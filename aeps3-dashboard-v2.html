@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AEPS-3 Ready-Set Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #F8F7F4;
+      --surface: #FFFFFF;
+      --border: #E8E5DE;
+      --text: #2C2A26;
+      --text-muted: #8A8578;
+      --text-light: #B5AFA3;
+      --accent: #4C6EF5;
+      --accent-light: #EDF0FF;
+      --green: #2B8A3E;
+      --green-bg: #EBFBEE;
+      --yellow: #E67700;
+      --yellow-bg: #FFF9DB;
+      --red: #C92A2A;
+      --red-bg: #FFF0F0;
+      --purple: #7048E8;
+      --purple-bg: #F3F0FF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    .nav {
+      background: #2C2A26;
+      padding: 0 28px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-logo {
+      background: var(--accent);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .nav-title {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .nav-subtitle {
+      color: rgba(255,255,255,0.35);
+      font-size: 13px;
+      margin-left: 4px;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-org {
+      color: rgba(255,255,255,0.5);
+      font-size: 12px;
+    }
+
+    .nav-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* MAIN */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 28px 60px;
+    }
+
+    /* HEADER */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 4px 0 0;
+    }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    select {
+      appearance: none;
+      background: var(--surface) url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%238A8578' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 32px 7px 12px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    select:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    /* METRIC CARDS */
+    .metrics {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 22px;
+      flex: 1;
+      min-width: 160px;
+    }
+
+    .metric-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .metric-label span:first-child {
+      font-size: 18px;
+    }
+
+    .metric-label span:last-child {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .metric-value {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .metric-value.green { color: var(--green); }
+    .metric-value.yellow { color: var(--yellow); }
+    .metric-value.red { color: var(--red); }
+
+    .metric-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* CHARTS ROW */
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .charts-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .chart-card h3 {
+      margin: 0 0 4px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .chart-card p {
+      margin: 0 0 12px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .chart-container {
+      position: relative;
+      height: 200px;
+    }
+
+    .chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* TABLE */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .table-header h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .table-header span {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .status-filters {
+      display: flex;
+      gap: 6px;
+    }
+
+    .status-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .status-btn:hover {
+      border-color: var(--text-muted);
+    }
+
+    .status-btn.active {
+      background: var(--text);
+      color: #fff;
+      border-color: var(--text);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      background: #FAFAF7;
+    }
+
+    th {
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    th:hover {
+      color: var(--text);
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr {
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #FCFCFA;
+    }
+
+    tbody tr:hover {
+      background: var(--accent-light) !important;
+    }
+
+    .student-name {
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .iep-badge {
+      font-size: 9px;
+      background: var(--purple-bg);
+      color: var(--purple);
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .status-badge.typically-developing {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .status-badge.at-risk {
+      background: var(--yellow-bg);
+      color: var(--yellow);
+    }
+
+    .status-badge.developmental-delay {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .status-badge::before {
+      content: "●";
+      font-size: 7px;
+    }
+
+    .pct-cell {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .result-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .result-badge.above {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .result-badge.below {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .table-footer {
+      padding: 12px 20px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* FOOTER */
+    .footer {
+      margin-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-light);
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 32px;
+      width: 90%;
+      max-width: 580px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .modal-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 4px 0 0;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+    }
+
+    .modal-stats {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .modal-stat {
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: center;
+      flex: 1;
+      min-width: 100px;
+    }
+
+    .modal-stat.accent {
+      background: var(--accent-light);
+    }
+
+    .modal-stat.neutral {
+      background: var(--bg);
+    }
+
+    .modal-stat-value {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .modal-stat-value.accent {
+      color: var(--accent);
+    }
+
+    .modal-stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .modal-section {
+      margin-bottom: 24px;
+    }
+
+    .modal-section h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .modal-chart {
+      height: 220px;
+      margin-bottom: 24px;
+    }
+
+    .domain-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      background: var(--bg);
+      border-radius: 6px;
+    }
+
+    .domain-label {
+      font-size: 12px;
+      color: var(--text);
+      width: 130px;
+      font-weight: 500;
+    }
+
+    .domain-score {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      width: 50px;
+    }
+
+    .domain-result {
+      margin-left: auto;
+    }
+
+    /* SORT ARROWS */
+    .sort-arrow {
+      font-size: 10px;
+      margin-left: 2px;
+    }
+
+    .sort-arrow.inactive {
+      opacity: 0.25;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-left">
+      <div class="nav-logo">A3</div>
+      <span class="nav-title">AEPS-3 Dashboard</span>
+      <span class="nav-subtitle">Universal Screener</span>
+    </div>
+    <div class="nav-right">
+      <span class="nav-org">Sunshine Early Learning Center</span>
+      <div class="nav-avatar">TJ</div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div>
+        <h1>Ready-Set Screener Results</h1>
+        <p>AEPS-3 Ready-Set · 40 items across 8 developmental domains · Scores: 0 (no performance), 1 (emerging), 2 (mastery)</p>
+      </div>
+      <div class="filters">
+        <select id="windowSelect">
+          <option>Fall 2025</option>
+          <option selected>Winter 2026</option>
+          <option>Spring 2026</option>
+        </select>
+        <select id="classroomSelect" style="width: 200px;">
+          <option>All Classrooms</option>
+          <option>Ms. Rivera — Pre-K A</option>
+          <option>Mr. Chen — Pre-K B</option>
+          <option>Ms. Okafor — Pre-K C</option>
+          <option>Ms. Patel — Head Start</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- METRICS -->
+    <div class="metrics" id="metricsRow">
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3>Development Status</h3>
+        <p>Distribution by eligibility determination category</p>
+        <div class="chart-container">
+          <canvas id="pieChart"></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background: #2B8A3E;"></div> Typically Developing</div>
+          <div class="legend-item"><div class="legend-dot" style="background: #E67700;"></div> At-Risk</div>
+          <div class="legend-item"><div class="legend-dot" style="background: #C92A2A;"></div> Developmental Delay</div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Domain Results</h3>
+        <p>% of students scoring "Above" cutoff by domain</p>
+        <div class="chart-container">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Progress Over Time</h3>
+        <p>% of students by status across screening windows</p>
+        <div class="chart-container">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+      <div class="table-header">
+        <div>
+          <h3>Student Scores</h3>
+          <span id="tableSubtitle">72 students · Click a row to view full profile</span>
+        </div>
+        <div class="status-filters">
+          <button class="status-btn active" data-status="All">All</button>
+          <button class="status-btn" data-status="Typically developing">Typically Developing</button>
+          <button class="status-btn" data-status="At-risk">At-Risk</button>
+          <button class="status-btn" data-status="Developmental delay">Developmental Delay</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr id="tableHead">
+              <!-- Populated by JS -->
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer" id="tableFooter" style="display: none;">
+        Showing 30 of <span id="totalCount">72</span> students · Scroll or export for full list
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <span>AEPS-3 Ready-Set · 40 goals · 8 domains · Scoring: 0 = No Performance, 1 = Emerging, 2 = Mastery · Max Score: 80</span>
+      <span>Dashboard Prototype · Standard Education</span>
+    </div>
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="modalName">Student Name</h2>
+          <p id="modalInfo">Classroom · Age</p>
+        </div>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="modal-stats">
+        <div class="modal-stat accent">
+          <div class="modal-stat-value accent" id="modalPct">75%</div>
+          <div class="modal-stat-label">Overall Score</div>
+        </div>
+        <div class="modal-stat neutral">
+          <div class="modal-stat-value" id="modalRaw">60</div>
+          <div class="modal-stat-label" id="modalRawLabel">of 80 pts</div>
+        </div>
+        <div class="modal-stat neutral">
+          <div class="modal-stat-value" id="modalAboveCount">6</div>
+          <div class="modal-stat-label">of 8 Above</div>
+        </div>
+        <div class="modal-stat" style="display: flex; align-items: center; justify-content: center;">
+          <span class="status-badge" id="modalStatus">Typically developing</span>
+        </div>
+      </div>
+      <div class="modal-section">
+        <h3>Domain Profile</h3>
+        <div class="modal-chart">
+          <canvas id="radarChart"></canvas>
+        </div>
+      </div>
+      <div class="modal-section">
+        <h3>Domain Results</h3>
+        <div id="modalDomains">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === DATA ===
+    const DOMAINS = [
+      { key: "fine_motor", label: "Fine Motor", short: "FM", items: 2, color: "#4C6EF5" },
+      { key: "gross_motor", label: "Gross Motor", short: "GM", items: 3, color: "#7048E8" },
+      { key: "adaptive", label: "Adaptive", short: "AD", items: 2, color: "#2B8A3E" },
+      { key: "social_emotional", label: "Social-Emotional", short: "SE", items: 8, color: "#E67700" },
+      { key: "social_communication", label: "Social-Comm", short: "SC", items: 3, color: "#D6336C" },
+      { key: "cognitive", label: "Cognitive", short: "CO", items: 6, color: "#1098AD" },
+      { key: "literacy", label: "Literacy", short: "LI", items: 10, color: "#5C940D" },
+      { key: "math", label: "Math", short: "MA", items: 6, color: "#C2255C" },
+    ];
+
+    const CLASSROOMS = ["All Classrooms", "Ms. Rivera — Pre-K A", "Mr. Chen — Pre-K B", "Ms. Okafor — Pre-K C", "Ms. Patel — Head Start"];
+
+    // Cutoff threshold: 60% of max score per domain = "Above", below = "Below"
+    const CUTOFF_PCT = 0.60;
+
+    function generateStudents(n) {
+      const firstNames = ["Aiden","Bella","Carlos","Dani","Elena","Finn","Grace","Hugo","Isla","Jax","Kaia","Leo","Maya","Noah","Olive","Parker","Quinn","Rosa","Sam","Tessa","Uma","Violet","Wyatt","Xena","Yara","Zane","Aria","Blake","Cora","Diego","Elise","Felix","Gemma","Hank","Ivy","Jules","Kira","Liam","Mila","Nico","Opal","Petra","Reed","Sage","Theo","Uri","Vera","Wren","Xavi","Zia"];
+      const lastNames = ["Adams","Brown","Clark","Diaz","Evans","Foster","Garcia","Hayes","Ito","Jones","Kim","Lopez","Moore","Ng","Ortiz","Park","Quinn","Rios","Smith","Tran","Ueda","Vega","Wang","Xu","Yang","Zhao"];
+      const classrooms = CLASSROOMS.slice(1);
+      const students = [];
+      for (let i = 0; i < n; i++) {
+        const firstName = firstNames[i % firstNames.length];
+        const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+        const classroom = classrooms[i % classrooms.length];
+        const ageMonths = Math.floor(Math.random() * 24) + 36;
+        const hasIEP = Math.random() < 0.18;
+        const scores = {};
+        const results = {};
+        let belowCount = 0;
+
+        DOMAINS.forEach(d => {
+          const maxScore = d.items * 2;
+          const base = hasIEP ? 0.30 + Math.random() * 0.45 : 0.50 + Math.random() * 0.48;
+          const score = Math.min(maxScore, Math.round(maxScore * base));
+          scores[d.key] = score;
+          const cutoff = Math.ceil(maxScore * CUTOFF_PCT);
+          results[d.key] = score >= cutoff ? "Above" : "Below";
+          if (results[d.key] === "Below") belowCount++;
+        });
+
+        const totalPossible = 80;
+        const totalRaw = Object.values(scores).reduce((a, b) => a + b, 0);
+        const pct = Math.round((totalRaw / totalPossible) * 100);
+
+        // Development Status based on number of domains below cutoff
+        let status;
+        if (belowCount === 0) status = "Typically developing";
+        else if (belowCount <= 2) status = "At-risk";
+        else status = "Developmental delay";
+
+        students.push({
+          id: i + 1,
+          firstName,
+          lastName,
+          name: `${firstName} ${lastName.charAt(0)}.`,
+          classroom,
+          ageMonths,
+          hasIEP,
+          scores,
+          results,
+          totalRaw,
+          totalPossible,
+          pct,
+          status,
+          belowCount,
+          aboveCount: 8 - belowCount
+        });
+      }
+      return students;
+    }
+
+    const ALL_STUDENTS = generateStudents(72);
+
+    // STATE
+    let currentClassroom = "All Classrooms";
+    let currentStatus = "All";
+    let sortCol = "name";
+    let sortDir = "asc";
+
+    // CHARTS
+    let pieChart, barChart, lineChart, radarChart;
+
+    // === RENDER FUNCTIONS ===
+    function getFiltered() {
+      let s = ALL_STUDENTS;
+      if (currentClassroom !== "All Classrooms") s = s.filter(st => st.classroom === currentClassroom);
+      if (currentStatus !== "All") s = s.filter(st => st.status === currentStatus);
+      s = [...s].sort((a, b) => {
+        let va, vb;
+        if (sortCol === "name") { va = a.name; vb = b.name; }
+        else if (sortCol === "pct") { va = a.pct; vb = b.pct; }
+        else if (sortCol === "status") { va = a.status; vb = b.status; }
+        else if (DOMAINS.find(d => d.key === sortCol)) {
+          // Sort by result (Above > Below), then by score
+          va = a.results[sortCol] === "Above" ? 1000 + a.scores[sortCol] : a.scores[sortCol];
+          vb = b.results[sortCol] === "Above" ? 1000 + b.scores[sortCol] : b.scores[sortCol];
+        }
+        else { va = a.scores[sortCol] || 0; vb = b.scores[sortCol] || 0; }
+        if (typeof va === "string") return sortDir === "asc" ? va.localeCompare(vb) : vb.localeCompare(va);
+        return sortDir === "asc" ? va - vb : vb - va;
+      });
+      return s;
+    }
+
+    function getStatusCounts() {
+      const base = currentClassroom === "All Classrooms" ? ALL_STUDENTS : ALL_STUDENTS.filter(s => s.classroom === currentClassroom);
+      return {
+        total: base.length,
+        typicallyDeveloping: base.filter(s => s.status === "Typically developing").length,
+        atRisk: base.filter(s => s.status === "At-risk").length,
+        developmentalDelay: base.filter(s => s.status === "Developmental delay").length,
+      };
+    }
+
+    function getDomainAbovePct() {
+      const base = currentClassroom === "All Classrooms" ? ALL_STUDENTS : ALL_STUDENTS.filter(s => s.classroom === currentClassroom);
+      return DOMAINS.map(d => {
+        const aboveCount = base.filter(s => s.results[d.key] === "Above").length;
+        const pct = base.length > 0 ? Math.round((aboveCount / base.length) * 100) : 0;
+        return { domain: d.short, fullLabel: d.label, pct, color: d.color };
+      });
+    }
+
+    function renderMetrics() {
+      const counts = getStatusCounts();
+      const window = document.getElementById("windowSelect").value;
+      document.getElementById("metricsRow").innerHTML = `
+        <div class="metric-card">
+          <div class="metric-label"><span>👥</span><span>Students Screened</span></div>
+          <div class="metric-value">${counts.total}</div>
+          <div class="metric-sub">${window}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label"><span>✓</span><span>Typically Developing</span></div>
+          <div class="metric-value green">${counts.typicallyDeveloping}</div>
+          <div class="metric-sub">${Math.round((counts.typicallyDeveloping / counts.total) * 100)}% of students</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label"><span>◐</span><span>At-Risk</span></div>
+          <div class="metric-value yellow">${counts.atRisk}</div>
+          <div class="metric-sub">${Math.round((counts.atRisk / counts.total) * 100)}% of students</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label"><span>⚑</span><span>Developmental Delay</span></div>
+          <div class="metric-value red">${counts.developmentalDelay}</div>
+          <div class="metric-sub">${Math.round((counts.developmentalDelay / counts.total) * 100)}% of students</div>
+        </div>
+      `;
+    }
+
+    function renderPieChart() {
+      const counts = getStatusCounts();
+      const ctx = document.getElementById("pieChart").getContext("2d");
+      if (pieChart) pieChart.destroy();
+      pieChart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: ["Typically Developing", "At-Risk", "Developmental Delay"],
+          datasets: [{
+            data: [counts.typicallyDeveloping, counts.atRisk, counts.developmentalDelay],
+            backgroundColor: ["#2B8A3E", "#E67700", "#C92A2A"],
+            borderWidth: 0,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "55%",
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    function renderBarChart() {
+      const data = getDomainAbovePct();
+      const ctx = document.getElementById("barChart").getContext("2d");
+      if (barChart) barChart.destroy();
+      barChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: data.map(d => d.domain + " Result"),
+          datasets: [{
+            data: data.map(d => d.pct),
+            backgroundColor: data.map(d => d.color),
+            borderRadius: 4,
+            barThickness: 18,
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { max: 100, grid: { display: false }, ticks: { font: { size: 10 }, callback: v => v + "%" } },
+            y: { grid: { display: false }, ticks: { font: { size: 10, weight: 500 } } }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    function renderLineChart() {
+      const ctx = document.getElementById("lineChart").getContext("2d");
+      if (lineChart) lineChart.destroy();
+      lineChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: ["Fall '25", "Winter '26", "Spring '26"],
+          datasets: [
+            { label: "Typically Developing", data: [42, 48, 55], borderColor: "#2B8A3E", backgroundColor: "#2B8A3E", tension: 0.3, pointRadius: 4 },
+            { label: "At-Risk", data: [35, 32, 28], borderColor: "#E67700", backgroundColor: "#E67700", tension: 0.3, pointRadius: 4 },
+            { label: "Developmental Delay", data: [23, 20, 17], borderColor: "#C92A2A", backgroundColor: "#C92A2A", tension: 0.3, pointRadius: 4 },
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { max: 100, ticks: { callback: v => v + "%" } },
+            x: { grid: { display: false } }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    function renderTable() {
+      const filtered = getFiltered();
+      const shown = filtered.slice(0, 30);
+
+      // Header
+      const cols = [
+        { key: "name", label: "Student", w: 140 },
+        { key: "status", label: "Dev. Status", w: 150 },
+        { key: "pct", label: "Overall %", w: 80 },
+        ...DOMAINS.map(d => ({ key: d.key, label: d.short + " Result", w: 85 }))
+      ];
+
+      document.getElementById("tableHead").innerHTML = cols.map(col => {
+        const arrow = sortCol === col.key
+          ? `<span class="sort-arrow">${sortDir === "asc" ? "↑" : "↓"}</span>`
+          : `<span class="sort-arrow inactive">↕</span>`;
+        return `<th data-col="${col.key}">${col.label} ${arrow}</th>`;
+      }).join("");
+
+      // Body
+      document.getElementById("tableBody").innerHTML = shown.map((s, idx) => {
+        const statusClass = s.status === "Typically developing" ? "typically-developing" : s.status === "At-risk" ? "at-risk" : "developmental-delay";
+        const iepBadge = s.hasIEP ? `<span class="iep-badge">IEP</span>` : "";
+
+        const domainCells = DOMAINS.map(d => {
+          const result = s.results[d.key];
+          const resultClass = result === "Above" ? "above" : "below";
+          return `<td><span class="result-badge ${resultClass}">${result}</span></td>`;
+        }).join("");
+
+        return `
+          <tr data-id="${s.id}">
+            <td><div class="student-name">${s.name} ${iepBadge}</div></td>
+            <td><span class="status-badge ${statusClass}">${s.status}</span></td>
+            <td class="pct-cell">${s.pct}%</td>
+            ${domainCells}
+          </tr>
+        `;
+      }).join("");
+
+      document.getElementById("tableSubtitle").textContent = `${filtered.length} students · Click a row to view full profile`;
+      const footer = document.getElementById("tableFooter");
+      if (filtered.length > 30) {
+        footer.style.display = "block";
+        document.getElementById("totalCount").textContent = filtered.length;
+      } else {
+        footer.style.display = "none";
+      }
+    }
+
+    function openModal(student) {
+      document.getElementById("modalName").textContent = `${student.firstName} ${student.lastName}`;
+      document.getElementById("modalInfo").textContent = `${student.classroom} · ${student.ageMonths} months${student.hasIEP ? " · IEP" : ""}`;
+      document.getElementById("modalPct").textContent = `${student.pct}%`;
+      document.getElementById("modalRaw").textContent = student.totalRaw;
+      document.getElementById("modalAboveCount").textContent = student.aboveCount;
+
+      const statusEl = document.getElementById("modalStatus");
+      statusEl.textContent = student.status;
+      statusEl.className = "status-badge " + (student.status === "Typically developing" ? "typically-developing" : student.status === "At-risk" ? "at-risk" : "developmental-delay");
+
+      // Radar chart
+      const radarData = DOMAINS.map(d => Math.round((student.scores[d.key] / (d.items * 2)) * 100));
+      const ctx = document.getElementById("radarChart").getContext("2d");
+      if (radarChart) radarChart.destroy();
+      radarChart = new Chart(ctx, {
+        type: "radar",
+        data: {
+          labels: DOMAINS.map(d => d.short),
+          datasets: [{
+            data: radarData,
+            backgroundColor: "rgba(76, 110, 245, 0.15)",
+            borderColor: "#4C6EF5",
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: "#4C6EF5"
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: {
+              min: 0,
+              max: 100,
+              ticks: { stepSize: 25, font: { size: 9 } },
+              pointLabels: { font: { size: 11 } }
+            }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // Domain rows
+      document.getElementById("modalDomains").innerHTML = DOMAINS.map(d => {
+        const max = d.items * 2;
+        const result = student.results[d.key];
+        const resultClass = result === "Above" ? "above" : "below";
+        return `
+          <div class="domain-row">
+            <span class="domain-label">${d.label}</span>
+            <span class="domain-score">${student.scores[d.key]} / ${max}</span>
+            <div class="domain-result">
+              <span class="result-badge ${resultClass}">${result}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      document.getElementById("modalOverlay").classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("modalOverlay").classList.remove("active");
+    }
+
+    function renderAll() {
+      renderMetrics();
+      renderPieChart();
+      renderBarChart();
+      renderLineChart();
+      renderTable();
+    }
+
+    // === EVENT LISTENERS ===
+    document.getElementById("classroomSelect").addEventListener("change", e => {
+      currentClassroom = e.target.value;
+      renderAll();
+    });
+
+    document.getElementById("windowSelect").addEventListener("change", renderMetrics);
+
+    document.querySelectorAll(".status-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".status-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentStatus = btn.dataset.status;
+        renderTable();
+      });
+    });
+
+    document.getElementById("tableHead").addEventListener("click", e => {
+      const th = e.target.closest("th");
+      if (!th) return;
+      const col = th.dataset.col;
+      if (sortCol === col) {
+        sortDir = sortDir === "asc" ? "desc" : "asc";
+      } else {
+        sortCol = col;
+        sortDir = "asc";
+      }
+      renderTable();
+    });
+
+    document.getElementById("tableBody").addEventListener("click", e => {
+      const tr = e.target.closest("tr");
+      if (!tr) return;
+      const id = parseInt(tr.dataset.id);
+      const student = ALL_STUDENTS.find(s => s.id === id);
+      if (student) openModal(student);
+    });
+
+    document.getElementById("modalClose").addEventListener("click", closeModal);
+    document.getElementById("modalOverlay").addEventListener("click", e => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+
+    // === INIT ===
+    renderAll();
+  </script>
+</body>
+</html>
