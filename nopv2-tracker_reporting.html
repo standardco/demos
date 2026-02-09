@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nOPV2 Outbreak Response Tracker</title>
+<style>
+  :root {
+    --blue-900: #1e3a5f;
+    --blue-700: #2563eb;
+    --blue-600: #2d72d2;
+    --blue-500: #3b82f6;
+    --blue-100: #dbeafe;
+    --blue-50: #eff6ff;
+    --green-600: #16a34a;
+    --green-100: #dcfce7;
+    --amber-600: #d97706;
+    --amber-100: #fef3c7;
+    --red-600: #dc2626;
+    --red-100: #fee2e2;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--gray-50); color: var(--gray-800); line-height: 1.5; }
+
+  /* Prototype banner */
+  .prototype-banner { background: #f59e0b; color: #78350f; text-align: center; padding: 10px 24px; font-size: 14px; font-weight: 600; letter-spacing: 0.01em; position: sticky; top: 0; z-index: 200; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .prototype-banner svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .prototype-banner .dismiss { background: none; border: none; cursor: pointer; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 18px; line-height: 1; margin-left: 12px; }
+  .prototype-banner .dismiss:hover { background: rgba(0,0,0,0.1); }
+
+  /* Header */
+  .header { background: var(--blue-900); color: white; padding: 0; position: sticky; top: 42px; z-index: 100; box-shadow: var(--shadow-lg); transition: top 0.3s; }
+  .header.banner-dismissed { top: 0; }
+  .header-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+  .header-brand { display: flex; align-items: center; gap: 12px; padding: 16px 0; }
+  .header-brand svg { width: 32px; height: 32px; }
+  .header-brand h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+  .header-brand span { font-size: 12px; opacity: 0.7; display: block; margin-top: 1px; }
+
+  /* Nav tabs */
+  .nav-tabs { display: flex; gap: 0; }
+  .nav-tab { padding: 18px 20px; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; font-weight: 500; border-bottom: 3px solid transparent; transition: all 0.2s; cursor: pointer; }
+  .nav-tab:hover { color: white; background: rgba(255,255,255,0.08); }
+  .nav-tab.active { color: white; border-bottom-color: #60a5fa; }
+
+  /* Main */
+  .main { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+  /* Tab panels */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Summary cards */
+  .summary-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .summary-card { background: white; border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border-left: 4px solid var(--blue-500); }
+  .summary-card.green { border-left-color: var(--green-600); }
+  .summary-card.amber { border-left-color: var(--amber-600); }
+  .summary-card.red { border-left-color: var(--red-600); }
+  .summary-card .label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500); font-weight: 600; }
+  .summary-card .value { font-size: 28px; font-weight: 700; color: var(--gray-900); margin-top: 4px; }
+  .summary-card .sub { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+
+  /* Toolbar */
+  .toolbar { background: white; border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow); margin-bottom: 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .search-box { flex: 1; min-width: 240px; position: relative; }
+  .search-box input { width: 100%; padding: 10px 12px 10px 38px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .search-box input:focus { border-color: var(--blue-500); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+  .search-box svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--gray-400); }
+  .filter-select { padding: 10px 32px 10px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 14px; background: white; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; outline: none; }
+  .filter-select:focus { border-color: var(--blue-500); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
+  /* Table */
+  .table-wrapper { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead { position: sticky; top: 0; z-index: 10; }
+  th { background: var(--gray-50); padding: 12px 14px; text-align: left; font-weight: 600; color: var(--gray-600); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--gray-200); white-space: nowrap; cursor: pointer; user-select: none; }
+  th:hover { background: var(--gray-100); }
+  th .sort-icon { display: inline-block; margin-left: 4px; opacity: 0.3; font-size: 10px; }
+  th.sorted .sort-icon { opacity: 1; color: var(--blue-600); }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); color: var(--gray-700); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  td.wrap { white-space: normal; max-width: 300px; }
+  tr:hover td { background: var(--blue-50); }
+  tr.expanded td { background: var(--blue-50); border-bottom: none; }
+
+  /* Status badges */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .badge-completed { background: var(--green-100); color: var(--green-600); }
+  .badge-planned { background: var(--amber-100); color: var(--amber-600); }
+  .badge-round { background: var(--blue-100); color: var(--blue-700); }
+
+  /* Expand row */
+  .expand-btn { background: none; border: none; cursor: pointer; padding: 4px; border-radius: 4px; color: var(--gray-500); transition: all 0.15s; }
+  .expand-btn:hover { background: var(--gray-200); color: var(--gray-700); }
+  .detail-row { display: none; }
+  .detail-row.show { display: table-row; }
+  .detail-row td { background: var(--gray-50); padding: 0; }
+  .detail-content { padding: 20px 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .detail-group h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500); margin-bottom: 6px; }
+  .detail-group p { font-size: 14px; color: var(--gray-800); }
+  .detail-actions { display: flex; gap: 8px; padding-top: 16px; grid-column: 1 / -1; border-top: 1px solid var(--gray-200); margin-top: 4px; }
+
+  /* Buttons */
+  .btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-primary { background: var(--blue-600); color: white; }
+  .btn-primary:hover { background: var(--blue-700); }
+  .btn-secondary { background: white; color: var(--gray-700); border: 1px solid var(--gray-300); }
+  .btn-secondary:hover { background: var(--gray-50); }
+  .btn-danger { background: var(--red-600); color: white; }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+  /* Upload area */
+  .upload-section { background: white; border-radius: var(--radius); padding: 32px; box-shadow: var(--shadow); margin-bottom: 24px; }
+  .upload-section h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .upload-section p { color: var(--gray-500); font-size: 14px; margin-bottom: 20px; }
+  .upload-dropzone { border: 2px dashed var(--gray-300); border-radius: var(--radius); padding: 48px; text-align: center; transition: all 0.2s; cursor: pointer; }
+  .upload-dropzone:hover, .upload-dropzone.dragover { border-color: var(--blue-500); background: var(--blue-50); }
+  .upload-dropzone svg { width: 48px; height: 48px; color: var(--gray-400); margin-bottom: 12px; }
+  .upload-dropzone h3 { font-size: 16px; color: var(--gray-700); }
+  .upload-dropzone span { font-size: 13px; color: var(--gray-500); }
+  .upload-history { margin-top: 24px; }
+  .upload-history h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--gray-600); }
+  .upload-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border: 1px solid var(--gray-200); border-radius: 6px; margin-bottom: 8px; }
+  .upload-item .name { font-size: 14px; font-weight: 500; }
+  .upload-item .meta { font-size: 12px; color: var(--gray-500); }
+  .upload-item .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-600); display: inline-block; margin-right: 6px; }
+
+  /* API Docs */
+  .api-section { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 16px; }
+  .api-header { padding: 16px 20px; border-bottom: 1px solid var(--gray-200); cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+  .api-header:hover { background: var(--gray-50); }
+  .api-method { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; font-family: 'SF Mono', SFMono-Regular, Menlo, monospace; margin-right: 12px; }
+  .api-method.get { background: var(--green-100); color: var(--green-600); }
+  .api-method.post { background: var(--blue-100); color: var(--blue-700); }
+  .api-method.put { background: var(--amber-100); color: var(--amber-600); }
+  .api-method.delete { background: var(--red-100); color: var(--red-600); }
+  .api-path { font-family: 'SF Mono', SFMono-Regular, Menlo, monospace; font-size: 14px; color: var(--gray-800); }
+  .api-desc { font-size: 13px; color: var(--gray-500); margin-left: auto; padding-left: 20px; }
+  .api-body { display: none; padding: 20px; background: var(--gray-50); border-top: 1px solid var(--gray-200); }
+  .api-body.show { display: block; }
+  .api-body h4 { font-size: 13px; font-weight: 600; color: var(--gray-600); margin-bottom: 8px; margin-top: 16px; }
+  .api-body h4:first-child { margin-top: 0; }
+  .api-body pre { background: var(--gray-900); color: #e5e7eb; padding: 16px; border-radius: 6px; font-size: 13px; overflow-x: auto; line-height: 1.6; }
+  .api-body .param-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+  .api-body .param-table th { font-size: 11px; text-align: left; padding: 8px 12px; background: white; border: 1px solid var(--gray-200); }
+  .api-body .param-table td { font-size: 13px; padding: 8px 12px; border: 1px solid var(--gray-200); }
+  .api-body .param-table code { background: var(--gray-100); padding: 2px 6px; border-radius: 3px; font-size: 12px; }
+
+  /* Edit modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: flex-start; padding: 60px 20px; overflow-y: auto; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: white; border-radius: 12px; width: 100%; max-width: 720px; box-shadow: var(--shadow-lg); }
+  .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; }
+  .modal-header h2 { font-size: 18px; font-weight: 600; }
+  .modal-close { background: none; border: none; cursor: pointer; padding: 4px; color: var(--gray-500); font-size: 20px; }
+  .modal-body { padding: 24px; max-height: 60vh; overflow-y: auto; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .form-group input, .form-group select, .form-group textarea { padding: 8px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 14px; outline: none; font-family: inherit; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--blue-500); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+  .form-group textarea { resize: vertical; min-height: 60px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-200); display: flex; gap: 8px; justify-content: flex-end; }
+
+  /* No results */
+  .no-results { text-align: center; padding: 48px 20px; color: var(--gray-500); }
+  .no-results svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.5; }
+
+  /* Footer */
+  .footer { text-align: center; padding: 24px; color: var(--gray-400); font-size: 12px; }
+
+  /* Reporting */
+  .report-modules { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .report-module { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .report-module-header { padding: 20px 24px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: 12px; }
+  .report-module-header svg { width: 22px; height: 22px; color: var(--blue-600); flex-shrink: 0; }
+  .report-module-header h3 { font-size: 16px; font-weight: 600; }
+  .report-module-header .count { margin-left: auto; font-size: 12px; color: var(--gray-500); background: var(--gray-100); padding: 2px 10px; border-radius: 10px; }
+  .report-list { list-style: none; }
+  .report-list li { border-bottom: 1px solid var(--gray-100); }
+  .report-list li:last-child { border-bottom: none; }
+  .report-list a { display: flex; align-items: center; padding: 14px 24px; text-decoration: none; color: var(--gray-800); transition: background 0.15s; cursor: pointer; }
+  .report-list a:hover { background: var(--blue-50); }
+  .report-list .report-title { font-size: 14px; font-weight: 500; flex: 1; }
+  .report-list .report-date { font-size: 12px; color: var(--gray-500); margin-left: 12px; }
+  .report-list .report-arrow { color: var(--gray-400); margin-left: 8px; font-size: 14px; }
+
+  .report-detail { background: white; border-radius: var(--radius); box-shadow: var(--shadow); }
+  .report-detail-header { padding: 20px 24px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: 12px; }
+  .report-detail-back { background: none; border: 1px solid var(--gray-300); border-radius: 6px; padding: 6px 10px; cursor: pointer; color: var(--gray-600); font-size: 13px; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s; }
+  .report-detail-back:hover { background: var(--gray-50); color: var(--gray-800); }
+  .report-detail-header h2 { font-size: 20px; font-weight: 600; }
+  .report-detail-body { padding: 32px 24px; }
+  .report-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 32px; }
+  .report-meta-item { }
+  .report-meta-item .meta-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500); font-weight: 600; margin-bottom: 4px; }
+  .report-meta-item .meta-value { font-size: 15px; color: var(--gray-800); font-weight: 500; }
+  .report-detail-actions { display: flex; gap: 12px; flex-wrap: wrap; padding-top: 24px; border-top: 1px solid var(--gray-200); }
+  .btn-pptx { background: #c05621; color: white; }
+  .btn-pptx:hover { background: #9c4221; }
+  .btn-email { background: var(--blue-600); color: white; }
+  .btn-email:hover { background: var(--blue-700); }
+
+  /* Email modal */
+  .email-preview { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px; margin-top: 16px; }
+  .email-preview .email-field { margin-bottom: 12px; }
+  .email-preview .email-field-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500); font-weight: 600; }
+  .email-preview .email-field-value { font-size: 14px; color: var(--gray-800); margin-top: 2px; }
+  .email-preview .email-body { font-size: 14px; color: var(--gray-700); line-height: 1.7; white-space: pre-line; }
+
+  @media (max-width: 768px) {
+    .report-modules { grid-template-columns: 1fr; }
+  }
+
+  /* Toast notification */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--gray-900); color: white; padding: 12px 20px; border-radius: 8px; font-size: 14px; box-shadow: var(--shadow-lg); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 2000; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  @media (max-width: 768px) {
+    .header-inner { flex-direction: column; align-items: flex-start; }
+    .nav-tabs { width: 100%; overflow-x: auto; }
+    .summary-row { grid-template-columns: 1fr 1fr; }
+    .toolbar { flex-direction: column; }
+    .search-box { min-width: 100%; }
+    .form-grid { grid-template-columns: 1fr; }
+    .detail-content { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Prototype Banner -->
+<div class="prototype-banner" id="prototypeBanner">
+  <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+  This is a non-functional prototype designed to illustrate potential functionality of a new and improved tracker
+  <button class="dismiss" onclick="dismissBanner()" title="Dismiss">&times;</button>
+</div>
+
+<header class="header" id="mainHeader">
+  <div class="header-inner">
+    <div class="header-brand">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="white" stroke-width="2"/><circle cx="16" cy="16" r="6" fill="white" opacity="0.3"/><path d="M16 2a14 14 0 0 1 0 28" stroke="white" stroke-width="2" stroke-dasharray="4 3"/><circle cx="16" cy="16" r="3" fill="white"/></svg>
+      <div>
+        <h1>nOPV2 Response Tracker</h1>
+        <span>Polio Outbreak Response Monitoring</span>
+      </div>
+    </div>
+    <nav class="nav-tabs">
+      <a class="nav-tab active" data-tab="dashboard" onclick="switchTab('dashboard')">Dashboard</a>
+      <a class="nav-tab" data-tab="upload" onclick="switchTab('upload')">Upload Data</a>
+      <a class="nav-tab" data-tab="reporting" onclick="switchTab('reporting')">Reporting</a>
+      <a class="nav-tab" data-tab="api" onclick="switchTab('api')">API</a>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- ===== DASHBOARD TAB ===== -->
+  <div id="tab-dashboard" class="tab-panel active">
+    <div class="summary-row" id="summaryCards"></div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"/></svg>
+        <input type="text" id="searchInput" placeholder="Search by SIA code, country, region..." oninput="renderTable()">
+      </div>
+      <select class="filter-select" id="filterCountry" onchange="renderTable()">
+        <option value="">All Countries</option>
+      </select>
+      <select class="filter-select" id="filterStatus" onchange="renderTable()">
+        <option value="">All Statuses</option>
+      </select>
+      <select class="filter-select" id="filterRound" onchange="renderTable()">
+        <option value="">All Rounds</option>
+      </select>
+      <button class="btn btn-secondary btn-sm" onclick="resetFilters()">Clear Filters</button>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:36px"></th>
+            <th onclick="sortBy('sia_code')">SIA Code <span class="sort-icon">&#9650;</span></th>
+            <th onclick="sortBy('country')">Country <span class="sort-icon">&#9650;</span></th>
+            <th onclick="sortBy('round_number')">Round <span class="sort-icon">&#9650;</span></th>
+            <th onclick="sortBy('campaign_status')">Status <span class="sort-icon">&#9650;</span></th>
+            <th onclick="sortBy('start_date')">Start Date <span class="sort-icon">&#9650;</span></th>
+            <th onclick="sortBy('end_date')">End Date <span class="sort-icon">&#9650;</span></th>
+            <th onclick="sortBy('target_pop_polis')">Target Pop. <span class="sort-icon">&#9650;</span></th>
+            <th onclick="sortBy('immunized_pop')">Immunized <span class="sort-icon">&#9650;</span></th>
+            <th>Admin Regions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div id="noResults" class="no-results" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <p>No responses match your search criteria.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== UPLOAD TAB ===== -->
+  <div id="tab-upload" class="tab-panel">
+    <div class="upload-section">
+      <h2>Upload Revised Spreadsheet</h2>
+      <p>Upload an updated .xlsx file to replace or merge with the current dataset. The system will parse columns automatically and flag any mismatches.</p>
+      <div class="upload-dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V4m0 0L8 8m4-4 4 4"/><path d="M20 16v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2"/></svg>
+        <h3>Drop your .xlsx file here</h3>
+        <span>or click to browse &middot; Max 25 MB</span>
+      </div>
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleUpload(this)">
+
+      <div class="upload-history">
+        <h3>Upload History</h3>
+        <div class="upload-item">
+          <div>
+            <div class="name"><span class="status-dot"></span>nopv2_response.xlsx</div>
+            <div class="meta">Uploaded Jan 15, 2026 &middot; 9 rows &middot; 31 columns</div>
+          </div>
+          <span class="badge badge-completed">Active</span>
+        </div>
+        <div class="upload-item" style="opacity:0.6">
+          <div>
+            <div class="name">nopv2_response_v2.xlsx</div>
+            <div class="meta">Uploaded Dec 3, 2025 &middot; 7 rows &middot; 31 columns</div>
+          </div>
+          <span class="badge" style="background:var(--gray-100);color:var(--gray-500)">Superseded</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="upload-section">
+      <h2>Column Mapping Preview</h2>
+      <p>When a new file is uploaded, the system maps incoming columns to the database schema. Unrecognized columns are flagged for manual review.</p>
+      <table style="width:100%; font-size:13px; border-collapse:collapse;">
+        <thead>
+          <tr><th style="text-align:left; padding:10px 12px; border-bottom:2px solid var(--gray-200);">Spreadsheet Column</th><th style="text-align:left; padding:10px 12px; border-bottom:2px solid var(--gray-200);">Database Field</th><th style="text-align:left; padding:10px 12px; border-bottom:2px solid var(--gray-200);">Status</th></tr>
+        </thead>
+        <tbody id="mappingTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== REPORTING TAB ===== -->
+  <div id="tab-reporting" class="tab-panel">
+    <!-- Report List View -->
+    <div id="reportListView">
+      <div style="margin-bottom:24px;">
+        <h2 style="font-size:22px; font-weight:700; margin-bottom:4px;">Reports</h2>
+        <p style="color:var(--gray-500); font-size:14px;">Access quarterly and weekly outbreak response reports. Click any report to view details, download the PowerPoint, or generate a summary email.</p>
+      </div>
+      <div class="report-modules">
+        <!-- Quarterly Reports -->
+        <div class="report-module">
+          <div class="report-module-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <h3>Quarterly Reports</h3>
+            <span class="count">4 reports</span>
+          </div>
+          <ul class="report-list" id="quarterlyReportList"></ul>
+        </div>
+        <!-- Weekly Reports -->
+        <div class="report-module">
+          <div class="report-module-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <h3>Weekly Reports</h3>
+            <span class="count">5 reports</span>
+          </div>
+          <ul class="report-list" id="weeklyReportList"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report Detail View -->
+    <div id="reportDetailView" style="display:none;">
+      <div class="report-detail">
+        <div class="report-detail-header">
+          <button class="report-detail-back" onclick="backToReportList()">&#8592; Back</button>
+          <h2 id="reportDetailTitle"></h2>
+        </div>
+        <div class="report-detail-body">
+          <div class="report-meta-grid" id="reportMetaGrid"></div>
+          <div class="report-detail-actions">
+            <button class="btn btn-pptx" onclick="showToast('Download started \u2014 in production this would download the .pptx file')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4m0 12l-4-4m4 4l4-4"/><path d="M20 16v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2"/></svg>
+              Download PowerPoint
+            </button>
+            <button class="btn btn-email" id="generateEmailBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              Generate summary email for this report
+            </button>
+          </div>
+          <div id="emailPreviewArea"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== API TAB ===== -->
+  <div id="tab-api" class="tab-panel">
+    <div style="margin-bottom:24px;">
+      <h2 style="font-size:22px; font-weight:700; margin-bottom:4px;">REST API Documentation</h2>
+      <p style="color:var(--gray-500); font-size:14px;">Base URL: <code style="background:var(--gray-100);padding:2px 8px;border-radius:4px;font-size:13px;">https://api.nopv2tracker.org/v1</code></p>
+    </div>
+
+    <div class="api-section">
+      <div class="api-header" onclick="toggleApi(this)">
+        <div><span class="api-method get">GET</span><span class="api-path">/responses</span></div>
+        <span class="api-desc">List all outbreak responses with optional filters</span>
+      </div>
+      <div class="api-body">
+        <h4>Query Parameters</h4>
+        <table class="param-table">
+          <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+          <tr><td><code>country</code></td><td>string</td><td>Filter by country name (e.g. "Angola")</td></tr>
+          <tr><td><code>status</code></td><td>string</td><td>Filter by campaign status: <code>completed</code>, <code>planned</code></td></tr>
+          <tr><td><code>round</code></td><td>string</td><td>Filter by round: <code>R1</code>, <code>R2</code>, <code>R3</code>, <code>Mop-up</code></td></tr>
+          <tr><td><code>region</code></td><td>string</td><td>Filter by WHO region (e.g. "AFRO")</td></tr>
+          <tr><td><code>search</code></td><td>string</td><td>Full-text search across SIA codes and admin regions</td></tr>
+          <tr><td><code>page</code></td><td>integer</td><td>Page number (default: 1)</td></tr>
+          <tr><td><code>per_page</code></td><td>integer</td><td>Results per page (default: 50, max: 200)</td></tr>
+        </table>
+        <h4>Example Request</h4>
+<pre>curl "https://api.nopv2tracker.org/v1/responses?country=Angola&status=completed"</pre>
+        <h4>Example Response</h4>
+<pre>{
+  "data": [
+    {
+      "id": 1,
+      "sia_code": "AGO-2024-001",
+      "country": "Angola",
+      "region": "AFRO",
+      "round_number": "R1",
+      "campaign_status": "Completed",
+      "vaccine_type": "nOPV2",
+      "start_date": "2024-05-17",
+      "end_date": "2024-05-19",
+      "target_pop": 3984996,
+      "immunized_pop": null,
+      "admin_regions": ["BENGO", "BENGUELA", "BIE", ...]
+    }
+  ],
+  "meta": {
+    "total": 6,
+    "page": 1,
+    "per_page": 50,
+    "total_pages": 1
+  }
+}</pre>
+      </div>
+    </div>
+
+    <div class="api-section">
+      <div class="api-header" onclick="toggleApi(this)">
+        <div><span class="api-method get">GET</span><span class="api-path">/responses/{id}</span></div>
+        <span class="api-desc">Get a single response by ID or SIA code</span>
+      </div>
+      <div class="api-body">
+        <h4>Path Parameters</h4>
+        <table class="param-table">
+          <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+          <tr><td><code>id</code></td><td>integer or string</td><td>Numeric ID or SIA code (e.g. <code>AGO-2024-001</code>)</td></tr>
+        </table>
+        <h4>Example Request</h4>
+<pre>curl "https://api.nopv2tracker.org/v1/responses/AGO-2024-001"</pre>
+        <h4>Example Response</h4>
+<pre>{
+  "data": {
+    "id": 1,
+    "sia_code": "AGO-2024-001",
+    "sub_activity_code": "AGO-2024-001-1",
+    "country": "Angola",
+    "region": "AFRO",
+    "vaccine_type": "nOPV2",
+    "round_number": "R1",
+    "campaign_status": "Completed",
+    "planned_date": "2024-03-15",
+    "start_date": "2024-05-17",
+    "end_date": "2024-05-19",
+    "target_pop_polis": 3984996,
+    "immunized_pop": null,
+    "admin_regions": ["BENGO", "BENGUELA", ...],
+    "campaign_history": ["2024-03-15", "2024-04-05", "2024-05-17"],
+    "doses_from_target": 3984996,
+    "doses_from_actual": null,
+    "approval_status": null,
+    "comments": null
+  }
+}</pre>
+      </div>
+    </div>
+
+    <div class="api-section">
+      <div class="api-header" onclick="toggleApi(this)">
+        <div><span class="api-method post">POST</span><span class="api-path">/responses</span></div>
+        <span class="api-desc">Create a new outbreak response record</span>
+      </div>
+      <div class="api-body">
+        <h4>Request Body (JSON)</h4>
+<pre>{
+  "sia_code": "AGO-2025-003",
+  "country": "Angola",
+  "region": "AFRO",
+  "vaccine_type": "nOPV2",
+  "round_number": "R1",
+  "campaign_status": "Planned - no date change",
+  "planned_date": "2025-09-01",
+  "start_date": "2025-09-01",
+  "end_date": "2025-09-03",
+  "target_pop_polis": 500000,
+  "admin_regions": ["LUANDA", "BENGO"]
+}</pre>
+        <h4>Response (201 Created)</h4>
+<pre>{
+  "data": { "id": 10, "sia_code": "AGO-2025-003", ... },
+  "message": "Response created successfully"
+}</pre>
+      </div>
+    </div>
+
+    <div class="api-section">
+      <div class="api-header" onclick="toggleApi(this)">
+        <div><span class="api-method put">PUT</span><span class="api-path">/responses/{id}</span></div>
+        <span class="api-desc">Update an existing response record</span>
+      </div>
+      <div class="api-body">
+        <h4>Request Body (partial update)</h4>
+<pre>{
+  "campaign_status": "Completed",
+  "immunized_pop": 480000,
+  "doses_from_actual": 480000
+}</pre>
+        <h4>Response (200 OK)</h4>
+<pre>{
+  "data": { "id": 10, ... },
+  "message": "Response updated successfully"
+}</pre>
+      </div>
+    </div>
+
+    <div class="api-section">
+      <div class="api-header" onclick="toggleApi(this)">
+        <div><span class="api-method post">POST</span><span class="api-path">/upload</span></div>
+        <span class="api-desc">Upload a revised Excel spreadsheet</span>
+      </div>
+      <div class="api-body">
+        <h4>Request</h4>
+<pre>curl -X POST "https://api.nopv2tracker.org/v1/upload" \
+  -H "Authorization: Bearer &lt;token&gt;" \
+  -F "file=@nopv2_response_updated.xlsx" \
+  -F "mode=merge"</pre>
+        <table class="param-table">
+          <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+          <tr><td><code>file</code></td><td>file</td><td>The .xlsx file to upload</td></tr>
+          <tr><td><code>mode</code></td><td>string</td><td><code>replace</code> (overwrite all) or <code>merge</code> (upsert by SIA code)</td></tr>
+        </table>
+        <h4>Response (200 OK)</h4>
+<pre>{
+  "message": "Upload processed successfully",
+  "stats": {
+    "rows_parsed": 12,
+    "rows_created": 3,
+    "rows_updated": 9,
+    "errors": []
+  }
+}</pre>
+      </div>
+    </div>
+
+    <div class="api-section">
+      <div class="api-header" onclick="toggleApi(this)">
+        <div><span class="api-method delete">DELETE</span><span class="api-path">/responses/{id}</span></div>
+        <span class="api-desc">Delete a response record</span>
+      </div>
+      <div class="api-body">
+        <h4>Example Request</h4>
+<pre>curl -X DELETE "https://api.nopv2tracker.org/v1/responses/10" \
+  -H "Authorization: Bearer &lt;token&gt;"</pre>
+        <h4>Response (200 OK)</h4>
+<pre>{
+  "message": "Response deleted successfully"
+}</pre>
+      </div>
+    </div>
+
+    <div class="api-section">
+      <div class="api-header" onclick="toggleApi(this)">
+        <div><span class="api-method get">GET</span><span class="api-path">/stats</span></div>
+        <span class="api-desc">Get summary statistics across all responses</span>
+      </div>
+      <div class="api-body">
+        <h4>Example Response</h4>
+<pre>{
+  "total_responses": 9,
+  "countries": 2,
+  "total_target_pop": 20131361,
+  "total_immunized": 4646682,
+  "by_status": {
+    "Completed": 7,
+    "Planned - no date change": 2
+  },
+  "by_country": {
+    "Angola": 6,
+    "Benin": 3
+  }
+}</pre>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  nOPV2 Outbreak Response Tracker &middot; Prototype Mockup &middot; Data from sample subset
+</footer>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Edit Response</h2>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" id="editForm"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== BANNER =====
+function dismissBanner() {
+  document.getElementById('prototypeBanner').style.display = 'none';
+  document.getElementById('mainHeader').classList.add('banner-dismissed');
+}
+
+// ===== DATA =====
+const DATA = [{"id":1,"sia_code":"AGO-2024-001","sub_activity_code":"AGO-2024-001-1","region":"AFRO","country":"Angola","admin1":"BENGO, BENGUELA, BIE, CABINDA, CUANDO CUBANGO, CUANZA NORTE, CUANZA SUL, CUNENE, HUAMBO, HUILA, LUANDA, LUNDA NORTE, LUNDA SUL, MALANJE, MOXICO, NAMIBE, UIGE, ZAIRE","rvt_approval_date":null,"vaccine_type":"nOPV2","round_number":"R1","campaign_status":"Completed","planned_date":"2024-03-15","start_date":"2024-05-17","end_date":"2024-05-19","campaign_history":"15/03/2024; 05/04/2024; 17/05/2024","target_pop_polis":3984996,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":null,"comments":null,"doses_from_target":3984996,"doses_from_actual":null,"doses_info_source":null,"delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null},{"id":2,"sia_code":"AGO-2024-002","sub_activity_code":"AGO-2024-002-1","region":"AFRO","country":"Angola","admin1":"BENGO, BENGUELA, BIE, CUANZA SUL, HUAMBO, LUANDA, LUNDA NORTE, LUNDA SUL, MALANJE, UIGE, ZAIRE","rvt_approval_date":null,"vaccine_type":"nOPV2","round_number":"R2","campaign_status":"Completed","planned_date":"2024-04-15","start_date":"2024-06-28","end_date":"2024-06-30","campaign_history":"15/04/2024; 10/05/2024; 28/06/2024","target_pop_polis":3444744,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":null,"comments":null,"doses_from_target":3444744,"doses_from_actual":null,"doses_info_source":null,"delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null},{"id":3,"sia_code":"AGO-2024-003","sub_activity_code":"AGO-2024-003-1","region":"AFRO","country":"Angola","admin1":"BENGO, BENGUELA, BIE, CABINDA, CUANDO CUBANGO, CUANZA NORTE, CUANZA SUL, CUNENE, HUAMBO, HUILA, LUANDA, LUNDA NORTE, LUNDA SUL, MALANJE, MOXICO, NAMIBE, UIGE, ZAIRE","rvt_approval_date":null,"vaccine_type":"nOPV2","round_number":"R3","campaign_status":"Completed","planned_date":"2024-09-06","start_date":"2024-09-06","end_date":"2024-09-08","campaign_history":"2024-09-06","target_pop_polis":6287191,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":null,"comments":null,"doses_from_target":null,"doses_from_actual":6844826,"doses_info_source":null,"delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null},{"id":4,"sia_code":"AGO-2024-004","sub_activity_code":"AGO-2024-004-1","region":"AFRO","country":"Angola","admin1":"CABINDA, CUANDO CUBANGO, CUANZA SUL, MOXICO","rvt_approval_date":null,"vaccine_type":"nOPV2","round_number":"Mop-up","campaign_status":"Completed","planned_date":"2024-10-26","start_date":"2024-11-15","end_date":"2024-11-18","campaign_history":"26/10/2024; 08/11/2024; 15/11/2024","target_pop_polis":342017,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":null,"comments":null,"doses_from_target":342017,"doses_from_actual":null,"doses_info_source":null,"delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null},{"id":5,"sia_code":"AGO-2025-001","sub_activity_code":"AGO-2025-001-1","region":"AFRO","country":"Angola","admin1":"BENGUELA","rvt_approval_date":null,"vaccine_type":"nOPV2","round_number":"R1","campaign_status":"Planned - no date change","planned_date":"2025-06-27","start_date":"2025-06-27","end_date":"2025-06-29","campaign_history":"2025-06-27","target_pop_polis":718440,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":null,"comments":null,"doses_from_target":null,"doses_from_actual":null,"doses_info_source":null,"delay_duration":null,"approved_doses":718440,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":"Approved by ORPG","vaccine_integration":null},{"id":6,"sia_code":"AGO-2025-002","sub_activity_code":"AGO-2025-002-1","region":"AFRO","country":"Angola","admin1":"BENGUELA","rvt_approval_date":null,"vaccine_type":"nOPV2","round_number":"R2","campaign_status":"Planned - no date change","planned_date":"2025-07-25","start_date":"2025-07-25","end_date":"2025-07-27","campaign_history":"2025-07-25","target_pop_polis":718440,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":null,"comments":null,"doses_from_target":null,"doses_from_actual":null,"doses_info_source":null,"delay_duration":null,"approved_doses":718440,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":"Approved by ORPG","vaccine_integration":null},{"id":7,"sia_code":"BEN-2021-001","sub_activity_code":"BEN-2021-001-1","region":"AFRO","country":"Benin","admin1":"ATLANTIQUE, COLLINES, COUFFO, LITTORAL, MONO, OUEME, ZOU","rvt_approval_date":"2021-02-24","vaccine_type":"nOPV2","round_number":"R1","campaign_status":"Completed","planned_date":"2021-03-19","start_date":"2021-05-07","end_date":"2021-05-09","campaign_history":"19/03/2021; 07/05/2021","target_pop_polis":1805538,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":1592842,"comments":"Presidential elections in March 2021","doses_from_target":null,"doses_from_actual":1592842,"doses_info_source":"POLIS","delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null},{"id":8,"sia_code":"BEN-2021-003","sub_activity_code":"BEN-2021-003-1","region":"AFRO","country":"Benin","admin1":"ATLANTIQUE, COLLINES, COUFFO, LITTORAL, MONO, OUEME, ZOU","rvt_approval_date":"2021-02-24","vaccine_type":"nOPV2","round_number":"R2","campaign_status":"Completed","planned_date":"2021-03-19","start_date":"2021-05-28","end_date":"2021-05-31","campaign_history":"19/03/2021; 28/05/2021","target_pop_polis":1805538,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":1937609,"comments":null,"doses_from_target":null,"doses_from_actual":1937609,"doses_info_source":"Shared by AFRO on 8/11/2021","delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null},{"id":9,"sia_code":"BEN-2021-004","sub_activity_code":"BEN-2021-004-1","region":"AFRO","country":"Benin","admin1":"ATLANTIQUE, COLLINES, COUFFO, LITTORAL, MONO, OUEME, ZOU","rvt_approval_date":"2021-02-24","vaccine_type":"nOPV2","round_number":"R3","campaign_status":"Completed","planned_date":"2021-09-22","start_date":"2021-09-22","end_date":"2021-09-24","campaign_history":"2021-09-22","target_pop_polis":1019458,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":1116231,"comments":null,"doses_from_target":null,"doses_from_actual":1116231,"doses_info_source":null,"delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null}];
+
+let currentSort = { key: 'sia_code', asc: true };
+let expandedRow = null;
+let editingId = null;
+
+function init() {
+  populateFilters();
+  renderSummary();
+  renderTable();
+  renderMappingTable();
+  setupDropzone();
+  renderReportLists();
+}
+
+function populateFilters() {
+  const countries = [...new Set(DATA.map(d => d.country))].sort();
+  const statuses = [...new Set(DATA.map(d => d.campaign_status))].sort();
+  const rounds = [...new Set(DATA.map(d => d.round_number))].sort();
+  const sel = (id, vals) => { const el = document.getElementById(id); vals.forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v; el.appendChild(o); }); };
+  sel('filterCountry', countries);
+  sel('filterStatus', statuses);
+  sel('filterRound', rounds);
+}
+
+function renderSummary() {
+  const total = DATA.length;
+  const completed = DATA.filter(d => d.campaign_status === 'Completed').length;
+  const planned = DATA.filter(d => d.campaign_status !== 'Completed').length;
+  const countries = new Set(DATA.map(d => d.country)).size;
+  const totalTarget = DATA.reduce((s, d) => s + (d.target_pop_polis || 0), 0);
+  const totalImmunized = DATA.reduce((s, d) => s + (d.immunized_pop || 0), 0);
+  document.getElementById('summaryCards').innerHTML = `
+    <div class="summary-card"><div class="label">Total Responses</div><div class="value">${total}</div><div class="sub">${countries} countries</div></div>
+    <div class="summary-card green"><div class="label">Completed</div><div class="value">${completed}</div><div class="sub">${Math.round(completed/total*100)}% completion rate</div></div>
+    <div class="summary-card amber"><div class="label">Planned</div><div class="value">${planned}</div><div class="sub">Upcoming campaigns</div></div>
+    <div class="summary-card"><div class="label">Target Population</div><div class="value">${fmt(totalTarget)}</div><div class="sub">Across all campaigns</div></div>
+    <div class="summary-card green"><div class="label">Immunized</div><div class="value">${fmt(totalImmunized)}</div><div class="sub">Reported to date</div></div>
+  `;
+}
+
+function fmt(n) {
+  if (n == null) return '\u2014';
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '';
+  return n.toLocaleString();
+}
+function fmtFull(n) { return n == null ? '\u2014' : n.toLocaleString(); }
+
+function getFiltered() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const country = document.getElementById('filterCountry').value;
+  const status = document.getElementById('filterStatus').value;
+  const round = document.getElementById('filterRound').value;
+  let rows = DATA.filter(d => {
+    if (country && d.country !== country) return false;
+    if (status && d.campaign_status !== status) return false;
+    if (round && d.round_number !== round) return false;
+    if (q) {
+      const hay = [d.sia_code, d.country, d.region, d.admin1, d.round_number, d.campaign_status, d.comments || ''].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  rows.sort((a, b) => {
+    let va = a[currentSort.key], vb = b[currentSort.key];
+    if (va == null) va = '';
+    if (vb == null) vb = '';
+    if (typeof va === 'number' && typeof vb === 'number') return currentSort.asc ? va - vb : vb - va;
+    return currentSort.asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+  });
+  return rows;
+}
+
+function renderTable() {
+  const rows = getFiltered();
+  const tbody = document.getElementById('tableBody');
+  const noRes = document.getElementById('noResults');
+  if (rows.length === 0) { tbody.innerHTML = ''; noRes.style.display = 'block'; return; }
+  noRes.style.display = 'none';
+  tbody.innerHTML = rows.map(d => {
+    const isExpanded = expandedRow === d.id;
+    const statusClass = d.campaign_status === 'Completed' ? 'badge-completed' : 'badge-planned';
+    return `
+    <tr class="${isExpanded ? 'expanded' : ''}" onclick="toggleExpand(${d.id})">
+      <td><button class="expand-btn" title="Expand">${isExpanded ? '&#9660;' : '&#9654;'}</button></td>
+      <td><strong>${d.sia_code}</strong></td>
+      <td>${d.country}</td>
+      <td><span class="badge badge-round">${d.round_number}</span></td>
+      <td><span class="badge ${statusClass}">${d.campaign_status === 'Planned - no date change' ? 'Planned' : d.campaign_status}</span></td>
+      <td>${d.start_date || '\u2014'}</td>
+      <td>${d.end_date || '\u2014'}</td>
+      <td style="text-align:right">${fmtFull(d.target_pop_polis)}</td>
+      <td style="text-align:right">${fmtFull(d.immunized_pop)}</td>
+      <td class="wrap" title="${d.admin1}">${d.admin1 ? d.admin1.split(',').slice(0,3).join(', ') + (d.admin1.split(',').length > 3 ? ' +' + (d.admin1.split(',').length - 3) + ' more' : '') : '\u2014'}</td>
+    </tr>
+    <tr class="detail-row ${isExpanded ? 'show' : ''}" id="detail-${d.id}">
+      <td colspan="10">
+        <div class="detail-content">
+          <div class="detail-group"><h4>SIA Code</h4><p>${d.sia_code}</p></div>
+          <div class="detail-group"><h4>Sub-Activity Code</h4><p>${d.sub_activity_code}</p></div>
+          <div class="detail-group"><h4>Region</h4><p>${d.region}</p></div>
+          <div class="detail-group"><h4>Vaccine Type</h4><p>${d.vaccine_type}</p></div>
+          <div class="detail-group"><h4>RVT Approval Date</h4><p>${d.rvt_approval_date || '\u2014'}</p></div>
+          <div class="detail-group"><h4>Planned Date</h4><p>${d.planned_date || '\u2014'}</p></div>
+          <div class="detail-group"><h4>Start Date</h4><p>${d.start_date || '\u2014'}</p></div>
+          <div class="detail-group"><h4>End Date</h4><p>${d.end_date || '\u2014'}</p></div>
+          <div class="detail-group"><h4>Age Group</h4><p>${d.age_group || '\u2014'}</p></div>
+          <div class="detail-group"><h4>Target Population (POLIS)</h4><p>${fmtFull(d.target_pop_polis)}</p></div>
+          <div class="detail-group"><h4>Immunized Population</h4><p>${fmtFull(d.immunized_pop)}</p></div>
+          <div class="detail-group"><h4>Doses (from target)</h4><p>${fmtFull(d.doses_from_target)}</p></div>
+          <div class="detail-group"><h4>Doses (from actual)</h4><p>${fmtFull(d.doses_from_actual)}</p></div>
+          <div class="detail-group"><h4>Approved Doses</h4><p>${fmtFull(d.approved_doses)}</p></div>
+          <div class="detail-group"><h4>Approval Status</h4><p>${d.approval_status || '\u2014'}</p></div>
+          <div class="detail-group"><h4>Campaign Date History</h4><p>${d.campaign_history || '\u2014'}</p></div>
+          <div class="detail-group" style="grid-column:1/-1"><h4>Admin 1 Regions</h4><p>${d.admin1 || '\u2014'}</p></div>
+          ${d.comments ? `<div class="detail-group" style="grid-column:1/-1"><h4>Comments</h4><p>${d.comments}</p></div>` : ''}
+          <div class="detail-actions">
+            <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); openEdit(${d.id})">Edit Record</button>
+            <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); showToast('JSON copied to clipboard')">Copy as JSON</button>
+          </div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function sortBy(key) {
+  if (currentSort.key === key) currentSort.asc = !currentSort.asc;
+  else { currentSort.key = key; currentSort.asc = true; }
+  renderTable();
+}
+
+function toggleExpand(id) {
+  expandedRow = expandedRow === id ? null : id;
+  renderTable();
+}
+
+function resetFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('filterCountry').value = '';
+  document.getElementById('filterStatus').value = '';
+  document.getElementById('filterRound').value = '';
+  renderTable();
+}
+
+// ===== EDIT MODAL =====
+const editFields = [
+  { key: 'sia_code', label: 'SIA Code', type: 'text' },
+  { key: 'country', label: 'Country', type: 'text' },
+  { key: 'region', label: 'Region', type: 'text' },
+  { key: 'round_number', label: 'Round', type: 'select', options: ['R1','R2','R3','Mop-up'] },
+  { key: 'campaign_status', label: 'Campaign Status', type: 'select', options: ['Completed','Planned - no date change'] },
+  { key: 'vaccine_type', label: 'Vaccine Type', type: 'text' },
+  { key: 'planned_date', label: 'Planned Date', type: 'date' },
+  { key: 'start_date', label: 'Start Date', type: 'date' },
+  { key: 'end_date', label: 'End Date', type: 'date' },
+  { key: 'target_pop_polis', label: 'Target Population (POLIS)', type: 'number' },
+  { key: 'immunized_pop', label: 'Immunized Population', type: 'number' },
+  { key: 'approved_doses', label: 'Approved Doses', type: 'number' },
+  { key: 'approval_status', label: 'Approval Status', type: 'text' },
+  { key: 'age_group', label: 'Age Group', type: 'text' },
+  { key: 'admin1', label: 'Admin 1 Regions', type: 'textarea', full: true },
+  { key: 'comments', label: 'Comments', type: 'textarea', full: true },
+];
+
+function openEdit(id) {
+  editingId = id;
+  const d = DATA.find(r => r.id === id);
+  document.getElementById('modalTitle').textContent = 'Edit ' + d.sia_code;
+  const form = document.getElementById('editForm');
+  form.innerHTML = editFields.map(f => {
+    const val = d[f.key] != null ? d[f.key] : '';
+    const cls = f.full ? 'form-group full' : 'form-group';
+    if (f.type === 'select') {
+      return '<div class="' + cls + '"><label>' + f.label + '</label><select id="edit-' + f.key + '">' + f.options.map(o => '<option' + (o === val ? ' selected' : '') + '>' + o + '</option>').join('') + '</select></div>';
+    } else if (f.type === 'textarea') {
+      return '<div class="' + cls + '"><label>' + f.label + '</label><textarea id="edit-' + f.key + '">' + val + '</textarea></div>';
+    } else {
+      return '<div class="' + cls + '"><label>' + f.label + '</label><input type="' + f.type + '" id="edit-' + f.key + '" value="' + val + '"></div>';
+    }
+  }).join('');
+  document.getElementById('editModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('editModal').classList.remove('show');
+  editingId = null;
+}
+
+function saveEdit() {
+  const d = DATA.find(r => r.id === editingId);
+  editFields.forEach(f => {
+    let val = document.getElementById('edit-' + f.key).value;
+    if (f.type === 'number') val = val ? Number(val) : null;
+    if (val === '') val = null;
+    d[f.key] = val;
+  });
+  closeModal();
+  renderSummary();
+  renderTable();
+  showToast('Record updated successfully');
+}
+
+// ===== TABS =====
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+}
+
+// ===== API DOCS =====
+function toggleApi(header) {
+  header.nextElementSibling.classList.toggle('show');
+}
+
+// ===== UPLOAD =====
+function setupDropzone() {
+  const dz = document.getElementById('dropzone');
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); handleUpload({ files: e.dataTransfer.files }); });
+}
+
+function handleUpload(input) {
+  if (input.files && input.files.length > 0) {
+    showToast('"' + input.files[0].name + '" received \u2014 in production this would be parsed and merged into the database.');
+  }
+}
+
+// ===== MAPPING TABLE =====
+function renderMappingTable() {
+  const mappings = [
+    ['SIA CODE as Per POLIS', 'sia_code', 'mapped'],
+    ['SIA Sub-Activity Code as per POLIS', 'sub_activity_code', 'mapped'],
+    ['Region', 'region', 'mapped'],
+    ['Country', 'country', 'mapped'],
+    ['Admin 1 -Regional level as per POLIS', 'admin1', 'mapped'],
+    ['RVT Final Approval Date', 'rvt_approval_date', 'mapped'],
+    ['Vaccine Type', 'vaccine_type', 'mapped'],
+    ['Round number', 'round_number', 'mapped'],
+    ['Campaign Status', 'campaign_status', 'mapped'],
+    ['Activity Initial Planned Date', 'planned_date', 'mapped'],
+    ['Sub-Activity Start Date', 'start_date', 'mapped'],
+    ['Sub-Activity End Date', 'end_date', 'mapped'],
+    ['Target Pop. as per POLIS', 'target_pop_polis', 'mapped'],
+    ['Immunized Population', 'immunized_pop', 'mapped'],
+    ['Number of Approved Doses', 'approved_doses', 'mapped'],
+    ['delay_geographic_scope', 'delay_scope', 'mapped'],
+    ['delay_category', 'delay_category', 'mapped'],
+    ['Vaccine Integration', 'vaccine_integration', 'review'],
+  ];
+  document.getElementById('mappingTable').innerHTML = mappings.map(m => {
+    const badge = m[2] === 'mapped'
+      ? '<span class="badge badge-completed">Mapped</span>'
+      : '<span class="badge badge-planned">Needs Review</span>';
+    return '<tr><td style="padding:10px 12px; border-bottom:1px solid var(--gray-200); font-family:monospace; font-size:13px;">' + m[0] + '</td><td style="padding:10px 12px; border-bottom:1px solid var(--gray-200); font-family:monospace; font-size:13px;">' + m[1] + '</td><td style="padding:10px 12px; border-bottom:1px solid var(--gray-200);">' + badge + '</td></tr>';
+  }).join('');
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===== REPORTING =====
+const QUARTERLY_REPORTS = [
+  { id: 'q4-2025', title: 'Q4 2025 Outbreak Response Summary', period: 'October \u2013 December 2025', date: 'Jan 12, 2026', countries: 'Angola, Benin, Chad, DRC', campaigns: 14, dosesAdmin: '8.2M', status: 'Final' },
+  { id: 'q3-2025', title: 'Q3 2025 Outbreak Response Summary', period: 'July \u2013 September 2025', date: 'Oct 8, 2025', countries: 'Angola, Benin, Cameroon', campaigns: 11, dosesAdmin: '6.8M', status: 'Final' },
+  { id: 'q2-2025', title: 'Q2 2025 Outbreak Response Summary', period: 'April \u2013 June 2025', date: 'Jul 10, 2025', countries: 'Angola, Benin, Niger', campaigns: 9, dosesAdmin: '5.1M', status: 'Final' },
+  { id: 'q1-2025', title: 'Q1 2025 Outbreak Response Summary', period: 'January \u2013 March 2025', date: 'Apr 7, 2025', countries: 'Angola, Benin, Chad, Nigeria', campaigns: 12, dosesAdmin: '7.4M', status: 'Final' },
+];
+
+const WEEKLY_REPORTS = [
+  { id: 'w05-2026', title: 'Week 5, 2026 \u2014 Situation Report', period: 'Jan 27 \u2013 Feb 2, 2026', date: 'Feb 3, 2026', countries: 'Angola', campaigns: 2, dosesAdmin: '1.4M', status: 'Final' },
+  { id: 'w04-2026', title: 'Week 4, 2026 \u2014 Situation Report', period: 'Jan 20 \u2013 Jan 26, 2026', date: 'Jan 27, 2026', countries: 'Angola, Benin', campaigns: 3, dosesAdmin: '2.1M', status: 'Final' },
+  { id: 'w03-2026', title: 'Week 3, 2026 \u2014 Situation Report', period: 'Jan 13 \u2013 Jan 19, 2026', date: 'Jan 20, 2026', countries: 'Angola', campaigns: 1, dosesAdmin: '718K', status: 'Final' },
+  { id: 'w02-2026', title: 'Week 2, 2026 \u2014 Situation Report', period: 'Jan 6 \u2013 Jan 12, 2026', date: 'Jan 13, 2026', countries: 'Benin', campaigns: 2, dosesAdmin: '1.8M', status: 'Final' },
+  { id: 'w01-2026', title: 'Week 1, 2026 \u2014 Situation Report', period: 'Dec 30 \u2013 Jan 5, 2026', date: 'Jan 6, 2026', countries: 'Angola, Benin', campaigns: 3, dosesAdmin: '2.4M', status: 'Draft' },
+];
+
+let currentReport = null;
+
+function renderReportLists() {
+  const renderList = (reports, elId) => {
+    document.getElementById(elId).innerHTML = reports.map(r => {
+      const statusBadge = r.status === 'Draft'
+        ? '<span class="badge badge-planned" style="font-size:11px; margin-left:8px;">Draft</span>'
+        : '';
+      return '<li><a onclick="openReport(\'' + r.id + '\')">' +
+        '<span class="report-title">' + r.title + statusBadge + '</span>' +
+        '<span class="report-date">' + r.date + '</span>' +
+        '<span class="report-arrow">&#8250;</span></a></li>';
+    }).join('');
+  };
+  renderList(QUARTERLY_REPORTS, 'quarterlyReportList');
+  renderList(WEEKLY_REPORTS, 'weeklyReportList');
+}
+
+function openReport(id) {
+  const all = [...QUARTERLY_REPORTS, ...WEEKLY_REPORTS];
+  const r = all.find(x => x.id === id);
+  if (!r) return;
+  currentReport = r;
+  document.getElementById('reportListView').style.display = 'none';
+  document.getElementById('reportDetailView').style.display = 'block';
+  document.getElementById('reportDetailTitle').textContent = r.title;
+  document.getElementById('emailPreviewArea').innerHTML = '';
+
+  const isQuarterly = QUARTERLY_REPORTS.some(x => x.id === id);
+  const periodLabel = isQuarterly ? 'Quarter' : 'Week';
+
+  document.getElementById('reportMetaGrid').innerHTML =
+    '<div class="report-meta-item"><div class="meta-label">Report Type</div><div class="meta-value">' + (isQuarterly ? 'Quarterly Report' : 'Weekly Situation Report') + '</div></div>' +
+    '<div class="report-meta-item"><div class="meta-label">' + periodLabel + '</div><div class="meta-value">' + r.period + '</div></div>' +
+    '<div class="report-meta-item"><div class="meta-label">Published</div><div class="meta-value">' + r.date + '</div></div>' +
+    '<div class="report-meta-item"><div class="meta-label">Status</div><div class="meta-value"><span class="badge ' + (r.status === 'Final' ? 'badge-completed' : 'badge-planned') + '">' + r.status + '</span></div></div>' +
+    '<div class="report-meta-item"><div class="meta-label">Countries Covered</div><div class="meta-value">' + r.countries + '</div></div>' +
+    '<div class="report-meta-item"><div class="meta-label">Active Campaigns</div><div class="meta-value">' + r.campaigns + '</div></div>' +
+    '<div class="report-meta-item"><div class="meta-label">Doses Administered</div><div class="meta-value">' + r.dosesAdmin + '</div></div>' +
+    '<div class="report-meta-item"><div class="meta-label">PowerPoint File</div><div class="meta-value" style="font-family:monospace; font-size:13px;">nOPV2_' + r.id.replace('-', '_') + '.pptx</div></div>';
+
+  document.getElementById('generateEmailBtn').onclick = function() { generateEmail(r); };
+}
+
+function backToReportList() {
+  document.getElementById('reportDetailView').style.display = 'none';
+  document.getElementById('reportListView').style.display = 'block';
+  currentReport = null;
+}
+
+function generateEmail(r) {
+  const isQuarterly = QUARTERLY_REPORTS.some(x => x.id === r.id);
+  const type = isQuarterly ? 'Quarterly' : 'Weekly';
+  const subject = 'nOPV2 Outbreak Response \u2014 ' + type + ' Report: ' + r.period;
+  const body =
+    'Dear Colleagues,\n\n' +
+    'Please find attached the ' + type.toLowerCase() + ' nOPV2 outbreak response report for ' + r.period + '.\n\n' +
+    'Key highlights:\n' +
+    '\u2022 Countries covered: ' + r.countries + '\n' +
+    '\u2022 Active campaigns during this period: ' + r.campaigns + '\n' +
+    '\u2022 Total doses administered: ' + r.dosesAdmin + '\n' +
+    '\u2022 Report status: ' + r.status + '\n\n' +
+    'The full PowerPoint presentation (nOPV2_' + r.id.replace('-', '_') + '.pptx) is attached for your review.\n\n' +
+    'Please do not hesitate to reach out if you have any questions or require additional details.\n\n' +
+    'Best regards,\n' +
+    'nOPV2 Response Tracker';
+
+  document.getElementById('emailPreviewArea').innerHTML =
+    '<div class="email-preview" style="margin-top:24px;">' +
+      '<h4 style="font-size:14px; font-weight:600; margin-bottom:16px; color:var(--gray-700);">Generated Email Preview</h4>' +
+      '<div class="email-field"><div class="email-field-label">Subject</div><div class="email-field-value">' + subject + '</div></div>' +
+      '<div class="email-field"><div class="email-field-label">Attachment</div><div class="email-field-value" style="font-family:monospace; font-size:13px;">nOPV2_' + r.id.replace('-', '_') + '.pptx</div></div>' +
+      '<div class="email-field" style="margin-bottom:0"><div class="email-field-label">Body</div><div class="email-body">' + body + '</div></div>' +
+      '<div style="margin-top:16px; display:flex; gap:8px;">' +
+        '<button class="btn btn-primary btn-sm" onclick="showToast(\'Email copied to clipboard \u2014 in production this would open your email client\')">Copy to Clipboard</button>' +
+        '<button class="btn btn-secondary btn-sm" onclick="showToast(\'Opening email client \u2014 in production this would launch mailto:\')">Open in Email Client</button>' +
+      '</div>' +
+    '</div>';
+
+  showToast('Summary email generated');
+}
+
+// ===== KEYBOARD =====
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === '/' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+});
+
+init();
+</script>
+</body>
+</html>
