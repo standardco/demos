@@ -37,8 +37,15 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--gray-50); color: var(--gray-800); line-height: 1.5; }
 
+  /* Prototype banner */
+  .prototype-banner { background: #f59e0b; color: #78350f; text-align: center; padding: 10px 24px; font-size: 14px; font-weight: 600; letter-spacing: 0.01em; position: sticky; top: 0; z-index: 200; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .prototype-banner svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .prototype-banner .dismiss { background: none; border: none; cursor: pointer; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 18px; line-height: 1; margin-left: 12px; }
+  .prototype-banner .dismiss:hover { background: rgba(0,0,0,0.1); }
+
   /* Header */
-  .header { background: var(--blue-900); color: white; padding: 0; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-lg); }
+  .header { background: var(--blue-900); color: white; padding: 0; position: sticky; top: 42px; z-index: 100; box-shadow: var(--shadow-lg); transition: top 0.3s; }
+  .header.banner-dismissed { top: 0; }
   .header-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
   .header-brand { display: flex; align-items: center; gap: 12px; padding: 16px 0; }
   .header-brand svg { width: 32px; height: 32px; }
@@ -103,7 +110,6 @@
   .detail-row.show { display: table-row; }
   .detail-row td { background: var(--gray-50); padding: 0; }
   .detail-content { padding: 20px 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-  .detail-group { }
   .detail-group h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500); margin-bottom: 6px; }
   .detail-group p { font-size: 14px; color: var(--gray-800); }
   .detail-actions { display: flex; gap: 8px; padding-top: 16px; grid-column: 1 / -1; border-top: 1px solid var(--gray-200); margin-top: 4px; }
@@ -196,7 +202,14 @@
 </head>
 <body>
 
-<header class="header">
+<!-- Prototype Banner -->
+<div class="prototype-banner" id="prototypeBanner">
+  <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+  This is a non-functional prototype designed to illustrate potential functionality of a new and improved tracker
+  <button class="dismiss" onclick="dismissBanner()" title="Dismiss">&times;</button>
+</div>
+
+<header class="header" id="mainHeader">
   <div class="header-inner">
     <div class="header-brand">
       <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="white" stroke-width="2"/><circle cx="16" cy="16" r="6" fill="white" opacity="0.3"/><path d="M16 2a14 14 0 0 1 0 28" stroke="white" stroke-width="2" stroke-dasharray="4 3"/><circle cx="16" cy="16" r="3" fill="white"/></svg>
@@ -543,6 +556,12 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// ===== BANNER =====
+function dismissBanner() {
+  document.getElementById('prototypeBanner').style.display = 'none';
+  document.getElementById('mainHeader').classList.add('banner-dismissed');
+}
+
 // ===== DATA =====
 const DATA = [{"id":1,"sia_code":"AGO-2024-001","sub_activity_code":"AGO-2024-001-1","region":"AFRO","country":"Angola","admin1":"BENGO, BENGUELA, BIE, CABINDA, CUANDO CUBANGO, CUANZA NORTE, CUANZA SUL, CUNENE, HUAMBO, HUILA, LUANDA, LUNDA NORTE, LUNDA SUL, MALANJE, MOXICO, NAMIBE, UIGE, ZAIRE","rvt_approval_date":null,"vaccine_type":"nOPV2","round_number":"R1","campaign_status":"Completed","planned_date":"2024-03-15","start_date":"2024-05-17","end_date":"2024-05-19","campaign_history":"15/03/2024; 05/04/2024; 17/05/2024","target_pop_polis":3984996,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":null,"comments":null,"doses_from_target":3984996,"doses_from_actual":null,"doses_info_source":null,"delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null},{"id":2,"sia_code":"AGO-2024-002","sub_activity_code":"AGO-2024-002-1","region":"AFRO","country":"Angola","admin1":"BENGO, BENGUELA, BIE, CUANZA SUL, HUAMBO, LUANDA, LUNDA NORTE, LUNDA SUL, MALANJE, UIGE, ZAIRE","rvt_approval_date":null,"vaccine_type":"nOPV2","round_number":"R2","campaign_status":"Completed","planned_date":"2024-04-15","start_date":"2024-06-28","end_date":"2024-06-30","campaign_history":"15/04/2024; 10/05/2024; 28/06/2024","target_pop_polis":3444744,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":null,"comments":null,"doses_from_target":3444744,"doses_from_actual":null,"doses_info_source":null,"delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null},{"id":3,"sia_code":"AGO-2024-003","sub_activity_code":"AGO-2024-003-1","region":"AFRO","country":"Angola","admin1":"BENGO, BENGUELA, BIE, CABINDA, CUANDO CUBANGO, CUANZA NORTE, CUANZA SUL, CUNENE, HUAMBO, HUILA, LUANDA, LUNDA NORTE, LUNDA SUL, MALANJE, MOXICO, NAMIBE, UIGE, ZAIRE","rvt_approval_date":null,"vaccine_type":"nOPV2","round_number":"R3","campaign_status":"Completed","planned_date":"2024-09-06","start_date":"2024-09-06","end_date":"2024-09-08","campaign_history":"2024-09-06","target_pop_polis":6287191,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":null,"comments":null,"doses_from_target":null,"doses_from_actual":6844826,"doses_info_source":null,"delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null},{"id":4,"sia_code":"AGO-2024-004","sub_activity_code":"AGO-2024-004-1","region":"AFRO","country":"Angola","admin1":"CABINDA, CUANDO CUBANGO, CUANZA SUL, MOXICO","rvt_approval_date":null,"vaccine_type":"nOPV2","round_number":"Mop-up","campaign_status":"Completed","planned_date":"2024-10-26","start_date":"2024-11-15","end_date":"2024-11-18","campaign_history":"26/10/2024; 08/11/2024; 15/11/2024","target_pop_polis":342017,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":null,"comments":null,"doses_from_target":342017,"doses_from_actual":null,"doses_info_source":null,"delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null},{"id":5,"sia_code":"AGO-2025-001","sub_activity_code":"AGO-2025-001-1","region":"AFRO","country":"Angola","admin1":"BENGUELA","rvt_approval_date":null,"vaccine_type":"nOPV2","round_number":"R1","campaign_status":"Planned - no date change","planned_date":"2025-06-27","start_date":"2025-06-27","end_date":"2025-06-29","campaign_history":"2025-06-27","target_pop_polis":718440,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":null,"comments":null,"doses_from_target":null,"doses_from_actual":null,"doses_info_source":null,"delay_duration":null,"approved_doses":718440,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":"Approved by ORPG","vaccine_integration":null},{"id":6,"sia_code":"AGO-2025-002","sub_activity_code":"AGO-2025-002-1","region":"AFRO","country":"Angola","admin1":"BENGUELA","rvt_approval_date":null,"vaccine_type":"nOPV2","round_number":"R2","campaign_status":"Planned - no date change","planned_date":"2025-07-25","start_date":"2025-07-25","end_date":"2025-07-27","campaign_history":"2025-07-25","target_pop_polis":718440,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":null,"comments":null,"doses_from_target":null,"doses_from_actual":null,"doses_info_source":null,"delay_duration":null,"approved_doses":718440,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":"Approved by ORPG","vaccine_integration":null},{"id":7,"sia_code":"BEN-2021-001","sub_activity_code":"BEN-2021-001-1","region":"AFRO","country":"Benin","admin1":"ATLANTIQUE, COLLINES, COUFFO, LITTORAL, MONO, OUEME, ZOU","rvt_approval_date":"2021-02-24","vaccine_type":"nOPV2","round_number":"R1","campaign_status":"Completed","planned_date":"2021-03-19","start_date":"2021-05-07","end_date":"2021-05-09","campaign_history":"19/03/2021; 07/05/2021","target_pop_polis":1805538,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":1592842,"comments":"Presidential elections in March 2021","doses_from_target":null,"doses_from_actual":1592842,"doses_info_source":"POLIS","delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null},{"id":8,"sia_code":"BEN-2021-003","sub_activity_code":"BEN-2021-003-1","region":"AFRO","country":"Benin","admin1":"ATLANTIQUE, COLLINES, COUFFO, LITTORAL, MONO, OUEME, ZOU","rvt_approval_date":"2021-02-24","vaccine_type":"nOPV2","round_number":"R2","campaign_status":"Completed","planned_date":"2021-03-19","start_date":"2021-05-28","end_date":"2021-05-31","campaign_history":"19/03/2021; 28/05/2021","target_pop_polis":1805538,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":1937609,"comments":null,"doses_from_target":null,"doses_from_actual":1937609,"doses_info_source":"Shared by AFRO on 8/11/2021","delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null},{"id":9,"sia_code":"BEN-2021-004","sub_activity_code":"BEN-2021-004-1","region":"AFRO","country":"Benin","admin1":"ATLANTIQUE, COLLINES, COUFFO, LITTORAL, MONO, OUEME, ZOU","rvt_approval_date":"2021-02-24","vaccine_type":"nOPV2","round_number":"R3","campaign_status":"Completed","planned_date":"2021-09-22","start_date":"2021-09-22","end_date":"2021-09-24","campaign_history":"2021-09-22","target_pop_polis":1019458,"target_pop_other":null,"age_group":"0 to 5 years","immunized_pop":1116231,"comments":null,"doses_from_target":null,"doses_from_actual":1116231,"doses_info_source":null,"delay_duration":null,"approved_doses":null,"delay_scope":null,"delay_category":null,"delay_comments":null,"synced_with":null,"approval_status":null,"vaccine_integration":null}];
 
@@ -550,7 +569,6 @@ let currentSort = { key: 'sia_code', asc: true };
 let expandedRow = null;
 let editingId = null;
 
-// ===== INIT =====
 function init() {
   populateFilters();
   renderSummary();
@@ -586,12 +604,12 @@ function renderSummary() {
 }
 
 function fmt(n) {
-  if (n == null) return '—';
+  if (n == null) return '\u2014';
   if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
   if (n >= 1e3) return (n / 1e3).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '';
   return n.toLocaleString();
 }
-function fmtFull(n) { return n == null ? '—' : n.toLocaleString(); }
+function fmtFull(n) { return n == null ? '\u2014' : n.toLocaleString(); }
 
 function getFiltered() {
   const q = document.getElementById('searchInput').value.toLowerCase();
@@ -634,11 +652,11 @@ function renderTable() {
       <td>${d.country}</td>
       <td><span class="badge badge-round">${d.round_number}</span></td>
       <td><span class="badge ${statusClass}">${d.campaign_status === 'Planned - no date change' ? 'Planned' : d.campaign_status}</span></td>
-      <td>${d.start_date || '—'}</td>
-      <td>${d.end_date || '—'}</td>
+      <td>${d.start_date || '\u2014'}</td>
+      <td>${d.end_date || '\u2014'}</td>
       <td style="text-align:right">${fmtFull(d.target_pop_polis)}</td>
       <td style="text-align:right">${fmtFull(d.immunized_pop)}</td>
-      <td class="wrap" title="${d.admin1}">${d.admin1 ? d.admin1.split(',').slice(0,3).join(', ') + (d.admin1.split(',').length > 3 ? ' +' + (d.admin1.split(',').length - 3) + ' more' : '') : '—'}</td>
+      <td class="wrap" title="${d.admin1}">${d.admin1 ? d.admin1.split(',').slice(0,3).join(', ') + (d.admin1.split(',').length > 3 ? ' +' + (d.admin1.split(',').length - 3) + ' more' : '') : '\u2014'}</td>
     </tr>
     <tr class="detail-row ${isExpanded ? 'show' : ''}" id="detail-${d.id}">
       <td colspan="10">
@@ -647,19 +665,19 @@ function renderTable() {
           <div class="detail-group"><h4>Sub-Activity Code</h4><p>${d.sub_activity_code}</p></div>
           <div class="detail-group"><h4>Region</h4><p>${d.region}</p></div>
           <div class="detail-group"><h4>Vaccine Type</h4><p>${d.vaccine_type}</p></div>
-          <div class="detail-group"><h4>RVT Approval Date</h4><p>${d.rvt_approval_date || '—'}</p></div>
-          <div class="detail-group"><h4>Planned Date</h4><p>${d.planned_date || '—'}</p></div>
-          <div class="detail-group"><h4>Start Date</h4><p>${d.start_date || '—'}</p></div>
-          <div class="detail-group"><h4>End Date</h4><p>${d.end_date || '—'}</p></div>
-          <div class="detail-group"><h4>Age Group</h4><p>${d.age_group || '—'}</p></div>
+          <div class="detail-group"><h4>RVT Approval Date</h4><p>${d.rvt_approval_date || '\u2014'}</p></div>
+          <div class="detail-group"><h4>Planned Date</h4><p>${d.planned_date || '\u2014'}</p></div>
+          <div class="detail-group"><h4>Start Date</h4><p>${d.start_date || '\u2014'}</p></div>
+          <div class="detail-group"><h4>End Date</h4><p>${d.end_date || '\u2014'}</p></div>
+          <div class="detail-group"><h4>Age Group</h4><p>${d.age_group || '\u2014'}</p></div>
           <div class="detail-group"><h4>Target Population (POLIS)</h4><p>${fmtFull(d.target_pop_polis)}</p></div>
           <div class="detail-group"><h4>Immunized Population</h4><p>${fmtFull(d.immunized_pop)}</p></div>
           <div class="detail-group"><h4>Doses (from target)</h4><p>${fmtFull(d.doses_from_target)}</p></div>
           <div class="detail-group"><h4>Doses (from actual)</h4><p>${fmtFull(d.doses_from_actual)}</p></div>
           <div class="detail-group"><h4>Approved Doses</h4><p>${fmtFull(d.approved_doses)}</p></div>
-          <div class="detail-group"><h4>Approval Status</h4><p>${d.approval_status || '—'}</p></div>
-          <div class="detail-group"><h4>Campaign Date History</h4><p>${d.campaign_history || '—'}</p></div>
-          <div class="detail-group" style="grid-column:1/-1"><h4>Admin 1 Regions</h4><p>${d.admin1 || '—'}</p></div>
+          <div class="detail-group"><h4>Approval Status</h4><p>${d.approval_status || '\u2014'}</p></div>
+          <div class="detail-group"><h4>Campaign Date History</h4><p>${d.campaign_history || '\u2014'}</p></div>
+          <div class="detail-group" style="grid-column:1/-1"><h4>Admin 1 Regions</h4><p>${d.admin1 || '\u2014'}</p></div>
           ${d.comments ? `<div class="detail-group" style="grid-column:1/-1"><h4>Comments</h4><p>${d.comments}</p></div>` : ''}
           <div class="detail-actions">
             <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); openEdit(${d.id})">Edit Record</button>
@@ -669,9 +687,6 @@ function renderTable() {
       </td>
     </tr>`;
   }).join('');
-
-  // Update sort indicators
-  document.querySelectorAll('th').forEach(th => th.classList.remove('sorted'));
 }
 
 function sortBy(key) {
@@ -716,17 +731,17 @@ const editFields = [
 function openEdit(id) {
   editingId = id;
   const d = DATA.find(r => r.id === id);
-  document.getElementById('modalTitle').textContent = `Edit ${d.sia_code}`;
+  document.getElementById('modalTitle').textContent = 'Edit ' + d.sia_code;
   const form = document.getElementById('editForm');
   form.innerHTML = editFields.map(f => {
     const val = d[f.key] != null ? d[f.key] : '';
     const cls = f.full ? 'form-group full' : 'form-group';
     if (f.type === 'select') {
-      return `<div class="${cls}"><label>${f.label}</label><select id="edit-${f.key}">${f.options.map(o => `<option${o === val ? ' selected' : ''}>${o}</option>`).join('')}</select></div>`;
+      return '<div class="' + cls + '"><label>' + f.label + '</label><select id="edit-' + f.key + '">' + f.options.map(o => '<option' + (o === val ? ' selected' : '') + '>' + o + '</option>').join('') + '</select></div>';
     } else if (f.type === 'textarea') {
-      return `<div class="${cls}"><label>${f.label}</label><textarea id="edit-${f.key}">${val}</textarea></div>`;
+      return '<div class="' + cls + '"><label>' + f.label + '</label><textarea id="edit-' + f.key + '">' + val + '</textarea></div>';
     } else {
-      return `<div class="${cls}"><label>${f.label}</label><input type="${f.type}" id="edit-${f.key}" value="${val}"></div>`;
+      return '<div class="' + cls + '"><label>' + f.label + '</label><input type="' + f.type + '" id="edit-' + f.key + '" value="' + val + '"></div>';
     }
   }).join('');
   document.getElementById('editModal').classList.add('show');
@@ -740,7 +755,7 @@ function closeModal() {
 function saveEdit() {
   const d = DATA.find(r => r.id === editingId);
   editFields.forEach(f => {
-    let val = document.getElementById(`edit-${f.key}`).value;
+    let val = document.getElementById('edit-' + f.key).value;
     if (f.type === 'number') val = val ? Number(val) : null;
     if (val === '') val = null;
     d[f.key] = val;
@@ -756,13 +771,12 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
-  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
 }
 
 // ===== API DOCS =====
 function toggleApi(header) {
-  const body = header.nextElementSibling;
-  body.classList.toggle('show');
+  header.nextElementSibling.classList.toggle('show');
 }
 
 // ===== UPLOAD =====
@@ -775,8 +789,7 @@ function setupDropzone() {
 
 function handleUpload(input) {
   if (input.files && input.files.length > 0) {
-    const file = input.files[0];
-    showToast(`"${file.name}" received — in production this would be parsed and merged into the database.`);
+    showToast('"' + input.files[0].name + '" received \u2014 in production this would be parsed and merged into the database.');
   }
 }
 
@@ -803,10 +816,10 @@ function renderMappingTable() {
     ['Vaccine Integration', 'vaccine_integration', 'review'],
   ];
   document.getElementById('mappingTable').innerHTML = mappings.map(m => {
-    const statusBadge = m[2] === 'mapped'
+    const badge = m[2] === 'mapped'
       ? '<span class="badge badge-completed">Mapped</span>'
       : '<span class="badge badge-planned">Needs Review</span>';
-    return `<tr><td style="padding:10px 12px; border-bottom:1px solid var(--gray-200); font-family:monospace; font-size:13px;">${m[0]}</td><td style="padding:10px 12px; border-bottom:1px solid var(--gray-200); font-family:monospace; font-size:13px;">${m[1]}</td><td style="padding:10px 12px; border-bottom:1px solid var(--gray-200);">${statusBadge}</td></tr>`;
+    return '<tr><td style="padding:10px 12px; border-bottom:1px solid var(--gray-200); font-family:monospace; font-size:13px;">' + m[0] + '</td><td style="padding:10px 12px; border-bottom:1px solid var(--gray-200); font-family:monospace; font-size:13px;">' + m[1] + '</td><td style="padding:10px 12px; border-bottom:1px solid var(--gray-200);">' + badge + '</td></tr>';
   }).join('');
 }
 
