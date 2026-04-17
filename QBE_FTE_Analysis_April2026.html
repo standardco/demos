@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Georgia QBE FTE Analysis</title>
+<style>
+body { font-family: Arial, sans-serif; font-size: 11pt; color: #222; margin: 40px; line-height: 1.5; }
+h1 { font-size: 20pt; color: #1a3a5c; border-bottom: 2px solid #1a3a5c; padding-bottom: 6px; }
+h2 { font-size: 14pt; color: #1a3a5c; margin-top: 28px; margin-bottom: 6px; }
+h3 { font-size: 12pt; color: #2e6da4; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 6px 0 10px 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0 18px 0; font-size: 10pt; }
+th { background-color: #1a3a5c; color: white; padding: 6px 10px; text-align: left; }
+td { padding: 5px 10px; border-bottom: 1px solid #ddd; }
+tr:nth-child(even) { background-color: #f5f7fa; }
+.flag { color: #c0392b; font-weight: bold; }
+.pos { color: #27ae60; font-weight: bold; }
+.neg { color: #c0392b; }
+.meta { color: #666; font-size: 10pt; font-style: italic; }
+.callout { background: #eaf3fb; border-left: 4px solid #2e6da4; padding: 10px 14px; margin: 12px 0; border-radius: 2px; }
+.caveat { background: #fef9e7; border-left: 4px solid #f39c12; padding: 10px 14px; margin: 12px 0; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<h1>Georgia QBE FTE Analysis</h1>
+<p class="meta">Prepared April 2026 &nbsp;|&nbsp; Data Sources: GA DOE QBE FTE &amp; Earnings (FY2023–FY2025), Enrollment by Subgroup Metrics (2023-24, 2024-25)</p>
+
+<div class="callout">
+<strong>Purpose:</strong> This analysis reviews statewide QBE FTE and earnings trends across three fiscal years and cross-references enrollment headcounts to identify program categories where districts may be under-claiming FTE funding. The gaps identified are signals for deeper investigation with each district — not definitive proof of under-claiming.
+</div>
+
+<h2>1. Data Overview</h2>
+<p>Seven files were analyzed covering:</p>
+<ul>
+<li><strong>QBE FTE data:</strong> FY2023, FY2024, FY2025 — FTE counts by program category across ~232 Georgia school districts</li>
+<li><strong>QBE Earnings data:</strong> FY2024 and FY2025 — dollar allotments by program category</li>
+<li><strong>Enrollment by Subgroup:</strong> 2023-24 and 2024-25 — headcount enrollment by program, allowing direct enrollment-vs-FTE comparison</li>
+</ul>
+
+<h2>2. Statewide Trends</h2>
+
+<h3>FTE Is Flat; Earnings Are Up Sharply</h3>
+<p>Total statewide FTE has been essentially flat for three years, while total QBE earnings jumped 7.3% year-over-year, driven by a uniform ~6.5% per-FTE rate increase across all categories — almost certainly a statewide salary schedule adjustment. This means <strong>the primary funding lever is program category mix, not raw enrollment growth.</strong></p>
+
+<table>
+<tr><th>Metric</th><th>FY2023</th><th>FY2024</th><th>FY2025</th><th>FY23→25 Change</th></tr>
+<tr><td>Total QBE FTE</td><td>1,732,456</td><td>1,745,222</td><td>1,744,114</td><td>+0.7%</td></tr>
+<tr><td>Total QBE Earnings</td><td>—</td><td>$11.10B</td><td>$11.90B</td><td>+7.3% (FY24→25)</td></tr>
+<tr><td>Avg $/FTE (all categories)</td><td>—</td><td>~$6,360</td><td>~$6,823</td><td>+6.5%</td></tr>
+</table>
+
+<h3>FTE by Program Category (FY2023 → FY2025)</h3>
+<table>
+<tr><th>Category</th><th>FY2023 FTE</th><th>FY2024 FTE</th><th>FY2025 FTE</th><th>FY23→25 %</th><th>$/FTE (FY25)</th></tr>
+<tr><td>ESOL</td><td>29,311</td><td>31,593</td><td>34,556</td><td class="pos">+17.9%</td><td>$13,238</td></tr>
+<tr><td>Remedial</td><td>35,785</td><td>38,258</td><td>39,474</td><td class="pos">+10.3%</td><td>$6,417</td></tr>
+<tr><td>Gifted</td><td>113,467</td><td>118,232</td><td>123,884</td><td class="pos">+9.2%</td><td>$7,961</td></tr>
+<tr><td>SpEd Cat-IV</td><td>13,577</td><td>14,192</td><td>14,784</td><td class="pos">+8.9%</td><td>$31,081</td></tr>
+<tr><td>SpEd Cat-III</td><td>65,182</td><td>67,587</td><td>70,565</td><td class="pos">+8.3%</td><td>$18,634</td></tr>
+<tr><td>CTAE (9–12)</td><td>81,010</td><td>84,523</td><td>87,100</td><td class="pos">+7.5%</td><td>$5,165</td></tr>
+<tr><td>GR9–12</td><td>352,875</td><td>355,702</td><td>354,381</td><td>+0.4%</td><td>$4,350</td></tr>
+<tr><td>GR1–3</td><td>273,785</td><td>276,222</td><td>273,680</td><td>–0.0%</td><td>$5,987</td></tr>
+<tr><td>Kindergarten</td><td>97,608</td><td>98,861</td><td>96,202</td><td class="neg">–1.4%</td><td>$7,408</td></tr>
+<tr><td>GR4–5</td><td>173,233</td><td>171,836</td><td>170,543</td><td class="neg">–1.6%</td><td>$4,578</td></tr>
+<tr><td>GR1–3 EI</td><td>57,590</td><td>56,354</td><td>55,986</td><td class="neg">–2.8%</td><td>$8,926</td></tr>
+<tr><td>MSIG (Middle)</td><td>314,216</td><td>307,363</td><td>299,273</td><td class="neg">–4.8%</td><td>$5,167</td></tr>
+<tr><td>KG EI</td><td>17,861</td><td>16,888</td><td>16,635</td><td class="neg">–6.9%</td><td>$9,618</td></tr>
+</table>
+
+<div class="callout">
+<strong>Key takeaway:</strong> The four highest-value program areas — ESOL, Gifted, SpEd Cat-III/IV, and CTAE — are all growing, but many districts are not capturing their proportionate share. The analysis below identifies where the gaps are largest.
+</div>
+
+<h3>District-Level Enrollment Movement (FY2024 → FY2025)</h3>
+<table>
+<tr><th colspan="4" style="background:#2e6da4">Top FTE Growth</th><th width="20"></th><th colspan="4" style="background:#8e2a2a">Top FTE Decline</th></tr>
+<tr><th>District</th><th>FY24</th><th>FY25</th><th>Change</th><th></th><th>District</th><th>FY24</th><th>FY25</th><th>Change</th></tr>
+<tr><td>Gwinnett County</td><td>190,224</td><td>191,183</td><td class="pos">+959</td><td></td><td>Fulton County</td><td>89,341</td><td>87,758</td><td class="neg">–1,583</td></tr>
+<tr><td>Forsyth County</td><td>54,495</td><td>55,385</td><td class="pos">+890</td><td></td><td>Clayton County</td><td>52,710</td><td>51,503</td><td class="neg">–1,207</td></tr>
+<tr><td>Georgia Cyber Academy</td><td>9,389</td><td>10,193</td><td class="pos">+804</td><td></td><td>Atlanta Public Schools</td><td>49,492</td><td>48,786</td><td class="neg">–706</td></tr>
+<tr><td>Jackson County</td><td>9,819</td><td>10,425</td><td class="pos">+606</td><td></td><td>DeKalb County</td><td>93,417</td><td>92,745</td><td class="neg">–672</td></tr>
+<tr><td>Bartow County</td><td>13,475</td><td>13,933</td><td class="pos">+458</td><td></td><td>Chatham County</td><td>35,101</td><td>34,580</td><td class="neg">–521</td></tr>
+<tr><td>Paulding County</td><td>31,624</td><td>32,053</td><td class="pos">+429</td><td></td><td>Foothills</td><td>2,616</td><td>2,168</td><td class="neg">–448</td></tr>
+<tr><td>Barrow County</td><td>14,940</td><td>15,367</td><td class="pos">+427</td><td></td><td>Coastal Plains</td><td>2,075</td><td>1,671</td><td class="neg">–404</td></tr>
+<tr><td>Effingham County</td><td>13,453</td><td>13,833</td><td class="pos">+380</td><td></td><td>Richmond County</td><td>28,585</td><td>28,293</td><td class="neg">–292</td></tr>
+</table>
+<p class="meta">Pattern: Suburban/exurban counties growing; metro core declining. Growth is concentrated in districts that are also expanding high-weight programs.</p>
+
+<h2>3. Enrollment vs. FTE Gap Analysis</h2>
+<p>The enrollment data allows us to compare <em>identified/enrolled students</em> in each program to <em>actual FTE claimed</em>. The ratio between these — and how each district compares to the statewide average ratio — reveals where potential under-claiming exists.</p>
+
+<h3>3a. Gifted</h3>
+<div class="callout">
+<strong>Statewide average:</strong> 0.552 gifted FTE per identified student &nbsp;|&nbsp; <strong>Rate:</strong> $7,961/FTE (FY2025)<br>
+<strong>Context:</strong> A gifted FTE of 1.0 = full-time gifted instruction. Pullout programs typically yield 0.15–0.35 FTE per student. The statewide average of 0.552 implies many districts run more intensive models. Districts well below the average are likely either running less intensive programs or have administrative claiming gaps.
+</div>
+
+<table>
+<tr><th>District</th><th>Identified Gifted</th><th>Gifted FTE Claimed</th><th>FTE/Student Ratio</th><th>vs. State Avg</th><th>Est. Annual $ Gap*</th></tr>
+<tr><td>Greene County</td><td>162</td><td>31</td><td class="flag">0.191</td><td class="neg">–0.360</td><td>$464,734</td></tr>
+<tr><td>Toombs County</td><td>184</td><td>40</td><td class="flag">0.217</td><td class="neg">–0.334</td><td>$489,712</td></tr>
+<tr><td>Muscogee County</td><td>2,471</td><td>734</td><td class="neg">0.297</td><td class="neg">–0.255</td><td>$5,009,576</td></tr>
+<tr><td>Lowndes County</td><td>1,406</td><td>461</td><td class="neg">0.328</td><td class="neg">–0.224</td><td>$2,505,312</td></tr>
+<tr><td>Coweta County</td><td>3,000</td><td>1,057</td><td class="neg">0.352</td><td class="neg">–0.199</td><td>$4,761,609</td></tr>
+<tr><td>Atlanta Public Schools</td><td>6,338</td><td>2,329</td><td class="neg">0.367</td><td class="neg">–0.184</td><td>$9,296,142</td></tr>
+<tr><td>Richmond County</td><td>2,140</td><td>844</td><td class="neg">0.394</td><td class="neg">–0.157</td><td>$2,680,071</td></tr>
+<tr><td>Catoosa County</td><td>1,730</td><td>691</td><td class="neg">0.399</td><td class="neg">–0.152</td><td>$2,097,332</td></tr>
+<tr><td>Fulton County</td><td>14,856</td><td>6,433</td><td class="neg">0.433</td><td class="neg">–0.119</td><td>$14,036,350</td></tr>
+<tr><td>Forsyth County</td><td>11,417</td><td>5,000</td><td class="neg">0.438</td><td class="neg">–0.114</td><td>$10,339,933</td></tr>
+</table>
+<p class="meta">*Estimated gap = (statewide ratio – district ratio) × identified students × $7,961. Assumes district could achieve statewide average service intensity. Actual recoverable amount depends on service model changes.</p>
+
+<h3>3b. ESOL</h3>
+<div class="callout">
+<strong>Statewide average:</strong> 0.242 FTE per enrolled EL student &nbsp;|&nbsp; <strong>Rate:</strong> $13,238/FTE (FY2025)<br>
+<strong>Context:</strong> ESOL FTE varies by ACCESS proficiency level — lower levels generate more FTE. A district with mostly level 4–5 students will legitimately have a lower ratio. However, districts significantly below the statewide average with mixed proficiency populations warrant investigation for late enrollment, incorrect proficiency coding, or inadequate ACCESS administration.
+</div>
+
+<table>
+<tr><th>District</th><th>EL Students Enrolled</th><th>ESOL FTE Claimed</th><th>FTE/Student Ratio</th><th>vs. State Avg (0.242)</th><th>Est. Annual $ Gap*</th></tr>
+<tr><td>Chatham County</td><td>2,939</td><td>394</td><td class="flag">0.134</td><td class="neg">–0.108</td><td>$4,191,723</td></tr>
+<tr><td>Troup County</td><td>693</td><td>106</td><td class="flag">0.153</td><td class="neg">–0.089</td><td>$815,007</td></tr>
+<tr><td>Effingham County</td><td>434</td><td>62</td><td class="neg">0.143</td><td class="neg">–0.099</td><td>$568,442</td></tr>
+<tr><td>Henry County</td><td>1,164</td><td>206</td><td class="neg">0.177</td><td class="neg">–0.065</td><td>$998,839</td></tr>
+<tr><td>Dougherty County</td><td>277</td><td>41</td><td class="neg">0.148</td><td class="neg">–0.094</td><td>$343,896</td></tr>
+<tr><td>Sumter County</td><td>300</td><td>46</td><td class="neg">0.153</td><td class="neg">–0.089</td><td>$351,327</td></tr>
+<tr><td>Liberty County</td><td>192</td><td>26</td><td class="neg">0.135</td><td class="neg">–0.107</td><td>$270,388</td></tr>
+<tr><td>Ware County</td><td>180</td><td>23</td><td class="neg">0.128</td><td class="neg">–0.114</td><td>$271,691</td></tr>
+<tr><td>Catoosa County</td><td>246</td><td>34</td><td class="neg">0.138</td><td class="neg">–0.104</td><td>$337,334</td></tr>
+<tr><td>Carrollton City</td><td>563</td><td>94</td><td class="neg">0.167</td><td class="neg">–0.075</td><td>$557,744</td></tr>
+</table>
+<p class="meta">*Estimated gap = (statewide ratio – district ratio) × EL enrollment × $13,238.</p>
+
+<h3>3c. Special Education — Category Distribution</h3>
+<div class="callout">
+<strong>Statewide SpEd category mix:</strong> Cat-I: 18.2% | Cat-II: 7.5% | Cat-III: 51.4% | Cat-IV: 10.8% | Cat-V: 12.0%<br>
+<strong>Statewide Cat-III+IV share: 62.2%</strong> &nbsp;|&nbsp; <strong>Blended avg $/FTE: $17,626</strong><br>
+<strong>Context:</strong> Under-classification — students with complex needs coded at Cat-I/II when Cat-III/IV is appropriate — is one of the most common QBE funding gaps. It also has direct implications for student services, since higher categories should correspond to more intensive support.
+</div>
+
+<table>
+<tr><th>District</th><th>SpEd Students Enrolled</th><th>SpEd FTE</th><th>Cat-III+IV Share</th><th>vs. State Avg (62.2%)</th></tr>
+<tr><td>Fannin County</td><td>489</td><td>310</td><td class="flag">36.5%</td><td class="neg">–25.8 pts</td></tr>
+<tr><td>DeKalb County</td><td>9,865</td><td>6,628</td><td class="flag">44.2%</td><td class="neg">–18.0 pts</td></tr>
+<tr><td>Crisp County</td><td>530</td><td>406</td><td class="neg">47.8%</td><td class="neg">–14.5 pts</td></tr>
+<tr><td>Lowndes County</td><td>1,697</td><td>1,126</td><td class="neg">48.4%</td><td class="neg">–13.8 pts</td></tr>
+<tr><td>Toombs County</td><td>542</td><td>337</td><td class="neg">49.0%</td><td class="neg">–13.3 pts</td></tr>
+<tr><td>Dublin City</td><td>267</td><td>164</td><td class="neg">50.0%</td><td class="neg">–12.2 pts</td></tr>
+<tr><td>Georgia Cyber Academy</td><td>1,790</td><td>1,224</td><td class="neg">50.2%</td><td class="neg">–12.0 pts</td></tr>
+<tr><td>Telfair County</td><td>164</td><td>126</td><td class="neg">50.8%</td><td class="neg">–11.5 pts</td></tr>
+<tr><td>Atlanta Public Schools</td><td>5,844</td><td>3,340</td><td class="neg">53.8%</td><td class="neg">–8.4 pts</td></tr>
+<tr><td>Ben Hill County</td><td>361</td><td>219</td><td class="neg">54.3%</td><td class="neg">–7.9 pts</td></tr>
+</table>
+
+<h3>3d. Early Intervention (EIP, K–5)</h3>
+<div class="callout">
+<strong>Statewide average:</strong> 0.559 EIP FTE per enrolled EIP student &nbsp;|&nbsp; <strong>Rates:</strong> KG EI $9,618 | GR1–3 EI $8,926 | GR4–5 EI $8,908<br>
+<strong>Context:</strong> Districts with low EIP FTE/enrollment ratios may have scheduling gaps (students not receiving the full instructional minutes), count-date mismatches, or documentation issues. EIP is among the higher-weight elementary programs.
+</div>
+
+<table>
+<tr><th>District</th><th>EIP Enrolled</th><th>EIP FTE</th><th>FTE/Student Ratio</th><th>vs. State Avg (0.559)</th></tr>
+<tr><td>Glascock County</td><td>52</td><td>5</td><td class="flag">0.096</td><td class="neg">–0.463</td></tr>
+<tr><td>Buford City</td><td>360</td><td>47</td><td class="flag">0.131</td><td class="neg">–0.428</td></tr>
+<tr><td>Towns County</td><td>127</td><td>21</td><td class="neg">0.165</td><td class="neg">–0.394</td></tr>
+<tr><td>Emanuel County</td><td>407</td><td>72</td><td class="neg">0.177</td><td class="neg">–0.382</td></tr>
+<tr><td>Dawson County</td><td>281</td><td>50</td><td class="neg">0.178</td><td class="neg">–0.381</td></tr>
+<tr><td>Coweta County</td><td>2,354</td><td>463</td><td class="neg">0.197</td><td class="neg">–0.362</td></tr>
+<tr><td>Forsyth County</td><td>2,623</td><td>570</td><td class="neg">0.217</td><td class="neg">–0.342</td></tr>
+<tr><td>Lee County</td><td>872</td><td>172</td><td class="neg">0.197</td><td class="neg">–0.362</td></tr>
+<tr><td>Oglethorpe County</td><td>365</td><td>67</td><td class="neg">0.184</td><td class="neg">–0.376</td></tr>
+<tr><td>Gainesville City</td><td>1,581</td><td>335</td><td class="neg">0.212</td><td class="neg">–0.347</td></tr>
+</table>
+
+<h2>4. Additional Data Needed for Full FTE Optimization</h2>
+<p>To fully calculate and prioritize FTE recovery opportunities for each district, the following data is still needed:</p>
+
+<table>
+<tr><th>Data Item</th><th>Why It Matters</th><th>Source</th></tr>
+<tr><td>Student-level program service records (SIS data)</td><td>Confirms minutes per week in each service — the core driver of FTE calculation</td><td>District SIS (Infinite Campus, PowerSchool, etc.)</td></tr>
+<tr><td>ACCESS for ELLs scores by level and grade</td><td>ESOL FTE is computed by proficiency level; needed to validate or challenge current FTE claims</td><td>District ESOL coordinator / GA DOE</td></tr>
+<tr><td>Gifted service model documentation</td><td>Program type (full-time, cluster, pullout, resource room) determines FTE multiplier</td><td>District gifted coordinator</td></tr>
+<tr><td>IEP category assignments by student</td><td>Validates SpEd Cat coding; misalignment between service intensity and category is the key gap</td><td>District special education dept.</td></tr>
+<tr><td>FTE count-date enrollment vs. year-round enrollment</td><td>Students enrolled after count date don't generate FTE; late enrollment is a recurring loss</td><td>District enrollment office</td></tr>
+<tr><td>CTAE course catalog with CIP codes and enrollment</td><td>Some CTE programs have higher weights; unused CIP codes = missed FTE</td><td>District CTE coordinator</td></tr>
+<tr><td>School-level FTE (not just district-level)</td><td>District totals can mask individual schools with large gaps</td><td>GA DOE data request</td></tr>
+<tr><td>FY2026 preliminary FTE count</td><td>Current-year data for real-time optimization before final count</td><td>GA DOE (if available) or district</td></tr>
+<tr><td>Prior-year FTE appeals or corrections</td><td>Reveals whether a district has already tried to address a gap (and been denied)</td><td>District finance office</td></tr>
+</table>
+
+<h2>5. Summary: Where to Focus First</h2>
+<p>Based on the data analyzed, the four highest-leverage areas for FTE maximization are:</p>
+<ol>
+<li><strong>Gifted service intensity</strong> — Many districts have far more identified gifted students than FTE claimed. The gap is often a scheduling or program model issue (pullout 1x/week vs. daily enrichment class). Increasing service hours directly increases FTE.</li>
+<li><strong>ESOL documentation and ACCESS administration</strong> — Districts with many EL students but low ESOL FTE ratios likely have proficiency level coding issues, late registration, or inadequate program documentation at count time.</li>
+<li><strong>SpEd category alignment</strong> — Category coding should reflect actual service needs and IEP minutes. A systematic IEP-to-category review at districts with low Cat-III/IV shares often surfaces legitimate reclassification opportunities.</li>
+<li><strong>EIP scheduling and documentation</strong> — Districts with very low EIP FTE/enrollment ratios should audit whether enrolled students are receiving the minimum instructional minutes required to generate full FTE.</li>
+</ol>
+
+<div class="caveat">
+<strong>Important note on methodology:</strong> All dollar gap estimates in this document are calculated by applying the statewide average FTE-per-student ratio to each district's enrollment count, then multiplying by the FY2025 per-FTE rate. This is an upper-bound signal, not a guaranteed recoverable amount. Actual optimization requires student-level data from each district's SIS to confirm that eligible students are enrolled, properly coded, and receiving services of sufficient duration at the time of the FTE count.
+</div>
+
+<p class="meta">Analysis prepared using GA DOE public data. FTE rates derived from QBE Earnings ÷ QBE FTE by category, FY2025.</p>
+
+</body>
+</html>
