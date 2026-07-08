@@ -67,6 +67,27 @@
 
   footer{background:var(--teal);color:#fff;padding:16px 28px;font-size:13px;text-align:center}
   footer a{color:var(--saffron);text-decoration:none;font-weight:600}
+
+  /* ---------- Share button + modal ---------- */
+  .share-btn{margin-left:auto;background:var(--emerald);color:var(--dark-green);font-family:var(--font-body);font-weight:700;font-size:14px;border:none;border-radius:8px;padding:10px 18px;cursor:pointer;box-shadow:rgba(7,0,77,.2) 3px 3px 6px 1px;display:flex;align-items:center;gap:7px}
+  .share-btn:hover{background:#2db882}
+  .share-btn svg{width:15px;height:15px}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(7,0,77,.55);z-index:100;align-items:center;justify-content:center;padding:20px}
+  .modal-overlay.open{display:flex}
+  .modal{background:#fff;border-radius:20px;max-width:470px;width:100%;padding:30px 30px 26px;box-shadow:0 20px 60px rgba(7,0,77,.35);font-family:var(--font-body)}
+  .modal h2{font-family:var(--font-head);color:var(--federal);margin:0 0 4px;font-size:23px}
+  .modal p.sub{margin:0 0 20px;color:var(--n);font-size:14px;line-height:1.5}
+  .field{margin-bottom:13px}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--federal);margin-bottom:5px}
+  .field input{width:100%;padding:11px 13px;border:1.5px solid #d4d9e2;border-radius:9px;font-size:15px;font-family:inherit}
+  .field input:focus{outline:none;border-color:var(--royal)}
+  .modal-actions{display:flex;gap:10px;margin-top:20px}
+  .btn{flex:1;padding:12px;border-radius:9px;font-weight:700;font-size:15px;font-family:inherit;cursor:pointer;border:none}
+  .btn.primary{background:var(--federal);color:#fff}
+  .btn.primary:disabled{opacity:.55;cursor:default}
+  .btn.ghost{background:#eef1f6;color:var(--n-dark)}
+  .modal .status{margin-top:14px;font-size:13.5px;text-align:center;min-height:18px;line-height:1.4}
+  .modal .status.ok{color:var(--success)} .modal .status.err{color:#b42318} .modal .status.work{color:var(--n)}
 </style>
 </head>
 <body>
@@ -81,6 +102,25 @@
       <button class="tab" data-tab="attendance">Attendance</button>
       <button class="tab" data-tab="cohort">Cohort Tracker</button>
     </div>
+    <button class="share-btn" id="shareBtn" title="Share this page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
+      Share
+    </button>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="shareOverlay">
+  <div class="modal">
+    <h2>Share this tool</h2>
+    <p class="sub">Enter who should receive it and we'll open a ready-to-go Gmail draft (TJ &amp; Jason cc'd). Just attach a screenshot of this page and hit send.</p>
+    <div class="field"><label for="sh_email1">Email 1 <span style="color:#b42318">*</span></label><input id="sh_email1" type="email" placeholder="you@district.org" autocomplete="email"></div>
+    <div class="field"><label for="sh_email2">Email 2 (optional)</label><input id="sh_email2" type="email" placeholder="colleague@district.org"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="sh_cancel" type="button">Cancel</button>
+      <button class="btn primary" id="sh_submit" type="button">Open Gmail draft</button>
+    </div>
+    <div class="status" id="sh_status"></div>
   </div>
 </div>
 
@@ -162,6 +202,49 @@
   }
   tabs.forEach(t=>t.addEventListener('click',()=>show(t.dataset.tab)));
   document.querySelectorAll('[data-goto]').forEach(c=>c.addEventListener('click',()=>show(c.dataset.goto)));
+
+  /* ============================================================
+     SHARE  —  opens a prefilled Gmail draft
+     ------------------------------------------------------------
+     Recipients come from the dialog. You + Jason are always cc'd.
+     Subject + body are fixed below. The sender attaches a
+     screenshot manually before sending.
+     ============================================================ */
+  const SHARE = {
+    cc:      "tj@standardco.de,jason@standardco.de",
+    subject: "FTE tool from Standard Education at GAEL",
+    body:    "Hi, check out this interesting tool I saw at GAEL"
+  };
+  /* ============================================================ */
+
+  const overlay=document.getElementById('shareOverlay');
+  const statusEl=document.getElementById('sh_status');
+  const submitBtn=document.getElementById('sh_submit');
+
+  function openModal(){ statusEl.textContent=''; statusEl.className='status'; overlay.classList.add('open'); }
+  function closeModal(){ overlay.classList.remove('open'); }
+  document.getElementById('shareBtn').addEventListener('click',openModal);
+  document.getElementById('sh_cancel').addEventListener('click',closeModal);
+  overlay.addEventListener('click',e=>{ if(e.target===overlay) closeModal(); });
+
+  const isEmail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v||'').trim());
+
+  submitBtn.addEventListener('click', ()=>{
+    const e1=document.getElementById('sh_email1').value.trim();
+    const e2=document.getElementById('sh_email2').value.trim();
+    if(!isEmail(e1)){ statusEl.className='status err'; statusEl.textContent='Please enter a valid Email 1.'; return; }
+    if(e2 && !isEmail(e2)){ statusEl.className='status err'; statusEl.textContent='Email 2 doesn’t look valid.'; return; }
+    const to = e2 ? e1+','+e2 : e1;
+    const url = "https://mail.google.com/mail/?view=cm&fs=1"
+      + "&to=" + encodeURIComponent(to)
+      + "&cc=" + encodeURIComponent(SHARE.cc)
+      + "&su=" + encodeURIComponent(SHARE.subject)
+      + "&body=" + encodeURIComponent(SHARE.body);
+    window.open(url,'_blank');
+    statusEl.className='status ok';
+    statusEl.textContent='Gmail draft opened — attach a screenshot and send.';
+    setTimeout(closeModal, 1600);
+  });
 </script>
 </body>
 </html>
