@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First District RESA — Georgia published data, 2024–25</title>
+<style>
+  /* ============================================================
+     BRAND TOKENS — swap these for Standard Education's real values.
+     Everything else on the page reads from them.
+       --brand        primary accent (buttons, active states, links)
+       --brand-ink    text/icon colour that sits on --brand
+     The data-visualisation ramps below are validated for contrast
+     against --surface-1 in both modes; re-run the palette validator
+     if you change --surface-1.
+     ============================================================ */
+  .viz-root{
+    color-scheme: light;
+    --brand:#0f2f5c; --brand-ink:#ffffff; --brand-soft:#eaf0f8;
+    --plane:#f6f7f9; --surface-1:#ffffff; --surface-2:#f9fafb;
+    --text-primary:#0f172a; --text-secondary:#475569; --muted:#8b97a8;
+    --grid:#e6e9ee; --axis:#cbd2dc; --border:rgba(15,23,42,0.10);
+    --d-neg3:#b32b2b; --d-neg2:#dd6a66; --d-neg1:#f2b8b4;
+    --d-zero:#eef1f5;
+    --d-pos1:#9ec5f4; --d-pos2:#3987e5; --d-pos3:#1c5cab;
+    --seq1:#cde2fb; --seq2:#9ec5f4; --seq3:#6da7ec; --seq4:#3987e5; --seq5:#256abf; --seq6:#184f95;
+    --ord1:#86b6ef; --ord2:#5598e7; --ord3:#256abf; --ord4:#0d366b;
+    --series-1:#2a78d6; --series-2:#eb6834;
+    --good:#0ca30c; --critical:#d03b3b;
+    --nodata:#e6e9ee;
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])) .viz-root{
+      color-scheme: dark;
+      --brand:#7fb3f2; --brand-ink:#0b0f16; --brand-soft:#1b2635;
+      --plane:#0b0f16; --surface-1:#141a23; --surface-2:#111721;
+      --text-primary:#f8fafc; --text-secondary:#cbd5e1; --muted:#8b97a8;
+      --grid:#232b36; --axis:#334155; --border:rgba(255,255,255,0.10);
+      --d-neg3:#e0837e; --d-neg2:#a8433f; --d-neg1:#5c2f2d;
+      --d-zero:#2a3441;
+      --d-pos1:#22456f; --d-pos2:#2a78d6; --d-pos3:#86b6ef;
+      --seq1:#184f95; --seq2:#256abf; --seq3:#2a78d6; --seq4:#5598e7; --seq5:#86b6ef; --seq6:#b7d3f6;
+      --ord1:#184f95; --ord2:#2a78d6; --ord3:#6da7ec; --ord4:#cde2fb;
+      --series-1:#3987e5; --series-2:#d95926;
+      --nodata:#232b36;
+    }
+  }
+  :root[data-theme="dark"] .viz-root{
+    color-scheme: dark;
+    --brand:#7fb3f2; --brand-ink:#0b0f16; --brand-soft:#1b2635;
+    --plane:#0b0f16; --surface-1:#141a23; --surface-2:#111721;
+    --text-primary:#f8fafc; --text-secondary:#cbd5e1; --muted:#8b97a8;
+    --grid:#232b36; --axis:#334155; --border:rgba(255,255,255,0.10);
+    --d-neg3:#e0837e; --d-neg2:#a8433f; --d-neg1:#5c2f2d;
+    --d-zero:#2a3441;
+    --d-pos1:#22456f; --d-pos2:#2a78d6; --d-pos3:#86b6ef;
+    --seq1:#184f95; --seq2:#256abf; --seq3:#2a78d6; --seq4:#5598e7; --seq5:#86b6ef; --seq6:#b7d3f6;
+    --ord1:#184f95; --ord2:#2a78d6; --ord3:#6da7ec; --ord4:#cde2fb;
+    --series-1:#3987e5; --series-2:#d95926;
+    --nodata:#232b36;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--plane,#f9f9f7)}
+  .viz-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--plane);color:var(--text-primary);min-height:100vh;padding:0}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+
+  /* ---- site header (matches the demo site shell) ---- */
+  .sitebar{border-bottom:1px solid var(--border);background:var(--surface-1);
+    position:sticky;top:0;z-index:50}
+  .sitebar-in{max-width:1240px;margin:0 auto;padding:0 24px;height:58px;
+    display:flex;align-items:center;gap:18px}
+  /* Logo placeholder — replace this <a> with standard-ed-logo-dark.svg /
+     standard-ed-logo-white.svg and delete .logomark/.logotype. */
+  .logo{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:inherit}
+  .logomark{width:24px;height:24px;border-radius:6px;background:var(--brand);
+    display:grid;place-items:center;color:var(--brand-ink);font-size:13px;font-weight:700;flex:none}
+  .logotype{font-size:14.5px;font-weight:640;letter-spacing:-0.01em;white-space:nowrap}
+  .crumbs{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;min-width:0}
+  .crumbs a{color:var(--text-secondary);text-decoration:none}
+  .crumbs a:hover{color:var(--text-primary)}
+  .crumbs span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bar-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .btn{background:var(--surface-1);border:1px solid var(--border);color:var(--text-secondary);
+    border-radius:9px;padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;text-decoration:none;transition:.12s}
+  .btn:hover{color:var(--text-primary);border-color:var(--axis);background:var(--surface-2)}
+  .btn-primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+  .btn-primary:hover{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);filter:brightness(1.08)}
+  .themebtn{composes:btn}
+
+  /* ---- tool title block (numbered like the demo tool cards) ---- */
+  .toolhead{display:flex;gap:16px;align-items:flex-start;padding:30px 0 4px}
+  .toolnum{width:30px;height:30px;border-radius:9px;background:var(--brand-soft);color:var(--brand);
+    display:grid;place-items:center;font-size:14px;font-weight:700;flex:none;margin-top:3px}
+  .eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+    font-weight:650;margin-bottom:6px}
+
+  /* ---- footer ---- */
+  .sitefoot{border-top:1px solid var(--border);margin-top:40px;background:var(--surface-1)}
+  .sitefoot-in{max-width:1240px;margin:0 auto;padding:22px 24px;display:flex;gap:16px;
+    align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+  .sitefoot-in a{color:var(--text-secondary)}
+  header.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;margin-bottom:6px}
+  h1{font-size:26px;line-height:1.22;margin:0 0 7px;font-weight:660;letter-spacing:-0.02em}
+  .sub{font-size:13px;color:var(--text-secondary);margin:0;max-width:70ch;line-height:1.55}
+  .brand{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+  .card{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--radius);
+    padding:20px 22px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])) .card{box-shadow:none}
+  }
+  :root[data-theme="dark"] .card{box-shadow:none}
+  .note-strict{border:1px solid var(--border);border-left:3px solid var(--brand);
+    border-radius:var(--radius);padding:14px 17px;margin:18px 0 0;
+    font-size:12.5px;color:var(--text-secondary);line-height:1.55;background:var(--surface-1)}
+  .note-strict b{color:var(--text-primary)}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(186px,1fr));gap:12px;margin:16px 0}
+  .tile .lab{font-size:11px;letter-spacing:.055em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:7px}
+  .tile .val{font-size:28px;font-weight:640;line-height:1;letter-spacing:-0.02em}
+  .tile .note{font-size:12px;color:var(--text-secondary);margin-top:7px;line-height:1.45}
+  .grid2{display:grid;grid-template-columns:1.32fr 1fr;gap:16px;align-items:start}
+  @media (max-width:1000px){.grid2{grid-template-columns:1fr}}
+  .ctrls{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+  .ctrls button{background:transparent;border:1px solid var(--border);color:var(--text-secondary);
+    border-radius:999px;padding:6px 13px;font:inherit;font-size:12.5px;cursor:pointer;transition:.12s}
+  .ctrls button:hover{color:var(--text-primary);border-color:var(--axis)}
+  .ctrls button[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+  .ctrlgrp{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);
+    font-weight:600;margin:10px 0 6px}
+  .sect-t{font-size:14.5px;font-weight:620;margin:0 0 3px}
+  .sect-d{font-size:12.5px;color:var(--text-secondary);margin:0 0 14px;line-height:1.5}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  .dpath{stroke:var(--surface-1);stroke-width:1.6;cursor:pointer;transition:opacity .12s}
+  .dpath:hover{opacity:.82}
+  .dpath.sel{stroke:var(--text-primary);stroke-width:2.4}
+  .dlab{font-size:9.4px;font-weight:600;pointer-events:none;paint-order:stroke;
+    stroke:var(--surface-1);stroke-width:2.6px;stroke-linejoin:round}
+  .dlab2{font-size:8.4px;font-weight:600;pointer-events:none;paint-order:stroke;
+    stroke:var(--surface-1);stroke-width:2.6px;stroke-linejoin:round}
+  .leader{stroke:var(--text-secondary);stroke-width:1;fill:none}
+  .legend{display:flex;align-items:center;gap:0;margin-top:14px;flex-wrap:wrap}
+  .lgcell{width:36px;height:11px}
+  .lgtxt{font-size:11px;color:var(--muted);margin:0 9px}
+  .prow{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--grid);font-size:13px}
+  .prow:last-child{border-bottom:0}
+  .prow dt{color:var(--text-secondary);margin:0}
+  .prow dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+  .phead{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);
+    font-weight:600;padding:14px 0 4px;border-bottom:1px solid var(--grid)}
+  .axline{stroke:var(--axis);stroke-width:1}
+  .gridline{stroke:var(--grid);stroke-width:1}
+  .tick{font-size:10.5px;fill:var(--muted);font-variant-numeric:tabular-nums}
+  .vlab{font-size:10.5px;font-variant-numeric:tabular-nums;fill:var(--text-secondary);font-weight:600}
+  .nlab{font-size:11px;fill:var(--text-primary)}
+  .qlab{font-size:10px;fill:var(--muted);letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+  .dot{stroke:var(--surface-1);stroke-width:2;cursor:pointer}
+  .tip{position:fixed;pointer-events:none;background:var(--surface-1,#fcfcfb);color:var(--text-primary,#0b0b0b);
+    border:1px solid var(--axis,#c3c2b7);border-radius:9px;padding:10px 12px;font-size:12px;
+    box-shadow:0 8px 26px rgba(0,0,0,.28);opacity:0;transition:opacity .1s;z-index:99;max-width:266px;line-height:1.5}
+  .tip b{font-size:12.5px}
+  .tip .r{display:flex;justify-content:space-between;gap:14px;color:var(--text-secondary,#52514e);margin-top:3px}
+  .tip .r span:last-child{color:var(--text-primary,#0b0b0b);font-weight:600;font-variant-numeric:tabular-nums}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;font-variant-numeric:tabular-nums}
+  th,td{text-align:right;padding:7px 9px;border-bottom:1px solid var(--grid);white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  th{font-size:10.5px;letter-spacing:.045em;text-transform:uppercase;color:var(--muted);font-weight:600;
+    position:sticky;top:0;background:var(--surface-1)}
+  tbody tr:hover{background:var(--plane)}
+  .tblwrap{max-height:0;overflow:hidden;transition:max-height .2s}
+  .tblwrap.open{max-height:900px;overflow:auto}
+  .find{font-size:13px;line-height:1.62;color:var(--text-secondary)}
+  .find li{margin-bottom:11px;break-inside:avoid}
+  @media (max-width:900px){.find{columns:1 !important}}
+  .find strong{color:var(--text-primary)}
+  .kicker{font-size:11px;letter-spacing:.055em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:9px}
+  .src{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:22px}
+  .src a{color:var(--text-secondary)}
+  .stack{display:flex;flex-direction:column;gap:16px}
+  .swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+  .pbis li{font-size:12px;color:var(--text-secondary);margin-bottom:3px}
+</style>
+</head>
+<body>
+<div class="viz-root">
+
+  <!-- ============ site shell ============ -->
+  <div class="sitebar">
+    <div class="sitebar-in">
+      <!-- Replace with <img src="standard-ed-logo-dark.svg"> (and the white variant for dark mode) -->
+      <a class="logo" href="/"><span class="logomark">S</span><span class="logotype">Standard Education</span></a>
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <span aria-hidden="true">/</span><a href="/">Demo tools</a>
+        <span aria-hidden="true">/</span><span>Regional data brief</span>
+      </nav>
+      <div class="bar-actions">
+        <button class="btn" id="themebtn">Dark</button>
+        <button class="btn" id="fsbtn">Fullscreen</button>
+        <button class="btn btn-primary" id="sharebtn">Share</button>
+      </div>
+    </div>
+  </div>
+
+<div class="wrap">
+
+  <header class="toolhead">
+    <div class="toolnum">6</div>
+    <div>
+      <div class="eyebrow">Regional data brief</div>
+      <h1>First District RESA — Georgia's published data, 2024–25</h1>
+      <p class="sub">All 19 member districts. Every figure on this page is a value published by the State of
+      Georgia, reproduced as-is. Nothing here is calculated, blended, averaged, or ranked by
+      Standard Education.</p>
+    </div>
+  </header>
+
+  <div class="note-strict">
+    <b>What is and isn't here.</b> Georgia publishes a statewide figure for chronic absenteeism, graduation rate,
+    and enrollment characteristics, so those are shown against the state. Georgia does <b>not</b> publish a
+    statewide row for Milestones assessment results or for discipline, so those are shown on their own absolute
+    scale with no state comparison — rather than against a state average we would have had to compute ourselves.
+    There is also no published First District RESA figure for anything, so this page shows no regional total.
+  </div>
+
+  <div class="tiles" id="tiles"></div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="ctrlgrp">Shown against Georgia's published statewide figure</div>
+      <div class="ctrls" id="metrics-vs"></div>
+      <div class="ctrlgrp">No statewide figure published — absolute scale</div>
+      <div class="ctrls" id="metrics-abs"></div>
+      <p class="sect-t" style="margin-top:16px" id="maptitle"></p>
+      <p class="sect-d" id="mapdesc"></p>
+      <div id="map"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div class="card">
+      <div class="kicker">District detail — published values only</div>
+      <div id="panel"></div>
+    </div>
+  </div>
+
+  <div style="height:16px"></div>
+
+  <div class="card">
+    <div class="kicker">What Georgia's numbers show</div>
+    <ul class="find" id="findings" style="columns:2;column-gap:38px;margin-bottom:0"></ul>
+  </div>
+
+  <div style="height:16px"></div>
+
+  <div class="card">
+    <p class="sect-t">Achievement levels as Georgia reports them</p>
+    <p class="sect-d">The four published achievement-level percentages for each district, stacked. The vertical
+      rule marks Georgia's proficiency standard — segments to its right are students at Proficient or
+      Distinguished. Districts are ordered by the published Beginning Learner percentage.</p>
+    <div class="ctrls" id="subjects"></div>
+    <div id="levels"></div>
+  </div>
+
+  <div style="height:16px"></div>
+
+  <div class="grid2" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <p class="sect-t">Chronic absenteeism, as published by student group</p>
+      <p class="sect-d">Each district's published rate for students with and without disabilities. Dashed lines
+        are Georgia's published statewide rates for the same two groups.</p>
+      <div id="absgrp"></div>
+    </div>
+    <div class="card">
+      <p class="sect-t">Graduation rate against Georgia's published rate</p>
+      <p class="sect-d">Published 4-year cohort rate per district. The line is Georgia's published statewide
+        rate of <span class="sg"></span>%.</p>
+      <div id="grad"></div>
+    </div>
+  </div>
+
+  <div style="height:16px"></div>
+
+  <div class="grid2" style="grid-template-columns:1fr 1fr;align-items:stretch">
+    <div class="card">
+      <p class="sect-t">Suspension, as published</p>
+      <p class="sect-d">Share of students given in-school and out-of-school suspension at least once. Georgia
+        publishes no statewide row in this file, so there is no state line to draw.</p>
+      <div id="susp"></div>
+    </div>
+    <div class="card">
+      <p class="sect-t">Published PBIS implementation ratings</p>
+      <p class="sect-d">Georgia publishes a PBIS implementation rating for individual schools. Select a district
+        to see its schools and their published ratings. A school with no rating is not necessarily a school
+        without PBIS — the rating reflects a submitted state fidelity review.</p>
+      <div id="pbis"></div>
+    </div>
+  </div>
+
+  <div style="height:16px"></div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+      <div>
+        <p class="sect-t" style="margin-bottom:3px">Full data table</p>
+        <p class="sect-d" style="margin:0">Every value on this page, as published. The Georgia row is the state's
+          own published row, not an average of the districts above it.</p>
+      </div>
+      <button class="themebtn" id="tblbtn" aria-expanded="false">Show table</button>
+    </div>
+    <div class="tblwrap" id="tblwrap"><div style="padding-top:14px"><table id="tbl"></table></div></div>
+  </div>
+
+  <p class="src">
+    <strong>Sources.</strong> All figures 2024–25, published by Georgia's Governor's Office of Student
+    Achievement / Governor's Office of Education and Workforce Strategy
+    (<a href="https://goews.georgia.gov/dashboards-data-report-card/downloadable-data">downloadable data</a>):
+    Georgia Milestones EOG and EOC assessment results; student attendance including chronic absenteeism;
+    4-year cohort graduation rate; enrollment by subgroup; and the K-12 Student Discipline dashboard files.
+    District boundaries: U.S. Census Bureau TIGER/Line 2023 unified school districts. Member district list:
+    <a href="https://www.fdresa.org/about/systems">First District RESA</a>.
+    "n/a" means Georgia suppressed or did not publish that cell — most often because the student count was too
+    small to report. Vidalia City appears separately from Toombs County because it is an independent city
+    district. Fort Stewart is a Department of Defense district inside the region's footprint and is not a
+    First District RESA member.
+  </p>
+
+  <div class="tip" id="tip"></div>
+</div>
+
+  <footer class="sitefoot">
+    <div class="sitefoot-in">
+      <a class="logo" href="/"><span class="logomark">S</span><span class="logotype">Standard Education</span></a>
+      <span style="margin-left:auto">Data tools that help districts act, not just report.</span>
+      <span>·</span><a href="/">All demo tools</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+const DATA = {"districts":{"Appling County":{"name":"Appling County","assess":{"ela_eog":{"tested":1442.0,"begin":26.1,"developing":36.1,"proficient":30.8,"distinguished":7.0},"math_eog":{"tested":1441.0,"begin":14.2,"developing":35.5,"proficient":35.5,"distinguished":14.8},"amlit":{"tested":259.0,"begin":25.9,"developing":41.3,"proficient":26.6,"distinguished":6.2},"alg":{"tested":134.0,"begin":16.4,"developing":26.9,"proficient":38.1,"distinguished":18.7}},"chronic":{"all":20.8,"swd":27.0,"not_swd":19.6,"ed":20.8,"not_ed":null,"el":13.0,"black":21.1,"white":21.6,"hispanic":15.6,"male":21.5,"female":20.1,"students":3379.0},"grad":{"all":99.16,"cohort":237.0,"ed":99.16,"swd":93.33,"black":98.44,"white":99.19,"hispanic":100.0},"enroll":{"ed":99.0,"swd":16.1,"el":13.0,"black":20.0,"white":55.0,"hispanic":20.0,"gifted":6.6},"disc":{"iss":6.7,"oss":3.6,"expl":0.1,"enrollment":3621.0,"students_with_incidents":336.0,"total_incidents":625.0},"pbis":[],"n_schools_listed":5},"Bryan County":{"name":"Bryan County","assess":{"ela_eog":{"tested":4793.0,"begin":15.1,"developing":29.2,"proficient":38.8,"distinguished":16.8},"math_eog":{"tested":4791.0,"begin":9.5,"developing":29.5,"proficient":36.0,"distinguished":25.0},"amlit":{"tested":818.0,"begin":15.0,"developing":33.6,"proficient":40.3,"distinguished":11.0},"alg":{"tested":860.0,"begin":7.8,"developing":19.5,"proficient":41.2,"distinguished":31.5}},"chronic":{"all":13.7,"swd":18.1,"not_swd":13.0,"ed":21.6,"not_ed":8.7,"el":10.4,"black":17.2,"white":13.1,"hispanic":14.2,"male":14.2,"female":13.2,"students":10847.0},"grad":{"all":94.46,"cohort":758.0,"ed":89.51,"swd":85.71,"black":92.11,"white":94.76,"hispanic":94.81},"enroll":{"ed":36.0,"swd":13.4,"el":4.0,"black":15.0,"white":60.0,"hispanic":12.0,"gifted":21.2},"disc":{"iss":6.8,"oss":5.5,"expl":0.0,"enrollment":11308.0,"students_with_incidents":1193.0,"total_incidents":2317.0},"pbis":[{"school":"Bryan County Elementary School","rating":"Operational"},{"school":"Bryan County High School","rating":"Operational"},{"school":"Bryan County Middle School","rating":"Emerging"},{"school":"Dr. George Washington Carver Elementary School","rating":"Operational"},{"school":"Frances Meeks Elementary School","rating":"Operational"},{"school":"McAllister Elementary School","rating":"Operational"},{"school":"Richmond Hill Elementary School","rating":"Emerging"},{"school":"Richmond Hill High School","rating":"Emerging"},{"school":"Richmond Hill Middle School","rating":"Emerging"},{"school":"Richmond Hill Primary School","rating":"Operational"}],"n_schools_listed":10},"Bulloch County":{"name":"Bulloch County","assess":{"ela_eog":{"tested":4830.0,"begin":32.3,"developing":31.4,"proficient":28.0,"distinguished":8.3},"math_eog":{"tested":4814.0,"begin":21.0,"developing":37.2,"proficient":28.1,"distinguished":13.6},"amlit":{"tested":758.0,"begin":30.3,"developing":34.8,"proficient":29.6,"distinguished":5.3},"alg":{"tested":883.0,"begin":30.0,"developing":27.5,"proficient":27.2,"distinguished":15.3}},"chronic":{"all":22.2,"swd":26.6,"not_swd":21.3,"ed":23.2,"not_ed":15.8,"el":17.1,"black":25.9,"white":19.6,"hispanic":19.3,"male":23.0,"female":21.4,"students":11428.0},"grad":{"all":88.54,"cohort":838.0,"ed":88.89,"swd":76.3,"black":87.68,"white":90.63,"hispanic":83.08},"enroll":{"ed":87.0,"swd":15.8,"el":4.0,"black":38.0,"white":47.0,"hispanic":9.0,"gifted":11.8},"disc":{"iss":8.4,"oss":6.0,"expl":0.3,"enrollment":12003.0,"students_with_incidents":1620.0,"total_incidents":3681.0},"pbis":[{"school":"Langston Chapel Middle School","rating":"Operational"},{"school":"Portal Middle/High School","rating":"Emerging"},{"school":"William James Middle School","rating":"Emerging"}],"n_schools_listed":15},"Camden County":{"name":"Camden County","assess":{"ela_eog":{"tested":4235.0,"begin":15.3,"developing":31.5,"proficient":37.9,"distinguished":15.4},"math_eog":{"tested":4233.0,"begin":9.3,"developing":32.9,"proficient":34.7,"distinguished":23.2},"amlit":{"tested":692.0,"begin":7.4,"developing":36.6,"proficient":46.1,"distinguished":10.0},"alg":{"tested":801.0,"begin":7.2,"developing":26.0,"proficient":31.1,"distinguished":35.7}},"chronic":{"all":20.8,"swd":25.7,"not_swd":19.6,"ed":25.7,"not_ed":16.1,"el":19.3,"black":22.9,"white":19.7,"hispanic":21.5,"male":21.1,"female":20.4,"students":10279.0},"grad":{"all":96.18,"cohort":654.0,"ed":94.7,"swd":91.35,"black":95.8,"white":95.49,"hispanic":98.46},"enroll":{"ed":50.0,"swd":18.4,"el":1.0,"black":21.0,"white":56.0,"hispanic":11.0,"gifted":13.8},"disc":{"iss":10.4,"oss":5.8,"expl":0.2,"enrollment":10582.0,"students_with_incidents":1455.0,"total_incidents":3413.0},"pbis":[{"school":"Camden County High School","rating":"Operational"},{"school":"Camden Middle School","rating":"Operational"},{"school":"Crooked River Elementary School","rating":"Distinguished"},{"school":"David L Rainer Elementary School","rating":"Emerging"},{"school":"Kingsland Elementary School","rating":"Distinguished"},{"school":"Mamie Lou Gross Elementary School","rating":"Emerging"},{"school":"Mary Lee Clark Elementary School","rating":"Distinguished"},{"school":"Matilda Harris Elementary School","rating":"Emerging"},{"school":"Saint Marys Elementary School","rating":"Emerging"},{"school":"Saint Marys Middle School","rating":"Operational"},{"school":"Sugarmill Elementary","rating":"Distinguished"},{"school":"Woodbine Elementary School","rating":"Distinguished"}],"n_schools_listed":12},"Candler County":{"name":"Candler County","assess":{"ela_eog":{"tested":914.0,"begin":39.9,"developing":31.7,"proficient":23.3,"distinguished":5.0},"math_eog":{"tested":914.0,"begin":22.1,"developing":38.2,"proficient":32.2,"distinguished":7.5},"amlit":{"tested":170.0,"begin":29.4,"developing":43.5,"proficient":23.5,"distinguished":3.5},"alg":{"tested":169.0,"begin":27.8,"developing":36.7,"proficient":26.6,"distinguished":8.9}},"chronic":{"all":14.0,"swd":17.6,"not_swd":13.4,"ed":14.0,"not_ed":null,"el":19.5,"black":16.2,"white":13.6,"hispanic":11.4,"male":14.7,"female":13.4,"students":2143.0},"grad":{"all":96.3,"cohort":162.0,"ed":96.3,"swd":81.25,"black":96.3,"white":96.3,"hispanic":95.83},"enroll":{"ed":96.0,"swd":14.3,"el":5.0,"black":27.0,"white":46.0,"hispanic":22.0,"gifted":4.2},"disc":{"iss":5.2,"oss":5.6,"expl":0.0,"enrollment":2287.0,"students_with_incidents":227.0,"total_incidents":331.0},"pbis":[],"n_schools_listed":4},"Effingham County":{"name":"Effingham County","assess":{"ela_eog":{"tested":6528.0,"begin":15.9,"developing":33.7,"proficient":36.3,"distinguished":14.1},"math_eog":{"tested":6528.0,"begin":7.4,"developing":32.0,"proficient":38.7,"distinguished":21.8},"amlit":{"tested":997.0,"begin":18.9,"developing":36.9,"proficient":37.9,"distinguished":6.3},"alg":{"tested":994.0,"begin":15.2,"developing":23.7,"proficient":37.0,"distinguished":24.0}},"chronic":{"all":14.8,"swd":18.8,"not_swd":13.9,"ed":19.8,"not_ed":9.7,"el":13.8,"black":16.6,"white":14.1,"hispanic":16.6,"male":14.8,"female":14.8,"students":14774.0},"grad":{"all":93.69,"cohort":983.0,"ed":91.25,"swd":83.1,"black":94.02,"white":93.49,"hispanic":95.9},"enroll":{"ed":49.0,"swd":16.5,"el":5.0,"black":18.0,"white":61.0,"hispanic":13.0,"gifted":11.4},"disc":{"iss":10.9,"oss":7.9,"expl":0.0,"enrollment":15537.0,"students_with_incidents":2855.0,"total_incidents":6751.0},"pbis":[{"school":"Blandford Elementary School","rating":"Emerging"},{"school":"Ebenezer Elementary School","rating":"Emerging"},{"school":"Ebenezer Middle School","rating":"Operational"},{"school":"Effingham County Middle School","rating":"Installing"},{"school":"Guyton Elementary School","rating":"Emerging"},{"school":"Marlow Elementary School","rating":"Operational"},{"school":"Rincon Elementary School","rating":"Emerging"},{"school":"Sand Hill Elementary School","rating":"Emerging"},{"school":"South Effingham Elementary School","rating":"Emerging"},{"school":"South Effingham Middle School","rating":"Operational"},{"school":"Springfield Elementary School","rating":"Emerging"}],"n_schools_listed":13},"Emanuel County":{"name":"Emanuel County","assess":{"ela_eog":{"tested":1669.0,"begin":32.7,"developing":35.9,"proficient":25.3,"distinguished":6.2},"math_eog":{"tested":1668.0,"begin":25.0,"developing":43.0,"proficient":25.2,"distinguished":6.8},"amlit":{"tested":283.0,"begin":35.0,"developing":38.2,"proficient":22.3,"distinguished":4.6},"alg":{"tested":294.0,"begin":25.2,"developing":37.4,"proficient":27.6,"distinguished":9.9}},"chronic":{"all":21.5,"swd":24.9,"not_swd":20.7,"ed":21.5,"not_ed":null,"el":13.0,"black":20.5,"white":23.3,"hispanic":15.3,"male":20.8,"female":22.2,"students":3948.0},"grad":{"all":88.33,"cohort":300.0,"ed":88.33,"swd":76.36,"black":85.71,"white":89.06,"hispanic":93.75},"enroll":{"ed":93.0,"swd":16.3,"el":4.0,"black":40.0,"white":46.0,"hispanic":10.0,"gifted":4.7},"disc":{"iss":11.5,"oss":8.6,"expl":0.0,"enrollment":4188.0,"students_with_incidents":728.0,"total_incidents":1727.0},"pbis":[],"n_schools_listed":6},"Evans County":{"name":"Evans County","assess":{"ela_eog":{"tested":754.0,"begin":60.7,"developing":27.2,"proficient":10.6,"distinguished":1.5},"math_eog":{"tested":754.0,"begin":49.6,"developing":38.2,"proficient":10.3,"distinguished":1.9},"amlit":{"tested":null,"begin":100.0,"developing":0.0,"proficient":0.0,"distinguished":0.0},"alg":{"tested":107.0,"begin":67.3,"developing":28.0,"proficient":3.7,"distinguished":0.9}},"chronic":{"all":30.0,"swd":32.9,"not_swd":29.6,"ed":30.0,"not_ed":null,"el":18.4,"black":30.6,"white":36.8,"hispanic":21.2,"male":29.4,"female":30.6,"students":1857.0},"grad":{"all":95.9,"cohort":122.0,"ed":95.9,"swd":83.33,"black":100.0,"white":89.36,"hispanic":100.0},"enroll":{"ed":100.0,"swd":11.5,"el":23.0,"black":38.0,"white":28.0,"hispanic":28.0,"gifted":4.9},"disc":{"iss":24.2,"oss":13.4,"expl":0.0,"enrollment":1975.0,"students_with_incidents":655.0,"total_incidents":1770.0},"pbis":[{"school":"Claxton Elementary School","rating":"Emerging"},{"school":"Claxton Middle School","rating":"Operational"}],"n_schools_listed":4},"Glynn County":{"name":"Glynn County","assess":{"ela_eog":{"tested":5622.0,"begin":28.5,"developing":31.0,"proficient":29.0,"distinguished":11.5},"math_eog":{"tested":5616.0,"begin":18.7,"developing":35.0,"proficient":28.5,"distinguished":17.9},"amlit":{"tested":753.0,"begin":5.0,"developing":33.3,"proficient":49.1,"distinguished":12.5},"alg":{"tested":970.0,"begin":6.8,"developing":30.1,"proficient":37.9,"distinguished":25.2}},"chronic":{"all":16.3,"swd":24.1,"not_swd":14.7,"ed":16.3,"not_ed":null,"el":17.2,"black":19.2,"white":13.3,"hispanic":17.0,"male":16.7,"female":15.8,"students":13316.0},"grad":{"all":99.04,"cohort":833.0,"ed":99.03,"swd":94.87,"black":97.98,"white":99.52,"hispanic":100.0},"enroll":{"ed":84.0,"swd":15.9,"el":13.0,"black":33.0,"white":42.0,"hispanic":19.0,"gifted":8.5},"disc":{"iss":13.2,"oss":10.9,"expl":0.0,"enrollment":13867.0,"students_with_incidents":2836.0,"total_incidents":6778.0},"pbis":[{"school":"Altama Elementary School","rating":"Emerging"},{"school":"Brunswick High School","rating":"Operational"},{"school":"Burroughs-Molette Elementary School","rating":"Emerging"},{"school":"Glyndale Elementary School","rating":"Emerging"},{"school":"Glynn Academy","rating":"Operational"},{"school":"Glynn Middle School","rating":"Operational"},{"school":"Golden Isles Elementary School","rating":"Emerging"},{"school":"Goodyear Elementary School","rating":"Operational"},{"school":"Greer Elementary School","rating":"Emerging"},{"school":"Jane Macon Middle","rating":"Operational"},{"school":"Morningstar Treatment Services, Inc. Youth Estate","rating":"Installing"},{"school":"Needwood Middle School","rating":"Operational"},{"school":"Oglethorpe Point Elementary School","rating":"Emerging"},{"school":"Risley Middle School","rating":"Operational"},{"school":"Satilla Marsh Elementary School","rating":"Emerging"},{"school":"St. Simons Elementary School","rating":"Emerging"},{"school":"Sterling Elementary School","rating":"Emerging"}],"n_schools_listed":17},"Jeff Davis County":{"name":"Jeff Davis County","assess":{"ela_eog":{"tested":1354.0,"begin":27.0,"developing":38.5,"proficient":28.4,"distinguished":6.2},"math_eog":{"tested":1353.0,"begin":12.3,"developing":36.4,"proficient":35.2,"distinguished":16.1},"amlit":{"tested":172.0,"begin":27.9,"developing":41.3,"proficient":26.7,"distinguished":4.1},"alg":{"tested":203.0,"begin":16.3,"developing":42.9,"proficient":31.0,"distinguished":9.9}},"chronic":{"all":22.2,"swd":26.2,"not_swd":21.6,"ed":22.2,"not_ed":null,"el":12.3,"black":20.1,"white":24.7,"hispanic":16.4,"male":22.4,"female":21.9,"students":3000.0},"grad":{"all":98.9,"cohort":182.0,"ed":98.9,"swd":93.75,"black":100.0,"white":99.08,"hispanic":97.67},"enroll":{"ed":98.0,"swd":11.5,"el":14.0,"black":16.0,"white":56.0,"hispanic":23.0,"gifted":2.4},"disc":{"iss":8.2,"oss":4.9,"expl":0.0,"enrollment":3216.0,"students_with_incidents":438.0,"total_incidents":963.0},"pbis":[],"n_schools_listed":4},"Liberty County":{"name":"Liberty County","assess":{"ela_eog":{"tested":4550.0,"begin":36.5,"developing":33.3,"proficient":24.8,"distinguished":5.4},"math_eog":{"tested":4534.0,"begin":29.2,"developing":39.4,"proficient":23.8,"distinguished":7.6},"amlit":{"tested":779.0,"begin":29.3,"developing":41.6,"proficient":25.3,"distinguished":3.9},"alg":{"tested":870.0,"begin":47.7,"developing":34.8,"proficient":12.8,"distinguished":4.7}},"chronic":{"all":31.0,"swd":35.0,"not_swd":30.2,"ed":31.0,"not_ed":null,"el":27.2,"black":30.4,"white":31.5,"hispanic":33.1,"male":31.1,"female":30.8,"students":11720.0},"grad":{"all":91.88,"cohort":702.0,"ed":93.07,"swd":81.55,"black":92.7,"white":87.72,"hispanic":94.44},"enroll":{"ed":89.0,"swd":14.7,"el":3.0,"black":54.0,"white":20.0,"hispanic":14.0,"gifted":9.0},"disc":{"iss":10.1,"oss":10.4,"expl":0.0,"enrollment":12274.0,"students_with_incidents":2066.0,"total_incidents":5262.0},"pbis":[{"school":"Bradwell Institute","rating":"Emerging"},{"school":"Button Gwinnett Elementary School","rating":"Emerging"},{"school":"Frank Long Elementary School","rating":"Distinguished"},{"school":"Joseph Martin Elementary School","rating":"Distinguished"},{"school":"Lewis Frasier Middle School","rating":"Emerging"},{"school":"Liberty County High School","rating":"Emerging"},{"school":"Liberty Elementary School","rating":"Emerging"},{"school":"Lyman Hall Elementary School","rating":"Emerging"},{"school":"Midway Middle School","rating":"Distinguished"},{"school":"Snelson-Golden Middle School","rating":"Operational"},{"school":"Taylors Creek Elementary School","rating":"Emerging"},{"school":"Waldo Pafford Elementary School","rating":"Distinguished"}],"n_schools_listed":12},"Long County":{"name":"Long County","assess":{"ela_eog":{"tested":2021.0,"begin":34.4,"developing":37.9,"proficient":23.3,"distinguished":4.5},"math_eog":{"tested":2017.0,"begin":27.9,"developing":39.8,"proficient":24.7,"distinguished":7.6},"amlit":{"tested":315.0,"begin":21.0,"developing":40.3,"proficient":34.6,"distinguished":4.1},"alg":{"tested":401.0,"begin":13.0,"developing":34.2,"proficient":35.4,"distinguished":17.5}},"chronic":{"all":19.8,"swd":25.2,"not_swd":18.9,"ed":19.8,"not_ed":null,"el":16.2,"black":15.8,"white":22.1,"hispanic":20.4,"male":20.6,"female":18.9,"students":4926.0},"grad":{"all":95.52,"cohort":335.0,"ed":96.96,"swd":91.3,"black":94.23,"white":94.12,"hispanic":98.33},"enroll":{"ed":77.0,"swd":13.1,"el":5.0,"black":27.0,"white":41.0,"hispanic":20.0,"gifted":3.1},"disc":{"iss":11.9,"oss":8.0,"expl":0.0,"enrollment":5163.0,"students_with_incidents":878.0,"total_incidents":2016.0},"pbis":[{"school":"Long County High School","rating":"Emerging"},{"school":"Long County Middle School","rating":"Emerging"},{"school":"Long County Primary School","rating":"Emerging"},{"school":"McClelland Elementary School","rating":"Emerging"},{"school":"Smiley Elementary School","rating":"Emerging"}],"n_schools_listed":5},"McIntosh County":{"name":"McIntosh County","assess":{"ela_eog":{"tested":604.0,"begin":27.6,"developing":36.8,"proficient":28.3,"distinguished":7.3},"math_eog":{"tested":605.0,"begin":23.3,"developing":45.1,"proficient":26.0,"distinguished":5.6},"amlit":{"tested":99.0,"begin":30.3,"developing":34.3,"proficient":32.3,"distinguished":3.0},"alg":{"tested":94.0,"begin":14.9,"developing":48.9,"proficient":28.7,"distinguished":7.4}},"chronic":{"all":18.1,"swd":20.1,"not_swd":17.7,"ed":18.1,"not_ed":null,"el":7.7,"black":12.3,"white":21.3,"hispanic":19.1,"male":16.3,"female":20.1,"students":1434.0},"grad":{"all":98.06,"cohort":103.0,"ed":98.06,"swd":92.86,"black":100.0,"white":96.49,"hispanic":null},"enroll":{"ed":99.0,"swd":15.8,"el":1.0,"black":38.0,"white":49.0,"hispanic":3.0,"gifted":6.1},"disc":{"iss":13.8,"oss":7.4,"expl":0.0,"enrollment":1520.0,"students_with_incidents":272.0,"total_incidents":571.0},"pbis":[{"school":"McIntosh Academy","rating":"Operational"},{"school":"McIntosh County Middle School","rating":"Operational"},{"school":"Todd Grant Elementary School","rating":"Emerging"}],"n_schools_listed":3},"Savannah-Chatham County":{"name":"Savannah-Chatham County","assess":{"ela_eog":{"tested":15839.0,"begin":42.3,"developing":28.2,"proficient":22.2,"distinguished":7.3},"math_eog":{"tested":15863.0,"begin":34.6,"developing":35.6,"proficient":20.4,"distinguished":9.3},"amlit":{"tested":2523.0,"begin":34.3,"developing":36.9,"proficient":24.3,"distinguished":4.4},"alg":{"tested":2741.0,"begin":38.0,"developing":32.5,"proficient":19.7,"distinguished":9.8}},"chronic":{"all":24.3,"swd":25.5,"not_swd":24.1,"ed":27.3,"not_ed":16.7,"el":24.4,"black":27.4,"white":16.2,"hispanic":25.6,"male":24.5,"female":24.2,"students":38491.0},"grad":{"all":87.17,"cohort":2557.0,"ed":84.87,"swd":78.9,"black":88.0,"white":88.84,"hispanic":80.47},"enroll":{"ed":73.0,"swd":13.8,"el":11.0,"black":55.0,"white":18.0,"hispanic":18.0,"gifted":17.1},"disc":{"iss":3.1,"oss":7.5,"expl":0.0,"enrollment":40286.0,"students_with_incidents":4092.0,"total_incidents":7706.0},"pbis":[{"school":"Andrea B Williams Elementary School","rating":"Installing"},{"school":"Coastal Empire Montessori Charter School","rating":"Emerging"},{"school":"Coastal Middle School","rating":"Installing"},{"school":"DeRenne Middle School","rating":"Installing"},{"school":"Georgetown School","rating":"Installing"},{"school":"Haven Elementary School","rating":"Installing"},{"school":"Hodge Elementary School","rating":"Installing"},{"school":"Oglethorpe Charter School","rating":"Operational"},{"school":"Rice Creek School","rating":"Installing"},{"school":"Southwest Middle School","rating":"Installing"},{"school":"Windsor Forest Elementary School","rating":"Installing"}],"n_schools_listed":57},"Screven County":{"name":"Screven County","assess":{"ela_eog":{"tested":867.0,"begin":34.6,"developing":34.8,"proficient":24.7,"distinguished":5.9},"math_eog":{"tested":865.0,"begin":17.6,"developing":44.5,"proficient":29.0,"distinguished":8.9},"amlit":{"tested":141.0,"begin":20.6,"developing":44.0,"proficient":31.9,"distinguished":3.5},"alg":{"tested":192.0,"begin":13.5,"developing":32.8,"proficient":38.0,"distinguished":15.6}},"chronic":{"all":21.0,"swd":24.7,"not_swd":20.4,"ed":21.0,"not_ed":null,"el":11.8,"black":20.0,"white":22.2,"hispanic":20.2,"male":21.9,"female":20.1,"students":2127.0},"grad":{"all":88.51,"cohort":148.0,"ed":88.51,"swd":61.11,"black":89.47,"white":87.5,"hispanic":null},"enroll":{"ed":79.0,"swd":12.9,"el":1.0,"black":47.0,"white":44.0,"hispanic":4.0,"gifted":7.9},"disc":{"iss":20.7,"oss":10.8,"expl":0.3,"enrollment":2232.0,"students_with_incidents":615.0,"total_incidents":1948.0},"pbis":[{"school":"Screven County Elementary School","rating":"Operational"},{"school":"Screven County High School","rating":"Emerging"},{"school":"Screven County Middle School","rating":"Emerging"}],"n_schools_listed":3},"Tattnall County":{"name":"Tattnall County","assess":{"ela_eog":{"tested":1519.0,"begin":37.6,"developing":32.5,"proficient":24.3,"distinguished":5.7},"math_eog":{"tested":1518.0,"begin":22.9,"developing":41.5,"proficient":25.0,"distinguished":10.5},"amlit":{"tested":242.0,"begin":32.2,"developing":37.2,"proficient":28.9,"distinguished":1.7},"alg":{"tested":229.0,"begin":35.4,"developing":36.7,"proficient":25.3,"distinguished":2.6}},"chronic":{"all":18.6,"swd":21.8,"not_swd":18.0,"ed":18.6,"not_ed":null,"el":13.5,"black":18.5,"white":20.9,"hispanic":14.0,"male":16.8,"female":20.6,"students":3589.0},"grad":{"all":88.7,"cohort":239.0,"ed":88.7,"swd":82.93,"black":90.48,"white":85.71,"hispanic":92.16},"enroll":{"ed":99.0,"swd":15.7,"el":10.0,"black":23.0,"white":49.0,"hispanic":22.0,"gifted":4.7},"disc":{"iss":11.8,"oss":5.0,"expl":0.1,"enrollment":3823.0,"students_with_incidents":532.0,"total_incidents":1128.0},"pbis":[{"school":"North Tattnall Elementary School","rating":"Emerging"},{"school":"North Tattnall Middle School","rating":"Operational"},{"school":"South Tattnall Elementary School","rating":"Emerging"},{"school":"South Tattnall Middle School","rating":"Operational"},{"school":"Tattnall County High School","rating":"Operational"}],"n_schools_listed":5},"Toombs County":{"name":"Toombs County","assess":{"ela_eog":{"tested":1347.0,"begin":32.9,"developing":34.9,"proficient":26.3,"distinguished":5.9},"math_eog":{"tested":1347.0,"begin":23.2,"developing":43.8,"proficient":25.5,"distinguished":7.4},"amlit":{"tested":213.0,"begin":42.7,"developing":35.2,"proficient":19.2,"distinguished":2.8},"alg":{"tested":248.0,"begin":28.2,"developing":37.1,"proficient":23.0,"distinguished":11.7}},"chronic":{"all":26.1,"swd":28.4,"not_swd":25.6,"ed":26.1,"not_ed":null,"el":20.6,"black":26.0,"white":27.0,"hispanic":24.2,"male":25.4,"female":26.9,"students":3176.0},"grad":{"all":93.97,"cohort":232.0,"ed":93.97,"swd":85.71,"black":93.88,"white":94.55,"hispanic":94.92},"enroll":{"ed":100.0,"swd":18.4,"el":11.0,"black":18.0,"white":50.0,"hispanic":27.0,"gifted":6.2},"disc":{"iss":6.0,"oss":4.1,"expl":0.1,"enrollment":3372.0,"students_with_incidents":372.0,"total_incidents":750.0},"pbis":[{"school":"Lyons Primary School","rating":"Operational"},{"school":"Lyons Upper Elementary","rating":"Operational"},{"school":"Toombs County Middle School","rating":"Emerging"}],"n_schools_listed":5},"Vidalia City":{"name":"Vidalia City","assess":{"ela_eog":{"tested":931.0,"begin":45.6,"developing":32.2,"proficient":19.2,"distinguished":2.9},"math_eog":{"tested":932.0,"begin":30.6,"developing":42.7,"proficient":19.8,"distinguished":6.9},"amlit":{"tested":179.0,"begin":38.0,"developing":33.5,"proficient":24.6,"distinguished":3.9},"alg":{"tested":158.0,"begin":27.2,"developing":32.9,"proficient":27.2,"distinguished":12.7}},"chronic":{"all":14.5,"swd":20.6,"not_swd":13.4,"ed":14.5,"not_ed":null,"el":14.4,"black":17.2,"white":11.1,"hispanic":14.9,"male":13.8,"female":15.2,"students":2278.0},"grad":{"all":96.84,"cohort":190.0,"ed":96.81,"swd":100.0,"black":96.51,"white":100.0,"hispanic":81.25},"enroll":{"ed":93.0,"swd":14.7,"el":4.0,"black":49.0,"white":35.0,"hispanic":10.0,"gifted":2.2},"disc":{"iss":13.0,"oss":7.8,"expl":0.0,"enrollment":2439.0,"students_with_incidents":416.0,"total_incidents":997.0},"pbis":[{"school":"J. D. Dickerson Primary School","rating":"Emerging"},{"school":"J. R. Trippe Middle School","rating":"Emerging"},{"school":"Sally Dailey Meadows Elementary School","rating":"Emerging"},{"school":"Vidalia Comprehensive High School","rating":"Operational"}],"n_schools_listed":4},"Wayne County":{"name":"Wayne County","assess":{"ela_eog":{"tested":2321.0,"begin":32.5,"developing":33.8,"proficient":27.0,"distinguished":6.7},"math_eog":{"tested":2320.0,"begin":23.3,"developing":37.9,"proficient":28.2,"distinguished":10.6},"amlit":{"tested":354.0,"begin":23.2,"developing":39.0,"proficient":35.3,"distinguished":2.5},"alg":{"tested":387.0,"begin":27.4,"developing":33.9,"proficient":26.1,"distinguished":12.7}},"chronic":{"all":22.5,"swd":27.0,"not_swd":21.5,"ed":22.5,"not_ed":null,"el":12.9,"black":25.3,"white":21.8,"hispanic":19.9,"male":22.9,"female":22.2,"students":5523.0},"grad":{"all":89.57,"cohort":374.0,"ed":89.57,"swd":83.02,"black":90.0,"white":89.12,"hispanic":91.3},"enroll":{"ed":92.0,"swd":16.9,"el":4.0,"black":22.0,"white":60.0,"hispanic":11.0,"gifted":10.9},"disc":{"iss":17.4,"oss":7.0,"expl":0.0,"enrollment":5853.0,"students_with_incidents":1320.0,"total_incidents":2902.0},"pbis":[],"n_schools_listed":8}},"state":{"chronic":{"all":20.4,"swd":25.1,"not_swd":19.6,"ed":23.5,"not_ed":12.1,"el":19.0,"black":24.4,"white":16.9,"hispanic":21.6,"male":20.3,"female":20.4,"students":1850404.0},"grad":{"all":87.22,"cohort":142070.0,"ed":86.03,"swd":78.36,"black":86.69,"white":89.46,"hispanic":82.32},"enroll":{"ed":68.0,"swd":13.5,"el":12.0,"black":36.0,"white":34.0,"hispanic":20.0,"gifted":13.2}},"subjects":[{"key":"ela_eog","label":"EOG grades 3\u20138 \u2014 English Language Arts"},{"key":"math_eog","label":"EOG grades 3\u20138 \u2014 Mathematics"},{"key":"amlit","label":"EOC \u2014 American Literature and Composition"},{"key":"alg","label":"EOC \u2014 Algebra: Concepts and Connections"}],"findings":["<strong>Georgia's published chronic absenteeism rate is 20.4%. 11 of the 19 districts are above it.</strong> Highest: Liberty 31%, Evans 30%, Toombs 26.1%.","<strong>Georgia's published graduation rate is 87.22%. Only 1 of the 19 districts falls below it.</strong> Set that against the Beginning Learner percentages below \u2014 the districts handing out the most diplomas are not the districts with the fewest struggling readers.","<strong>In EOG English Language Arts, the published Beginning Learner share runs as high as 60.7%</strong> in Evans, followed by Vidalia City at 45.6%, Savannah-Chatham at 42.3%. Beginning Learner is Georgia's own lowest achievement level \u2014 students not yet demonstrating proficiency in the grade-level standards.","<strong>Georgia publishes chronic absenteeism separately for students with and without disabilities \u2014 25.1% and 19.6% statewide.</strong> In 19 of the 19 districts the published rate for students with disabilities is the higher of the two.","<strong>Out-of-school suspension, as published: highest in </strong>Evans at 13.4%, Glynn at 10.9%, Screven at 10.8%. Georgia publishes no statewide suspension figure in this file, so there is no state rate to compare these against.","<strong>5 of the 19 districts have no published PBIS implementation rating for any school</strong> (Appling, Candler, Emanuel, Jeff Davis, Wayne). The rating reflects a submitted state fidelity review, so this is a gap in published visibility rather than proof that PBIS is absent."]};
+const G = {"type":"FeatureCollection","features":[{"id":"Appling County","type":"Feature","properties":{"district":"Appling County"},"geometry":{"type":"Polygon","coordinates":[[[-82.550691,31.749112],[-82.520158,31.74919],[-82.520251,31.838388],[-82.431362,31.837993],[-82.431531,31.966182],[-82.408446,31.956088],[-82.407245,31.949488],[-82.402044,31.951688],[-82.404442,31.957887],[-82.400842,31.960286],[-82.387138,31.948184],[-82.385437,31.951383],[-82.389035,31.957782],[-82.384456,31.960022],[-82.379533,31.954977],[-82.371549,31.953493],[-82.378449,31.945993],[-82.377649,31.941893],[-82.362334,31.94369],[-82.358009,31.939686],[-82.314482,31.930783],[-82.30887,31.932698],[-82.307681,31.93727],[-82.315331,31.942805],[-82.31391,31.947122],[-82.309508,31.946541],[-82.301112,31.93327],[-82.291583,31.942398],[-82.286418,31.942443],[-82.270334,31.935871],[-82.266779,31.928408],[-82.256037,31.932089],[-82.24681,31.9151],[-82.235826,31.920399],[-82.230239,31.911998],[-82.222745,31.913398],[-82.218545,31.909498],[-82.192044,31.906499],[-82.191344,31.900499],[-82.160043,31.903999],[-82.145143,31.8981],[-82.134243,31.908],[-82.131143,31.9038],[-82.135543,31.8917],[-82.119542,31.886001],[-82.115442,31.888801],[-82.116642,31.8997],[-82.112915,31.900939],[-82.107842,31.883701],[-82.109625,31.870308],[-82.116413,31.866346],[-82.115478,31.862846],[-82.106314,31.863327],[-82.081309,31.842806],[-82.066071,31.838215],[-82.048582,31.827075],[-82.071271,31.825654],[-82.077084,31.829068],[-82.087398,31.821622],[-82.087247,31.799509],[-82.10654,31.799798],[-82.107028,31.786101],[-82.089338,31.785903],[-82.08944,31.772913],[-82.133013,31.773404],[-82.132942,31.56931],[-82.147948,31.569123],[-82.147926,31.557308],[-82.132867,31.557514],[-82.132794,31.471262],[-82.136625,31.470071],[-82.150242,31.469739],[-82.159729,31.473505],[-82.216173,31.516237],[-82.225145,31.52761],[-82.232307,31.545265],[-82.244255,31.557953],[-82.260283,31.562008],[-82.272308,31.573351],[-82.309242,31.588815],[-82.348526,31.620661],[-82.367041,31.630212],[-82.375099,31.630497],[-82.389633,31.637947],[-82.407509,31.6392],[-82.43573,31.660656],[-82.45089,31.661381],[-82.453209,31.668053],[-82.472725,31.680157],[-82.477737,31.690559],[-82.495866,31.710588],[-82.52142,31.710796],[-82.520567,31.736201],[-82.550714,31.736334],[-82.550691,31.749112]]]}},{"id":"Bryan County","type":"Feature","properties":{"district":"Bryan County"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-81.404961,31.937002],[-81.368451,31.952315],[-81.337358,31.952553],[-81.331882,31.961759],[-81.308852,31.98233],[-81.28863,31.977201],[-81.288412,31.94467],[-81.27742,31.944699],[-81.273121,31.941281],[-81.276343,31.930262],[-81.273034,31.925005],[-81.257731,31.92591],[-81.265826,31.915848],[-81.263549,31.908075],[-81.257407,31.905163],[-81.24983,31.910711],[-81.240961,31.911976],[-81.233177,31.907954],[-81.234199,31.902279],[-81.242927,31.894075],[-81.238735,31.887088],[-81.231246,31.892258],[-81.21108,31.919305],[-81.201173,31.922514],[-81.192283,31.920401],[-81.190665,31.915012],[-81.195924,31.906578],[-81.219518,31.896582],[-81.222345,31.890367],[-81.212172,31.887366],[-81.185573,31.899875],[-81.173396,31.899751],[-81.161187,31.887571],[-81.16103,31.87713],[-81.155124,31.864311],[-81.138324,31.855415],[-81.156209,31.837555],[-81.160926,31.821617],[-81.177027,31.816113],[-81.181024,31.797416],[-81.17973,31.791317],[-81.160728,31.785014],[-81.161625,31.779616],[-81.170526,31.77072],[-81.173625,31.75862],[-81.155427,31.740216],[-81.154731,31.71266],[-81.177459,31.717337],[-81.203628,31.72827],[-81.220862,31.743637],[-81.262549,31.755331],[-81.270003,31.763222],[-81.268426,31.784616],[-81.275126,31.793515],[-81.311027,31.789915],[-81.310327,31.799514],[-81.320028,31.808414],[-81.315043,31.816787],[-81.328224,31.823013],[-81.326224,31.830118],[-81.331805,31.839832],[-81.340009,31.840549],[-81.34545,31.837036],[-81.34397,31.834411],[-81.332541,31.834016],[-81.342866,31.827943],[-81.339594,31.818051],[-81.355837,31.8149],[-81.355197,31.819314],[-81.34658,31.818365],[-81.344808,31.824785],[-81.358075,31.831219],[-81.353701,31.838211],[-81.362151,31.837],[-81.366417,31.846622],[-81.372079,31.840147],[-81.371847,31.846928],[-81.378097,31.848678],[-81.381973,31.854174],[-81.382934,31.876085],[-81.39643,31.883162],[-81.391601,31.893806],[-81.394431,31.904711],[-81.403739,31.917021],[-81.399703,31.929188],[-81.404961,31.937002]]],[[[-81.78168,32.15235],[-81.624809,32.189681],[-81.435732,32.241307],[-81.426131,32.228324],[-81.430114,32.22393],[-81.427009,32.219181],[-81.429466,32.216862],[-81.423103,32.215083],[-81.421317,32.210178],[-81.416076,32.212158],[-81.413367,32.207787],[-81.418647,32.196911],[-81.415099,32.187877],[-81.40969,32.185284],[-81.415282,32.183075],[-81.414573,32.176567],[-81.411558,32.175671],[-81.413482,32.169753],[-81.410003,32.167988],[-81.410941,32.161194],[-81.413833,32.160725],[-81.408469,32.152081],[-81.401504,32.149773],[-81.408187,32.12735],[-81.400557,32.106399],[-81.403194,32.107625],[-81.406977,32.102165],[-81.402851,32.107266],[-81.391844,32.100517],[-81.384727,32.079517],[-81.394637,32.081899],[-81.415269,32.095259],[-81.435456,32.097921],[-81.46139,32.091445],[-81.475579,32.095221],[-81.506073,32.093435],[-81.585065,32.103578],[-81.596396,32.101075],[-81.600484,32.104266],[-81.680162,32.112102],[-81.731225,32.108179],[-81.76334,32.11762],[-81.761215,32.119568],[-81.766145,32.121985],[-81.767326,32.127464],[-81.777423,32.132167],[-81.776092,32.136681],[-81.78168,32.15235]]]]}},{"id":"Bulloch County","type":"Feature","properties":{"district":"Bulloch County"},"geometry":{"type":"Polygon","coordinates":[[[-82.030233,32.53877],[-82.026842,32.555163],[-82.001505,32.606878],[-81.839722,32.649386],[-81.834307,32.653433],[-81.803512,32.644176],[-81.800445,32.641388],[-81.802955,32.637608],[-81.798042,32.631798],[-81.80117,32.63026],[-81.799046,32.627166],[-81.791313,32.627357],[-81.783134,32.620502],[-81.783973,32.615208],[-81.773788,32.607039],[-81.771147,32.609233],[-81.761489,32.600555],[-81.754745,32.602154],[-81.754809,32.599204],[-81.748596,32.597839],[-81.741745,32.587851],[-81.733322,32.585766],[-81.732498,32.576317],[-81.719406,32.565723],[-81.713188,32.563426],[-81.707977,32.565838],[-81.689643,32.54629],[-81.677635,32.548408],[-81.67543,32.544548],[-81.666191,32.544227],[-81.665801,32.538803],[-81.661636,32.537086],[-81.656524,32.539909],[-81.654487,32.531509],[-81.648117,32.52747],[-81.639396,32.532528],[-81.628761,32.528561],[-81.628883,32.524129],[-81.617454,32.525047],[-81.616415,32.515697],[-81.606292,32.514595],[-81.598831,32.507359],[-81.593375,32.506576],[-81.594756,32.509234],[-81.587753,32.512436],[-81.578475,32.512466],[-81.574127,32.505893],[-81.5615,32.5013],[-81.560256,32.495575],[-81.55706,32.496505],[-81.549482,32.491886],[-81.547401,32.48653],[-81.536521,32.482052],[-81.535835,32.475468],[-81.539787,32.476379],[-81.543029,32.466808],[-81.531463,32.466534],[-81.531188,32.458416],[-81.525726,32.449818],[-81.531852,32.438122],[-81.539001,32.435608],[-81.535308,32.422268],[-81.542564,32.419178],[-81.532749,32.406866],[-81.534904,32.39358],[-81.530578,32.390327],[-81.523322,32.392944],[-81.523216,32.380412],[-81.514343,32.375584],[-81.512008,32.369419],[-81.508651,32.371395],[-81.507697,32.357937],[-81.494804,32.349846],[-81.49102,32.351917],[-81.490577,32.343066],[-81.486091,32.338264],[-81.487857,32.333908],[-81.480773,32.328918],[-81.47731,32.331477],[-81.473663,32.328266],[-81.465575,32.328884],[-81.464378,32.323799],[-81.467658,32.323227],[-81.463096,32.317017],[-81.465591,32.312931],[-81.460662,32.313],[-81.452743,32.305904],[-81.454292,32.300671],[-81.449081,32.295731],[-81.453185,32.294711],[-81.453101,32.291431],[-81.447799,32.289535],[-81.446334,32.284717],[-81.449889,32.282898],[-81.443389,32.277191],[-81.445434,32.275413],[-81.438369,32.271904],[-81.441726,32.268352],[-81.435142,32.259704],[-81.43901,32.255386],[-81.433341,32.244262],[-81.624809,32.189681],[-81.780858,32.15289],[-81.781196,32.160538],[-81.77844,32.162441],[-81.782686,32.168627],[-81.781308,32.176499],[-81.785436,32.17785],[-81.792366,32.193199],[-81.803395,32.199055],[-81.806922,32.207558],[-81.803742,32.219619],[-81.813934,32.230075],[-81.811929,32.233049],[-81.81628,32.23747],[-81.829009,32.23849],[-81.833337,32.242089],[-81.842009,32.241065],[-81.851255,32.248026],[-81.856341,32.257092],[-81.860888,32.25536],[-81.892725,32.274783],[-81.918352,32.274645],[-81.953213,32.266832],[-81.96223,32.271814],[-81.969059,32.268751],[-81.956924,32.286228],[-81.952316,32.310944],[-81.918671,32.41541],[-81.936662,32.42282],[-81.940881,32.436732],[-81.962123,32.452508],[-81.963966,32.463547],[-81.974121,32.469971],[-81.976425,32.478859],[-81.974038,32.486694],[-81.979828,32.501343],[-81.974235,32.504846],[-81.971003,32.51324],[-82.030233,32.53877]]]}},{"id":"Camden County","type":"Feature","properties":{"district":"Camden County"},"geometry":{"type":"Polygon","coordinates":[[[-81.936927,31.060495],[-81.931758,31.064032],[-81.926078,31.061224],[-81.927351,31.079311],[-81.923683,31.088428],[-81.919105,31.089256],[-81.921249,31.091972],[-81.915883,31.095281],[-81.912711,31.093674],[-81.911178,31.097063],[-81.889574,31.100809],[-81.840671,31.097665],[-81.818821,31.136774],[-81.801614,31.15126],[-81.790674,31.146038],[-81.788218,31.152166],[-81.766241,31.16965],[-81.762893,31.165728],[-81.765028,31.158205],[-81.762426,31.153305],[-81.722432,31.149007],[-81.711925,31.137807],[-81.686225,31.122419],[-81.662102,31.125634],[-81.647148,31.115274],[-81.641983,31.117912],[-81.632881,31.107793],[-81.62159,31.116895],[-81.609764,31.112886],[-81.58924,31.118294],[-81.580215,31.11544],[-81.571716,31.128279],[-81.562606,31.130285],[-81.557929,31.121363],[-81.564086,31.105499],[-81.572303,31.098671],[-81.571952,31.094183],[-81.56472,31.091658],[-81.556297,31.080603],[-81.542625,31.084061],[-81.534554,31.081517],[-81.526565,31.063194],[-81.492668,31.05464],[-81.483802,31.033077],[-81.452522,31.03639],[-81.445075,31.0294],[-81.440223,31.008406],[-81.426895,30.991634],[-81.306435,30.990644],[-81.304832,30.970774],[-81.312126,30.954456],[-81.3256,30.941736],[-81.345207,30.931503],[-81.350204,30.889109],[-81.358856,30.867512],[-81.362682,30.845926],[-81.374809,30.817377],[-81.38633,30.801371],[-81.400482,30.766426],[-81.374809,30.757483],[-81.359146,30.744314],[-81.351395,30.730879],[-81.347015,30.712444],[-81.451241,30.709484],[-81.474113,30.713913],[-81.488464,30.726309],[-81.509887,30.722614],[-81.532295,30.724091],[-81.534011,30.711447],[-81.538391,30.708656],[-81.548377,30.718279],[-81.561424,30.711672],[-81.563507,30.71751],[-81.574218,30.722504],[-81.587684,30.723635],[-81.596176,30.718666],[-81.596534,30.727472],[-81.601882,30.729586],[-81.605834,30.727264],[-81.606048,30.718676],[-81.609588,30.715881],[-81.614166,30.722353],[-81.622978,30.723467],[-81.620681,30.730959],[-81.624366,30.73634],[-81.628331,30.735394],[-81.630432,30.728088],[-81.636619,30.733938],[-81.643585,30.728203],[-81.652153,30.72887],[-81.651828,30.742208],[-81.663009,30.743492],[-81.659729,30.749716],[-81.662323,30.754177],[-81.683096,30.748492],[-81.679908,30.744692],[-81.670837,30.747396],[-81.668838,30.742514],[-81.672494,30.73879],[-81.689155,30.741632],[-81.693893,30.748472],[-81.72013,30.744719],[-81.732055,30.749815],[-81.731857,30.754995],[-81.742195,30.759254],[-81.740753,30.765007],[-81.755943,30.769344],[-81.76172,30.775698],[-81.770706,30.77682],[-81.77359,30.767708],[-81.771568,30.764143],[-81.78263,30.761454],[-81.786697,30.769802],[-81.78379,30.773333],[-81.793075,30.787251],[-81.796852,30.781462],[-81.807449,30.790119],[-81.839477,30.786589],[-81.84188,30.787569],[-81.840271,30.792591],[-81.86837,30.79285],[-81.871139,30.79804],[-81.882515,30.800165],[-81.884719,30.811422],[-81.891434,30.816586],[-81.891975,30.824882],[-81.901245,30.82988],[-81.904869,30.828253],[-81.89212,30.910004],[-81.896278,30.904818],[-81.899437,30.908644],[-81.906219,30.908799],[-81.90216,30.914991],[-81.912429,30.909956],[-81.915519,30.913462],[-81.899131,30.945663],[-81.892426,30.951478],[-81.892028,30.960474],[-81.903518,30.966017],[-81.901626,30.969175],[-81.907203,30.971426],[-81.906494,30.975327],[-81.910846,30.972472],[-81.913464,30.974555],[-81.917578,30.985858],[-81.912441,30.991533],[-81.914543,30.99608],[-81.907354,30.995817],[-81.911453,31.010948],[-81.904029,31.021101],[-81.904358,31.024883],[-81.908493,31.023767],[-81.906799,31.028538],[-81.902633,31.029215],[-81.906219,31.030493],[-81.906036,31.039715],[-81.911528,31.043231],[-81.92324,31.042564],[-81.928441,31.048103],[-81.935829,31.047617],[-81.932205,31.049158],[-81.936737,31.051088],[-81.9318,31.056452],[-81.936927,31.060495]]]}},{"id":"Candler County","type":"Feature","properties":{"district":"Candler County"},"geometry":{"type":"Polygon","coordinates":[[[-82.254572,32.351498],[-82.187944,32.433571],[-82.181145,32.474066],[-82.148338,32.520429],[-82.079842,32.560063],[-81.971003,32.51324],[-81.974235,32.504846],[-81.979828,32.501343],[-81.974038,32.486694],[-81.976425,32.478859],[-81.974121,32.469971],[-81.963966,32.463547],[-81.962123,32.452508],[-81.940881,32.436732],[-81.936662,32.42282],[-81.918671,32.41541],[-81.952316,32.310944],[-81.956924,32.286228],[-81.969069,32.268783],[-82.232788,32.318838],[-82.23949,32.326684],[-82.236065,32.328674],[-82.240001,32.332605],[-82.238217,32.344617],[-82.254572,32.351498]]]}},{"id":"Savannah-Chatham County","type":"Feature","properties":{"district":"Savannah-Chatham County"},"geometry":{"type":"Polygon","coordinates":[[[-81.391624,32.095942],[-81.195449,32.237591],[-81.144763,32.226474],[-81.152064,32.222042],[-81.138925,32.219768],[-81.136012,32.212854],[-81.12742,32.207554],[-81.121885,32.195538],[-81.114032,32.195701],[-81.121795,32.191794],[-81.118237,32.189203],[-81.120439,32.1787],[-81.116933,32.176198],[-81.111933,32.178002],[-81.111132,32.172703],[-81.116946,32.170914],[-81.121149,32.174902],[-81.129756,32.165839],[-81.12203,32.161796],[-81.120034,32.153303],[-81.112236,32.150804],[-81.118331,32.144408],[-81.119995,32.134265],[-81.115247,32.125504],[-81.117225,32.117604],[-81.112384,32.112471],[-81.106703,32.109698],[-81.091619,32.111165],[-81.086974,32.103968],[-81.08827,32.099931],[-81.038125,32.083734],[-81.026296,32.088103],[-81.012444,32.101742],[-81.004305,32.102367],[-80.992138,32.094915],[-80.983509,32.079549],[-80.954031,32.07029],[-80.925085,32.041939],[-80.892128,32.035425],[-80.886139,32.038952],[-80.850238,32.04142],[-80.822762,32.034244],[-80.782997,31.995667],[-80.789841,31.96439],[-80.796272,31.953459],[-80.829224,31.926584],[-80.855339,31.910809],[-80.896988,31.852806],[-80.916817,31.838377],[-80.928589,31.816982],[-80.949631,31.803049],[-80.970726,31.798353],[-80.976952,31.780876],[-80.99617,31.762133],[-80.9972,31.748503],[-81.013812,31.728643],[-81.025824,31.720227],[-81.056623,31.714875],[-81.051521,31.705198],[-81.150932,31.712019],[-81.154731,31.71307],[-81.156418,31.742329],[-81.173625,31.75862],[-81.170526,31.77072],[-81.161625,31.779616],[-81.160728,31.785014],[-81.17973,31.791317],[-81.181222,31.795614],[-81.177027,31.816113],[-81.160926,31.821617],[-81.156628,31.836916],[-81.138533,31.855921],[-81.155124,31.864311],[-81.16103,31.87713],[-81.161187,31.887571],[-81.173396,31.899751],[-81.185573,31.899875],[-81.212172,31.887366],[-81.222345,31.890367],[-81.219518,31.896582],[-81.202227,31.90237],[-81.193681,31.908913],[-81.19063,31.917216],[-81.193817,31.921377],[-81.203312,31.922327],[-81.212309,31.918358],[-81.236648,31.887325],[-81.243069,31.8928],[-81.234199,31.902279],[-81.235253,31.910102],[-81.246147,31.911665],[-81.257407,31.905163],[-81.262927,31.907475],[-81.265826,31.915848],[-81.258031,31.92671],[-81.273034,31.925005],[-81.276343,31.930262],[-81.273121,31.941281],[-81.27742,31.944699],[-81.288412,31.94467],[-81.28863,31.977201],[-81.309448,31.983474],[-81.307442,31.989639],[-81.310149,31.995174],[-81.304436,32.000709],[-81.31412,32.004511],[-81.314916,32.011412],[-81.321909,32.00741],[-81.322907,32.011609],[-81.318296,32.015497],[-81.324134,32.015408],[-81.325034,32.021805],[-81.3287,32.019201],[-81.336334,32.022506],[-81.334635,32.027704],[-81.338255,32.03291],[-81.341215,32.03134],[-81.348384,32.039135],[-81.350429,32.034242],[-81.36124,32.045724],[-81.360607,32.048641],[-81.368026,32.048526],[-81.370211,32.054457],[-81.36723,32.057293],[-81.375234,32.066215],[-81.368869,32.068986],[-81.384636,32.079379],[-81.391624,32.095942]]]}},{"id":"Effingham County","type":"Feature","properties":{"district":"Effingham County"},"geometry":{"type":"Polygon","coordinates":[[[-81.548006,32.489286],[-81.538558,32.509059],[-81.389205,32.595416],[-81.378883,32.588912],[-81.369826,32.591175],[-81.369819,32.585048],[-81.363586,32.582977],[-81.36695,32.577019],[-81.357749,32.582119],[-81.353492,32.57877],[-81.358314,32.574451],[-81.355926,32.571606],[-81.328605,32.561092],[-81.297652,32.562931],[-81.296165,32.553345],[-81.29148,32.555714],[-81.29341,32.561881],[-81.290137,32.562283],[-81.289771,32.55172],[-81.28127,32.556471],[-81.278737,32.552661],[-81.280874,32.5479],[-81.274861,32.54466],[-81.279655,32.536338],[-81.252063,32.518136],[-81.243937,32.520904],[-81.240865,32.516481],[-81.233794,32.51831],[-81.232322,32.512082],[-81.238821,32.508052],[-81.233111,32.498069],[-81.200408,32.468314],[-81.187347,32.464463],[-81.194412,32.458909],[-81.192013,32.453786],[-81.197669,32.454608],[-81.197868,32.448555],[-81.203286,32.452993],[-81.205774,32.450474],[-81.206318,32.447007],[-81.199292,32.442914],[-81.208389,32.43725],[-81.205405,32.423339],[-81.178283,32.392986],[-81.181845,32.379348],[-81.167914,32.368482],[-81.173875,32.362766],[-81.160998,32.355905],[-81.160928,32.349473],[-81.154608,32.350068],[-81.15561,32.343314],[-81.159995,32.340476],[-81.145327,32.34516],[-81.147318,32.350127],[-81.143857,32.351543],[-81.134186,32.341315],[-81.129317,32.341405],[-81.128834,32.336599],[-81.138013,32.32824],[-81.135546,32.324323],[-81.130735,32.325756],[-81.129777,32.31329],[-81.133016,32.308546],[-81.122631,32.30699],[-81.123917,32.295194],[-81.119519,32.28738],[-81.127141,32.282255],[-81.123505,32.275143],[-81.129479,32.276218],[-81.133179,32.269678],[-81.136033,32.272663],[-81.142058,32.271634],[-81.13693,32.266115],[-81.146317,32.263323],[-81.145905,32.250724],[-81.15628,32.245005],[-81.153991,32.238062],[-81.144017,32.230215],[-81.144542,32.226166],[-81.195449,32.237591],[-81.391698,32.095886],[-81.391844,32.100517],[-81.402456,32.107182],[-81.406776,32.101931],[-81.403194,32.107625],[-81.400557,32.106399],[-81.408187,32.12735],[-81.401504,32.149773],[-81.408469,32.152081],[-81.413833,32.160725],[-81.410941,32.161194],[-81.410003,32.167988],[-81.413482,32.169753],[-81.411558,32.175671],[-81.414573,32.176567],[-81.415282,32.183075],[-81.40969,32.185284],[-81.415099,32.187877],[-81.418647,32.196911],[-81.413367,32.207787],[-81.416076,32.212158],[-81.421317,32.210178],[-81.423103,32.215083],[-81.429466,32.216862],[-81.427009,32.219181],[-81.430114,32.22393],[-81.426131,32.228324],[-81.437471,32.242736],[-81.433044,32.245303],[-81.437392,32.248009],[-81.435195,32.251365],[-81.438979,32.255871],[-81.435142,32.259704],[-81.441726,32.268352],[-81.438239,32.271591],[-81.440017,32.275115],[-81.445243,32.275196],[-81.443389,32.277191],[-81.449821,32.28273],[-81.446288,32.284878],[-81.448753,32.290729],[-81.453101,32.291431],[-81.453185,32.294711],[-81.449081,32.295731],[-81.454292,32.300671],[-81.451614,32.301997],[-81.454643,32.303123],[-81.452888,32.306129],[-81.460662,32.313],[-81.465591,32.312931],[-81.463096,32.317017],[-81.467658,32.323227],[-81.464378,32.323799],[-81.465575,32.328884],[-81.473663,32.328266],[-81.47731,32.331477],[-81.480773,32.328918],[-81.487857,32.333908],[-81.486091,32.338264],[-81.490577,32.343066],[-81.49102,32.351917],[-81.494804,32.349846],[-81.507697,32.357937],[-81.508651,32.371395],[-81.512008,32.369419],[-81.514343,32.375584],[-81.523216,32.380412],[-81.523322,32.392944],[-81.530578,32.390327],[-81.534904,32.39358],[-81.532749,32.406866],[-81.542564,32.419178],[-81.535308,32.422268],[-81.539001,32.435608],[-81.531852,32.438122],[-81.525726,32.449818],[-81.531188,32.458416],[-81.531463,32.466534],[-81.54293,32.466518],[-81.539787,32.476379],[-81.535903,32.475319],[-81.535934,32.481071],[-81.548006,32.489286]]]}},{"id":"Emanuel County","type":"Feature","properties":{"district":"Emanuel County"},"geometry":{"type":"Polygon","coordinates":[[[-82.647733,32.512507],[-82.629356,32.520566],[-82.623056,32.521566],[-82.622256,32.517966],[-82.602955,32.521467],[-82.602563,32.509473],[-82.597855,32.532866],[-82.593375,32.535103],[-82.585322,32.52523],[-82.564358,32.532449],[-82.591186,32.557691],[-82.594439,32.579158],[-82.512002,32.625163],[-82.517717,32.633677],[-82.498921,32.642733],[-82.492924,32.634046],[-82.463854,32.647236],[-82.490315,32.662035],[-82.499431,32.68634],[-82.470763,32.710608],[-82.452751,32.71926],[-82.452751,32.728659],[-82.434149,32.762258],[-82.429843,32.761487],[-82.417473,32.77035],[-82.410567,32.768459],[-82.39843,32.777099],[-82.399562,32.783707],[-82.409061,32.784236],[-82.408959,32.791597],[-82.419023,32.800992],[-82.419005,32.811163],[-82.40885,32.81508],[-82.400276,32.813049],[-82.391897,32.817567],[-82.362839,32.81591],[-82.35482,32.827281],[-82.346926,32.826976],[-82.326256,32.84133],[-82.319483,32.840185],[-82.308533,32.828315],[-82.278225,32.825696],[-82.271118,32.82107],[-82.265882,32.826377],[-82.256299,32.823988],[-82.253227,32.817532],[-82.239662,32.812427],[-82.222946,32.812691],[-82.214168,32.803711],[-82.202973,32.80395],[-82.195803,32.809195],[-82.187689,32.806751],[-82.174882,32.813299],[-82.168166,32.810817],[-82.157774,32.816029],[-82.146726,32.814802],[-82.082871,32.663324],[-82.001236,32.60691],[-82.026842,32.555163],[-82.030233,32.53877],[-82.079842,32.560063],[-82.148338,32.520429],[-82.181145,32.474066],[-82.187944,32.433571],[-82.254572,32.351498],[-82.238217,32.344617],[-82.240001,32.332605],[-82.236065,32.328674],[-82.23949,32.326684],[-82.232493,32.319284],[-82.279845,32.294182],[-82.354546,32.292194],[-82.358787,32.318646],[-82.378936,32.336902],[-82.392833,32.335524],[-82.401648,32.352265],[-82.409118,32.35383],[-82.411107,32.365619],[-82.394285,32.391762],[-82.39426,32.412647],[-82.38194,32.440596],[-82.38992,32.442632],[-82.397519,32.451667],[-82.420566,32.457189],[-82.430951,32.4662],[-82.463995,32.478613],[-82.475316,32.489376],[-82.488941,32.49183],[-82.49055,32.496502],[-82.51707,32.499597],[-82.534524,32.497158],[-82.554196,32.500461],[-82.563046,32.505708],[-82.618649,32.504966],[-82.647733,32.512507]]]}},{"id":"Evans County","type":"Feature","properties":{"district":"Evans County"},"geometry":{"type":"Polygon","coordinates":[[[-82.025339,32.278883],[-81.999843,32.276189],[-81.967522,32.267598],[-81.96223,32.271814],[-81.953732,32.266819],[-81.918352,32.274645],[-81.892725,32.274783],[-81.860888,32.25536],[-81.856341,32.257092],[-81.851255,32.248026],[-81.842009,32.241065],[-81.833337,32.242089],[-81.829009,32.23849],[-81.81628,32.23747],[-81.811929,32.233049],[-81.813934,32.230075],[-81.803742,32.219619],[-81.806922,32.207558],[-81.803395,32.199055],[-81.792366,32.193199],[-81.785436,32.17785],[-81.780873,32.175342],[-81.782686,32.168627],[-81.77844,32.162441],[-81.781196,32.160538],[-81.781555,32.147743],[-81.7771,32.141371],[-81.777423,32.132167],[-81.771201,32.131422],[-81.761291,32.119295],[-81.788412,32.124789],[-81.820735,32.101329],[-81.828653,32.103253],[-81.857513,32.049847],[-81.889118,32.050438],[-81.980041,32.081502],[-82.025339,32.278883]]]}},{"id":"Glynn County","type":"Feature","properties":{"district":"Glynn County"},"geometry":{"type":"Polygon","coordinates":[[[-81.782629,31.172504],[-81.77596,31.17648],[-81.766872,31.201481],[-81.764393,31.223158],[-81.747198,31.281461],[-81.733686,31.297272],[-81.731694,31.330048],[-81.725235,31.327206],[-81.699026,31.363001],[-81.698134,31.367879],[-81.704826,31.374873],[-81.697435,31.391982],[-81.691977,31.400545],[-81.665029,31.3999],[-81.625987,31.453019],[-81.617858,31.446751],[-81.611389,31.446136],[-81.606857,31.438827],[-81.611335,31.435299],[-81.605277,31.431316],[-81.604606,31.425549],[-81.593421,31.415604],[-81.586753,31.416157],[-81.588958,31.410507],[-81.583518,31.409176],[-81.577575,31.399429],[-81.559112,31.387596],[-81.546203,31.385538],[-81.54544,31.381416],[-81.550979,31.375715],[-81.537086,31.377192],[-81.534988,31.368229],[-81.525916,31.366159],[-81.517494,31.356745],[-81.503967,31.354887],[-81.491851,31.347219],[-81.493339,31.343512],[-81.489715,31.34487],[-81.489318,31.341839],[-81.481704,31.339943],[-81.483154,31.337109],[-81.479003,31.337549],[-81.478355,31.334274],[-81.475044,31.339302],[-81.47396,31.333338],[-81.47097,31.33301],[-81.472511,31.338356],[-81.469405,31.3396],[-81.453368,31.326313],[-81.437026,31.331587],[-81.435874,31.313263],[-81.415199,31.305723],[-81.4094,31.310993],[-81.404372,31.30924],[-81.412238,31.295675],[-81.408645,31.291176],[-81.402992,31.292452],[-81.397598,31.304214],[-81.387191,31.314884],[-81.36959,31.318714],[-81.356567,31.313795],[-81.337859,31.312981],[-81.332191,31.306103],[-81.316024,31.308887],[-81.295783,31.291679],[-81.277718,31.294329],[-81.183716,31.294283],[-81.182564,31.268991],[-81.186119,31.250233],[-81.216263,31.204651],[-81.225113,31.183231],[-81.234337,31.170258],[-81.24791,31.160812],[-81.292145,31.155415],[-81.296417,31.15188],[-81.28653,31.116686],[-81.286316,31.103083],[-81.290199,31.093494],[-81.297874,31.080952],[-81.313637,31.067852],[-81.345306,31.059362],[-81.353416,31.037121],[-81.344498,31.01811],[-81.320404,31.006514],[-81.306435,30.990644],[-81.426895,30.991634],[-81.440223,31.008406],[-81.445075,31.0294],[-81.452522,31.03639],[-81.483802,31.033077],[-81.492668,31.05464],[-81.526565,31.063194],[-81.534554,31.081517],[-81.542625,31.084061],[-81.556297,31.080603],[-81.56472,31.091658],[-81.571952,31.094183],[-81.572303,31.098671],[-81.564086,31.105499],[-81.557929,31.121363],[-81.562606,31.130285],[-81.571716,31.128279],[-81.580215,31.11544],[-81.58924,31.118294],[-81.609764,31.112886],[-81.62159,31.116895],[-81.632881,31.107793],[-81.641983,31.117912],[-81.647148,31.115274],[-81.662102,31.125634],[-81.686225,31.122419],[-81.711925,31.137807],[-81.722432,31.149007],[-81.762426,31.153305],[-81.764028,31.168505],[-81.780333,31.165205],[-81.782629,31.172504]]]}},{"id":"Jeff Davis County","type":"Feature","properties":{"district":"Jeff Davis County"},"geometry":{"type":"Polygon","coordinates":[[[-82.836633,31.671398],[-82.836366,31.816154],[-82.824937,31.8197],[-82.82795,31.815007],[-82.824691,31.813479],[-82.819326,31.819761],[-82.814391,31.818597],[-82.808123,31.822891],[-82.809445,31.827767],[-82.804831,31.831433],[-82.802722,31.828722],[-82.79581,31.835096],[-82.786235,31.836982],[-82.78514,31.841746],[-82.791937,31.846732],[-82.790817,31.852982],[-82.782027,31.852364],[-82.775728,31.862615],[-82.769664,31.855418],[-82.768657,31.861538],[-82.757322,31.856901],[-82.753371,31.86081],[-82.754035,31.865815],[-82.741963,31.876781],[-82.710262,31.889282],[-82.699861,31.903582],[-82.695161,31.898082],[-82.690061,31.900782],[-82.684261,31.908682],[-82.67606,31.911482],[-82.682361,31.916282],[-82.682361,31.920482],[-82.66126,31.919883],[-82.65806,31.923683],[-82.648559,31.916483],[-82.635059,31.925083],[-82.624177,31.923588],[-82.62215,31.92918],[-82.614558,31.926684],[-82.602457,31.938084],[-82.594757,31.931585],[-82.592957,31.936285],[-82.586657,31.936085],[-82.570356,31.953985],[-82.562656,31.957686],[-82.555755,31.955386],[-82.555255,31.959286],[-82.545155,31.955387],[-82.544611,31.958734],[-82.537299,31.957229],[-82.533097,31.961351],[-82.492317,31.948616],[-82.479911,31.955787],[-82.492782,31.959108],[-82.49913,31.957208],[-82.497582,31.964043],[-82.491874,31.96854],[-82.478475,31.971689],[-82.457552,31.96379],[-82.444451,31.96749],[-82.431531,31.966182],[-82.431362,31.837993],[-82.520251,31.838388],[-82.520158,31.74919],[-82.550691,31.749112],[-82.550714,31.736334],[-82.520567,31.736201],[-82.521393,31.672512],[-82.836633,31.671398]]]}},{"id":"Liberty County","type":"Feature","properties":{"district":"Liberty County"},"geometry":{"type":"Polygon","coordinates":[[[-81.766281,31.886577],[-81.690815,31.867282],[-81.637894,31.849634],[-81.618552,31.849151],[-81.608851,31.856422],[-81.605273,31.853794],[-81.598685,31.863585],[-81.567147,31.877944],[-81.553971,31.86626],[-81.525952,31.885141],[-81.404926,31.936868],[-81.399703,31.929188],[-81.403739,31.917021],[-81.394431,31.904711],[-81.391601,31.893806],[-81.39643,31.883162],[-81.382934,31.876085],[-81.381973,31.854174],[-81.378097,31.848678],[-81.371847,31.846928],[-81.372079,31.840147],[-81.366417,31.846622],[-81.362151,31.837],[-81.353701,31.838211],[-81.358075,31.831219],[-81.344808,31.824785],[-81.34658,31.818365],[-81.355197,31.819314],[-81.355837,31.8149],[-81.339594,31.818051],[-81.342866,31.827943],[-81.332541,31.834016],[-81.34397,31.834411],[-81.34545,31.837036],[-81.332664,31.840235],[-81.326346,31.830617],[-81.328224,31.823013],[-81.315043,31.816787],[-81.320028,31.808414],[-81.310327,31.799514],[-81.311027,31.789915],[-81.283827,31.794415],[-81.273526,31.792615],[-81.268426,31.784616],[-81.270003,31.763222],[-81.259887,31.753754],[-81.220862,31.743637],[-81.204345,31.728628],[-81.169677,31.715284],[-81.051521,31.705198],[-81.049789,31.688633],[-81.059006,31.666008],[-81.066635,31.657328],[-81.069633,31.642405],[-81.065826,31.625227],[-81.076683,31.597946],[-81.087997,31.527317],[-81.095383,31.520981],[-81.175148,31.53966],[-81.185332,31.544823],[-81.194869,31.558222],[-81.190124,31.598101],[-81.19284,31.60339],[-81.216041,31.618786],[-81.22222,31.63042],[-81.264626,31.651152],[-81.298358,31.649337],[-81.318016,31.659854],[-81.338079,31.647112],[-81.355573,31.65467],[-81.364322,31.654337],[-81.366174,31.648968],[-81.370942,31.651788],[-81.374403,31.64717],[-81.372715,31.650345],[-81.377776,31.655106],[-81.37699,31.650175],[-81.380265,31.650862],[-81.383636,31.646451],[-81.387145,31.648811],[-81.396066,31.642417],[-81.417587,31.652094],[-81.424896,31.649062],[-81.428001,31.641979],[-81.434737,31.64138],[-81.443076,31.654015],[-81.455322,31.659401],[-81.467712,31.678547],[-81.460892,31.683477],[-81.46544,31.693983],[-81.476373,31.69833],[-81.499603,31.699968],[-81.641761,31.765451],[-81.645591,31.787994],[-81.660331,31.800806],[-81.695175,31.812589],[-81.714035,31.83472],[-81.728706,31.841835],[-81.735847,31.853988],[-81.752326,31.861207],[-81.765357,31.87454],[-81.766281,31.886577]]]}},{"id":"Long County","type":"Feature","properties":{"district":"Long County"},"geometry":{"type":"Polygon","coordinates":[[[-81.981033,31.791367],[-81.97934,31.804991],[-81.955132,31.809851],[-81.94503,31.835667],[-81.922302,31.851463],[-81.918449,31.86223],[-81.92012,31.871029],[-81.912468,31.886959],[-81.902687,31.888315],[-81.892548,31.895033],[-81.894959,31.902864],[-81.883087,31.915821],[-81.881985,31.924095],[-81.765442,31.88856],[-81.765357,31.87454],[-81.752326,31.861207],[-81.735847,31.853988],[-81.728706,31.841835],[-81.714035,31.83472],[-81.695442,31.812812],[-81.660331,31.800806],[-81.645591,31.787994],[-81.641761,31.765451],[-81.499603,31.699968],[-81.491798,31.699575],[-81.566009,31.576467],[-81.622216,31.551295],[-81.663206,31.538667],[-81.671751,31.548025],[-81.681266,31.541671],[-81.681411,31.551153],[-81.696777,31.553823],[-81.701074,31.564183],[-81.69636,31.565762],[-81.69954,31.572398],[-81.696989,31.577864],[-81.701156,31.579952],[-81.701774,31.584922],[-81.713005,31.585857],[-81.713073,31.590929],[-81.723182,31.591644],[-81.724784,31.599431],[-81.732215,31.600954],[-81.731573,31.604533],[-81.737503,31.608842],[-81.742393,31.602317],[-81.74723,31.601495],[-81.748168,31.607383],[-81.744186,31.61226],[-81.750938,31.612773],[-81.759567,31.620471],[-81.769597,31.614817],[-81.770646,31.621767],[-81.765651,31.625228],[-81.770729,31.624774],[-81.77848,31.631475],[-81.789535,31.632034],[-81.786781,31.642219],[-81.79639,31.644051],[-81.796974,31.652675],[-81.806579,31.655277],[-81.81302,31.664117],[-81.818283,31.662959],[-81.812263,31.658456],[-81.811996,31.653873],[-81.820999,31.651062],[-81.830941,31.65731],[-81.828918,31.663958],[-81.851394,31.668199],[-81.852012,31.672534],[-81.847572,31.677263],[-81.866928,31.690765],[-81.875953,31.712696],[-81.906666,31.725812],[-81.91338,31.740526],[-81.908999,31.747963],[-81.911369,31.753481],[-81.920099,31.759845],[-81.923467,31.759415],[-81.922651,31.753665],[-81.925757,31.751812],[-81.931588,31.76176],[-81.943717,31.759702],[-81.943382,31.766817],[-81.951728,31.772302],[-81.952514,31.788326],[-81.970771,31.790164],[-81.974411,31.787576],[-81.981033,31.791367]]]}},{"id":"McIntosh County","type":"Feature","properties":{"district":"McIntosh County"},"geometry":{"type":"Polygon","coordinates":[[[-81.668357,31.536308],[-81.622216,31.551295],[-81.566009,31.576467],[-81.491798,31.699575],[-81.47587,31.698229],[-81.464754,31.693329],[-81.460892,31.683477],[-81.467712,31.678547],[-81.455322,31.659401],[-81.443076,31.654015],[-81.433563,31.64089],[-81.428001,31.641979],[-81.424896,31.649062],[-81.417587,31.652094],[-81.410088,31.646984],[-81.399803,31.646316],[-81.397763,31.64282],[-81.391576,31.643561],[-81.387145,31.648811],[-81.383636,31.646451],[-81.380265,31.650862],[-81.37699,31.650175],[-81.377776,31.655106],[-81.372715,31.650345],[-81.374403,31.64717],[-81.370942,31.651788],[-81.366174,31.648968],[-81.364322,31.654337],[-81.355573,31.65467],[-81.338079,31.647112],[-81.318016,31.659854],[-81.298358,31.649337],[-81.268841,31.652197],[-81.237321,31.63942],[-81.22222,31.63042],[-81.216041,31.618786],[-81.200904,31.611229],[-81.190894,31.60034],[-81.194922,31.558845],[-81.187591,31.546539],[-81.175148,31.53966],[-81.095383,31.520981],[-81.099686,31.518526],[-81.10714,31.496632],[-81.114998,31.487011],[-81.125435,31.477541],[-81.143845,31.471521],[-81.150146,31.45804],[-81.163551,31.442034],[-81.166939,31.423445],[-81.190758,31.399876],[-81.175613,31.382479],[-81.171089,31.370323],[-81.177116,31.339277],[-81.186119,31.326796],[-81.183716,31.294283],[-81.277718,31.294329],[-81.295783,31.291679],[-81.316024,31.308887],[-81.332191,31.306103],[-81.337859,31.312981],[-81.356567,31.313795],[-81.36959,31.318714],[-81.387191,31.314884],[-81.397598,31.304214],[-81.402992,31.292452],[-81.407752,31.290956],[-81.412238,31.295675],[-81.404372,31.30924],[-81.4094,31.310993],[-81.415199,31.305723],[-81.435874,31.313263],[-81.436515,31.33128],[-81.453368,31.326313],[-81.469405,31.3396],[-81.472511,31.338356],[-81.471214,31.332869],[-81.475044,31.339302],[-81.47853,31.334347],[-81.479003,31.337549],[-81.483154,31.337109],[-81.481704,31.339943],[-81.489318,31.341839],[-81.489715,31.34487],[-81.493339,31.343512],[-81.491851,31.347219],[-81.503967,31.354887],[-81.517494,31.356745],[-81.525916,31.366159],[-81.534988,31.368229],[-81.537086,31.377192],[-81.550979,31.375715],[-81.54544,31.381416],[-81.546768,31.386053],[-81.559112,31.387596],[-81.578056,31.399874],[-81.583518,31.409176],[-81.588958,31.410507],[-81.586753,31.416157],[-81.593421,31.415604],[-81.604606,31.425549],[-81.605277,31.431316],[-81.611335,31.435299],[-81.606857,31.438827],[-81.611389,31.446136],[-81.6249,31.450672],[-81.616922,31.458342],[-81.612255,31.470048],[-81.623078,31.484752],[-81.632438,31.483797],[-81.647621,31.49544],[-81.645423,31.500975],[-81.658256,31.510473],[-81.652252,31.528551],[-81.662086,31.528378],[-81.668357,31.536308]]]}},{"id":"Screven County","type":"Feature","properties":{"district":"Screven County"},"geometry":{"type":"Polygon","coordinates":[[[-81.868683,32.67326],[-81.866193,32.674712],[-81.867938,32.68115],[-81.767654,32.90935],[-81.541831,33.045654],[-81.538789,33.039185],[-81.529124,33.04081],[-81.528451,33.035646],[-81.522742,33.030836],[-81.511245,33.027786],[-81.51169,33.024506],[-81.519075,33.023196],[-81.510282,33.021233],[-81.51069,33.010315],[-81.504053,33.016253],[-81.491954,33.009093],[-81.50063,33.002454],[-81.491197,32.997824],[-81.496327,32.990212],[-81.494736,32.978997],[-81.499471,32.964779],[-81.505026,32.963561],[-81.51015,32.968991],[-81.510009,32.957326],[-81.499446,32.944988],[-81.502427,32.935353],[-81.483198,32.921802],[-81.487626,32.916407],[-81.480008,32.913444],[-81.480812,32.898614],[-81.472142,32.893814],[-81.470761,32.900902],[-81.464069,32.897813],[-81.468232,32.893251],[-81.46619,32.889128],[-81.476396,32.887962],[-81.479445,32.881082],[-81.470376,32.876267],[-81.465051,32.880896],[-81.460556,32.875161],[-81.452883,32.872964],[-81.455559,32.846508],[-81.460722,32.846038],[-81.452744,32.84415],[-81.443595,32.850628],[-81.440357,32.84113],[-81.432855,32.843479],[-81.421614,32.835178],[-81.421828,32.829265],[-81.430161,32.827767],[-81.421952,32.821466],[-81.427953,32.81938],[-81.427094,32.81687],[-81.417984,32.818196],[-81.421343,32.812108],[-81.426445,32.81071],[-81.422444,32.802477],[-81.428292,32.800832],[-81.425234,32.79419],[-81.4197,32.793227],[-81.427667,32.787613],[-81.422793,32.783413],[-81.431235,32.784141],[-81.424831,32.778703],[-81.414456,32.778149],[-81.417353,32.773336],[-81.429854,32.772129],[-81.43194,32.768911],[-81.418943,32.767629],[-81.417766,32.760222],[-81.412093,32.763866],[-81.414038,32.755423],[-81.408159,32.755803],[-81.419698,32.749167],[-81.405866,32.749144],[-81.404932,32.745559],[-81.407043,32.740662],[-81.413678,32.737992],[-81.412099,32.732622],[-81.418542,32.732585],[-81.417769,32.725074],[-81.409988,32.721863],[-81.420338,32.721051],[-81.41512,32.713669],[-81.425927,32.710037],[-81.424079,32.706294],[-81.427517,32.701895],[-81.412403,32.692095],[-81.409012,32.696551],[-81.40701,32.68555],[-81.401211,32.679882],[-81.404287,32.667797],[-81.397154,32.661378],[-81.400342,32.658488],[-81.405369,32.662919],[-81.407193,32.660519],[-81.405273,32.656517],[-81.399432,32.656813],[-81.393033,32.651542],[-81.403582,32.643397],[-81.412553,32.641523],[-81.402735,32.637031],[-81.407271,32.631737],[-81.414761,32.637439],[-81.41866,32.629392],[-81.389205,32.595416],[-81.538558,32.509059],[-81.548006,32.489286],[-81.562629,32.497642],[-81.561698,32.50148],[-81.574127,32.505893],[-81.578475,32.512466],[-81.587753,32.512436],[-81.594756,32.509234],[-81.593375,32.506576],[-81.598831,32.507359],[-81.606292,32.514595],[-81.616415,32.515697],[-81.617454,32.525047],[-81.628883,32.524129],[-81.628761,32.528561],[-81.639396,32.532528],[-81.648117,32.52747],[-81.654487,32.531509],[-81.656524,32.539909],[-81.661636,32.537086],[-81.665801,32.538803],[-81.666191,32.544227],[-81.67543,32.544548],[-81.677635,32.548408],[-81.689643,32.54629],[-81.707977,32.565838],[-81.713188,32.563426],[-81.719406,32.565723],[-81.732498,32.576317],[-81.733322,32.585766],[-81.741745,32.587851],[-81.748596,32.597839],[-81.754809,32.599204],[-81.754745,32.602154],[-81.761489,32.600555],[-81.771147,32.609233],[-81.773788,32.607039],[-81.783973,32.615208],[-81.783134,32.620502],[-81.791313,32.627357],[-81.799046,32.627166],[-81.802024,32.643203],[-81.810157,32.647388],[-81.819324,32.646726],[-81.82891,32.652985],[-81.845724,32.649597],[-81.865909,32.662874],[-81.864902,32.670641],[-81.868683,32.67326]]]}},{"id":"Tattnall County","type":"Feature","properties":{"district":"Tattnall County"},"geometry":{"type":"Polygon","coordinates":[[[-82.228599,32.3027],[-82.234121,32.317368],[-82.232666,32.318858],[-82.025339,32.278883],[-81.980041,32.081502],[-81.889118,32.050438],[-81.857513,32.049847],[-81.846321,32.039327],[-81.851271,32.021076],[-81.851743,32.00103],[-81.859456,31.991616],[-81.859242,31.986302],[-81.867985,31.980801],[-81.868575,31.973616],[-81.876068,31.968376],[-81.876762,31.962223],[-81.889626,31.948963],[-81.882874,31.941156],[-81.881989,31.91823],[-81.894859,31.903101],[-81.892548,31.895033],[-81.902687,31.888315],[-81.912468,31.886959],[-81.92012,31.871029],[-81.918449,31.86223],[-81.922302,31.851463],[-81.94503,31.835667],[-81.955132,31.809851],[-81.979912,31.80455],[-81.981033,31.791367],[-81.974411,31.787576],[-81.969052,31.789324],[-81.973639,31.783408],[-81.981941,31.784405],[-81.997839,31.793507],[-81.997056,31.800396],[-82.006777,31.800047],[-82.006714,31.807679],[-82.013211,31.812138],[-82.016396,31.823731],[-82.021118,31.823657],[-82.022074,31.817415],[-82.026076,31.815095],[-82.033462,31.820424],[-82.041522,31.820422],[-82.066071,31.838215],[-82.081309,31.842806],[-82.106314,31.863327],[-82.115478,31.862846],[-82.116413,31.866346],[-82.109625,31.870308],[-82.107842,31.883701],[-82.112042,31.891301],[-82.111818,31.900487],[-82.116642,31.8997],[-82.115442,31.888801],[-82.120442,31.886101],[-82.135743,31.892],[-82.131243,31.9027],[-82.134243,31.908],[-82.145143,31.8981],[-82.160043,31.903999],[-82.191344,31.900499],[-82.192044,31.906499],[-82.218545,31.909498],[-82.225042,31.913074],[-82.204417,32.076774],[-82.193009,32.136426],[-82.195317,32.140929],[-82.18915,32.146085],[-82.181912,32.166125],[-82.186105,32.167173],[-82.184187,32.180002],[-82.194935,32.196275],[-82.196116,32.204969],[-82.199058,32.204196],[-82.206249,32.211331],[-82.207199,32.22081],[-82.21372,32.229309],[-82.209754,32.239086],[-82.2128,32.241403],[-82.211931,32.24693],[-82.216289,32.24866],[-82.217412,32.258601],[-82.22226,32.261982],[-82.221438,32.271468],[-82.227868,32.277972],[-82.228599,32.3027]]]}},{"id":"Toombs County","type":"Feature","properties":{"district":"Toombs County"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-82.354693,32.194894],[-82.354486,32.196163],[-82.35376,32.195292],[-82.354693,32.194894]]],[[[-82.441707,32.205065],[-82.443335,32.205571],[-82.443008,32.207402],[-82.441707,32.205065]]],[[[-82.483063,31.96954],[-82.443755,32.203306],[-82.441465,32.204628],[-82.437553,32.199673],[-82.441709,32.192159],[-82.43252,32.191194],[-82.42908,32.194106],[-82.417292,32.191086],[-82.41014,32.182967],[-82.401104,32.187252],[-82.39779,32.183945],[-82.386794,32.189411],[-82.379862,32.184921],[-82.379717,32.177445],[-82.375247,32.175713],[-82.373871,32.183851],[-82.367518,32.185932],[-82.361594,32.182809],[-82.361064,32.187524],[-82.355661,32.185972],[-82.361357,32.181163],[-82.359285,32.178267],[-82.346985,32.181565],[-82.350049,32.191676],[-82.344785,32.195977],[-82.350997,32.197485],[-82.351474,32.201848],[-82.34866,32.209646],[-82.359958,32.212467],[-82.361765,32.208665],[-82.377961,32.213238],[-82.376431,32.231138],[-82.390899,32.241845],[-82.412817,32.247684],[-82.424656,32.245535],[-82.436098,32.2387],[-82.44061,32.241261],[-82.438987,32.29318],[-82.409118,32.35383],[-82.401648,32.352265],[-82.392833,32.335524],[-82.378936,32.336902],[-82.358787,32.318646],[-82.354546,32.292194],[-82.279845,32.294182],[-82.232788,32.318838],[-82.234992,32.314239],[-82.228599,32.3027],[-82.227895,32.278059],[-82.221438,32.271468],[-82.22226,32.261982],[-82.217412,32.258601],[-82.216289,32.24866],[-82.211931,32.24693],[-82.2128,32.241403],[-82.209754,32.239086],[-82.213749,32.229396],[-82.207199,32.22081],[-82.206249,32.211331],[-82.199058,32.204196],[-82.196116,32.204969],[-82.194935,32.196275],[-82.184187,32.180002],[-82.186105,32.167173],[-82.181912,32.166125],[-82.18915,32.146085],[-82.195317,32.140929],[-82.193009,32.136426],[-82.204417,32.076774],[-82.225042,31.913074],[-82.230938,31.912399],[-82.236325,31.920499],[-82.24681,31.9151],[-82.256037,31.932089],[-82.266779,31.928408],[-82.270334,31.935871],[-82.286418,31.942443],[-82.291583,31.942398],[-82.301112,31.93327],[-82.309508,31.946541],[-82.31391,31.947122],[-82.315331,31.942805],[-82.307681,31.93727],[-82.30887,31.932698],[-82.314482,31.930783],[-82.358009,31.939686],[-82.362334,31.94369],[-82.377649,31.941893],[-82.378449,31.945993],[-82.371549,31.953493],[-82.379533,31.954977],[-82.384456,31.960022],[-82.389035,31.957782],[-82.385437,31.951383],[-82.387138,31.948184],[-82.400842,31.960286],[-82.404242,31.958487],[-82.401844,31.952487],[-82.405545,31.949188],[-82.408446,31.956088],[-82.430151,31.965991],[-82.444451,31.96749],[-82.457552,31.96379],[-82.477957,31.971603],[-82.483063,31.96954]]]]}},{"id":"Vidalia City","type":"Feature","properties":{"district":"Vidalia City"},"geometry":{"type":"Polygon","coordinates":[[[-82.450062,32.225611],[-82.45121,32.2376],[-82.444126,32.237371],[-82.440226,32.241628],[-82.436098,32.2387],[-82.417742,32.247212],[-82.393499,32.243324],[-82.376431,32.231138],[-82.377961,32.213238],[-82.361765,32.208665],[-82.359958,32.212467],[-82.34866,32.209646],[-82.351474,32.201848],[-82.350997,32.197485],[-82.344785,32.195977],[-82.350049,32.191676],[-82.346985,32.181565],[-82.359285,32.178267],[-82.361357,32.181163],[-82.355661,32.185972],[-82.361064,32.187524],[-82.361594,32.182809],[-82.367518,32.185932],[-82.373871,32.183851],[-82.374688,32.175616],[-82.379717,32.177445],[-82.379862,32.184921],[-82.386794,32.189411],[-82.39779,32.183945],[-82.401104,32.187252],[-82.409909,32.182943],[-82.417292,32.191086],[-82.42908,32.194106],[-82.43252,32.191194],[-82.441709,32.192159],[-82.437553,32.199673],[-82.441465,32.204628],[-82.444491,32.203314],[-82.441707,32.205065],[-82.444933,32.224752],[-82.45248,32.225386],[-82.450062,32.225611]],[[-82.354486,32.196163],[-82.354693,32.194894],[-82.35376,32.195292],[-82.354486,32.196163]]]}},{"id":"Wayne County","type":"Feature","properties":{"district":"Wayne County"},"geometry":{"type":"Polygon","coordinates":[[[-82.147948,31.569123],[-82.132942,31.56931],[-82.133013,31.773404],[-82.08944,31.772913],[-82.089338,31.785903],[-82.107028,31.786101],[-82.10654,31.799798],[-82.087247,31.799509],[-82.087398,31.821622],[-82.076991,31.82911],[-82.071271,31.825654],[-82.048582,31.827075],[-82.043232,31.821192],[-82.033462,31.820424],[-82.026076,31.815095],[-82.018201,31.824079],[-82.014639,31.8218],[-82.01227,31.810614],[-82.006714,31.807679],[-82.006777,31.800047],[-81.996139,31.799807],[-81.997839,31.793507],[-81.97654,31.782607],[-81.969052,31.789324],[-81.953971,31.7893],[-81.951728,31.772302],[-81.943382,31.766817],[-81.943717,31.759702],[-81.931588,31.76176],[-81.925757,31.751812],[-81.922076,31.759817],[-81.912146,31.754241],[-81.908999,31.747963],[-81.913242,31.739734],[-81.906666,31.725812],[-81.875953,31.712696],[-81.866928,31.690765],[-81.847572,31.677263],[-81.852012,31.672534],[-81.851394,31.668199],[-81.828918,31.663958],[-81.830941,31.65731],[-81.820999,31.651062],[-81.811996,31.653873],[-81.812263,31.658456],[-81.818283,31.662959],[-81.81302,31.664117],[-81.806579,31.655277],[-81.796974,31.652675],[-81.79639,31.644051],[-81.786781,31.642219],[-81.789535,31.632034],[-81.77848,31.631475],[-81.770729,31.624774],[-81.765651,31.625228],[-81.770646,31.621767],[-81.769597,31.614817],[-81.759567,31.620471],[-81.750938,31.612773],[-81.744186,31.61226],[-81.748168,31.607383],[-81.74723,31.601495],[-81.742393,31.602317],[-81.737503,31.608842],[-81.731573,31.604533],[-81.732215,31.600954],[-81.724784,31.599431],[-81.723182,31.591644],[-81.713073,31.590929],[-81.713005,31.585857],[-81.701774,31.584922],[-81.701156,31.579952],[-81.696989,31.577864],[-81.69954,31.572398],[-81.69636,31.565762],[-81.701074,31.564183],[-81.696426,31.553272],[-81.681411,31.551153],[-81.681892,31.54181],[-81.672431,31.548039],[-81.664149,31.541783],[-81.663206,31.538667],[-81.668289,31.536552],[-81.667243,31.532652],[-81.661109,31.528095],[-81.652252,31.528551],[-81.655738,31.524305],[-81.657051,31.507894],[-81.645584,31.501196],[-81.64772,31.495613],[-81.640068,31.488092],[-81.631401,31.483431],[-81.623078,31.484752],[-81.612028,31.468909],[-81.617093,31.458089],[-81.625987,31.453019],[-81.665029,31.3999],[-81.691977,31.400545],[-81.704826,31.374873],[-81.698134,31.367879],[-81.699026,31.363001],[-81.725235,31.327206],[-81.801052,31.363737],[-81.845192,31.354745],[-81.923238,31.345875],[-81.992101,31.358674],[-82.0311,31.366239],[-82.04262,31.374178],[-82.039895,31.382073],[-82.044829,31.386136],[-82.044024,31.395135],[-82.049936,31.396323],[-82.050128,31.404239],[-82.057524,31.409117],[-82.054061,31.413761],[-82.052754,31.454569],[-82.063387,31.466362],[-82.098007,31.481249],[-82.118362,31.479267],[-82.132794,31.471262],[-82.132867,31.557514],[-82.147926,31.557308],[-82.147948,31.569123]]]}}]};
+const FS = {"type":"FeatureCollection","features":[{"id":"1","type":"Feature","properties":{"district":"Fort Stewart"},"geometry":{"type":"Polygon","coordinates":[[[-81.889648,31.948814],[-81.876762,31.962223],[-81.876068,31.968376],[-81.868575,31.973616],[-81.867985,31.980801],[-81.859242,31.986302],[-81.859456,31.991616],[-81.851743,32.00103],[-81.851271,32.021076],[-81.846269,32.039191],[-81.857558,32.049889],[-81.828653,32.103253],[-81.820735,32.101329],[-81.787993,32.12484],[-81.731225,32.108179],[-81.680291,32.112108],[-81.600484,32.104266],[-81.596396,32.101075],[-81.585065,32.103578],[-81.533305,32.098678],[-81.506073,32.093435],[-81.475579,32.095221],[-81.46139,32.091445],[-81.435804,32.09794],[-81.415269,32.095259],[-81.368869,32.068986],[-81.375234,32.066215],[-81.36723,32.057293],[-81.370211,32.054457],[-81.368026,32.048526],[-81.360607,32.048641],[-81.36124,32.045724],[-81.350429,32.034242],[-81.348384,32.039135],[-81.341215,32.03134],[-81.338255,32.03291],[-81.334635,32.027704],[-81.336334,32.022506],[-81.3287,32.019201],[-81.325034,32.021805],[-81.324134,32.015408],[-81.318296,32.015497],[-81.322907,32.011609],[-81.321909,32.00741],[-81.314916,32.011412],[-81.31412,32.004511],[-81.304269,31.999174],[-81.310149,31.995174],[-81.308852,31.98233],[-81.331882,31.961759],[-81.337358,31.952553],[-81.368451,31.952315],[-81.525952,31.885141],[-81.553971,31.86626],[-81.567147,31.877944],[-81.598685,31.863585],[-81.605273,31.853794],[-81.608851,31.856422],[-81.618552,31.849151],[-81.647366,31.852309],[-81.880703,31.923392],[-81.882874,31.941156],[-81.889648,31.948814]]]}}]};
+
+const D = DATA.districts, ST = DATA.state, SUBJ = DATA.subjects;
+const NAMES = Object.keys(D);
+const short = n => n.replace(/ County$/,'').replace('Savannah-Chatham','Sav-Chatham').replace(' City','');
+const f1 = v => v==null ? 'n/a' : (Math.round(v*10)/10).toFixed(1);
+const cs = v => getComputedStyle(document.querySelector('.viz-root')).getPropertyValue(v).trim();
+
+/* ---------------- metric definitions ----------------
+   `ref` is ONLY ever a value Georgia publishes. Where Georgia publishes no statewide
+   figure, ref is null and the metric is shaded on an absolute sequential scale.      */
+const VS = {
+  chronic:{ label:'Chronic absenteeism', get:d=>D[d].chronic.all, ref:ST.chronic.all, good:'low',
+    title:'Chronic absenteeism — students missing 10% or more of enrolled days',
+    desc:'Published per district. Reversed scale: blue is better. Midpoint is Georgia’s published statewide rate.'},
+  grad:{ label:'Graduation rate', get:d=>D[d].grad.all, ref:ST.grad.all, good:'high',
+    title:'4-year cohort graduation rate',
+    desc:'Published per district. Midpoint is Georgia’s published statewide rate.'},
+  ed:{ label:'Economically disadvantaged', get:d=>D[d].enroll.ed, ref:ST.enroll.ed, good:'none',
+    title:'Economically disadvantaged share of enrollment',
+    desc:'Context, not performance. Published per district; Georgia publishes a statewide figure of '+ST.enroll.ed+'%.'},
+  swd:{ label:'Students with disabilities', get:d=>D[d].enroll.swd, ref:ST.enroll.swd, good:'none',
+    title:'Students with disabilities share of enrollment',
+    desc:'Context, not performance. Published per district; Georgia publishes a statewide figure of '+ST.enroll.swd+'%.'},
+};
+const ABS = {};
+SUBJ.forEach(s=>{
+  ABS['beg_'+s.key] = { label:s.label.replace('EOG grades 3–8 — ','').replace('EOC — ','')+' — Beginning',
+    get:d=>D[d].assess[s.key]?.begin, ref:null, good:'low',
+    title:s.label+' — Beginning Learner',
+    desc:'Published share of students in Georgia’s lowest achievement level. Reversed scale: blue is better. Georgia publishes no statewide row for Milestones, so there is no state midpoint.'};
+});
+ABS.oss = { label:'Out-of-school suspension', get:d=>D[d].disc.oss, ref:null, good:'low',
+  title:'Students given out-of-school suspension at least once',
+  desc:'Published per district. Reversed scale: blue is better. Georgia publishes no statewide row in the discipline file.'};
+ABS.iss = { label:'In-school suspension', get:d=>D[d].disc.iss, ref:null, good:'low',
+  title:'Students given in-school suspension at least once',
+  desc:'Published per district. Reversed scale: blue is better. Georgia publishes no statewide row in the discipline file.'};
+const METRICS = {...VS, ...ABS};
+
+const DIV = ['--d-neg3','--d-neg2','--d-neg1','--d-zero','--d-pos1','--d-pos2','--d-pos3'];
+const SEQ = ['--seq1','--seq2','--seq3','--seq4','--seq5','--seq6'];
+const ORD = ['--ord1','--ord2','--ord3','--ord4'];
+const BREAKS = [-15,-7.5,-2.5,2.5,7.5,15];
+
+function fillFor(v, m){
+  if(v==null) return cs('--nodata');
+  if(m.ref==null){                                   // absolute sequential
+    const vals = NAMES.map(n=>m.get(n)).filter(x=>x!=null);
+    const lo=Math.min(...vals), hi=Math.max(...vals);
+    let t = (v-lo)/((hi-lo)||1);
+    if(m.good==='low') t = 1-t;                       // low is good -> darker means better
+    return cs(SEQ[Math.min(SEQ.length-1, Math.floor(t*SEQ.length))]);
+  }
+  if(m.good==='none'){                               // context ramp around published state share
+    const vals = NAMES.map(n=>m.get(n)).filter(x=>x!=null);
+    const lo=Math.min(...vals), hi=Math.max(...vals);
+    const t=(v-lo)/((hi-lo)||1);
+    return cs(SEQ[Math.min(SEQ.length-1, Math.floor(t*SEQ.length))]);
+  }
+  let gap = v - m.ref;
+  if(m.good==='low') gap = -gap;
+  let i=0; while(i<BREAKS.length && gap>BREAKS[i]) i++;
+  return cs(DIV[i]);
+}
+
+/* ---------------- projection ---------------- */
+let BB=[1e9,1e9,-1e9,-1e9];
+function eachRing(f,cb){
+  const g=f.geometry;
+  if(g.type==='Polygon') g.coordinates.forEach(cb);
+  else if(g.type==='MultiPolygon') g.coordinates.forEach(p=>p.forEach(cb));
+}
+G.features.forEach(f=>eachRing(f,r=>r.forEach(([x,y])=>{
+  BB[0]=Math.min(BB[0],x);BB[1]=Math.min(BB[1],y);BB[2]=Math.max(BB[2],x);BB[3]=Math.max(BB[3],y);})));
+const MW=660, MH=680, PAD=16;
+const latm=(BB[1]+BB[3])/2, kx=Math.cos(latm*Math.PI/180);
+const sc=Math.min((MW-2*PAD)/((BB[2]-BB[0])*kx),(MH-2*PAD)/(BB[3]-BB[1]));
+const ox=PAD+((MW-2*PAD)-(BB[2]-BB[0])*kx*sc)/2, oy=PAD+((MH-2*PAD)-(BB[3]-BB[1])*sc)/2;
+const px=x=>ox+(x-BB[0])*kx*sc, py=y=>oy+(BB[3]-y)*sc;
+const dAttr=f=>{let s='';eachRing(f,r=>{s+='M'+r.map(([x,y])=>px(x).toFixed(1)+','+py(y).toFixed(1)).join('L')+'Z';});return s;};
+function centroid(f){
+  let best=null, ba=-1;
+  eachRing(f,r=>{let a=0,cx=0,cy=0;
+    for(let i=0;i<r.length-1;i++){const [x1,y1]=r[i],[x2,y2]=r[i+1];
+      const cr=x1*y2-x2*y1; a+=cr; cx+=(x1+x2)*cr; cy+=(y1+y2)*cr;}
+    a/=2; if(Math.abs(a)>ba){ba=Math.abs(a); best=[cx/(6*a),cy/(6*a)];}});
+  return [px(best[0]),py(best[1])];
+}
+const LEADER = {'Vidalia City':[-52,-30]};
+const NUDGE = {'Toombs County':[6,14],'Long County':[0,4],'Evans County':[-4,-2],
+  'Candler County':[-4,-4],'McIntosh County':[8,4],'Savannah-Chatham County':[10,0],
+  'Bryan County':[-5,-4],'Liberty County':[-6,4],'Jeff Davis County':[0,-2],'Glynn County':[8,2]};
+
+function lum(h){const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255)
+  .map(v=>v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4));
+  return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2];}
+const ctr=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05);};
+const inkOn=h=>!/^#[0-9a-f]{6}$/i.test(h)?cs('--text-primary'):(ctr(h,'#ffffff')>=ctr(h,'#000000')?'#ffffff':'#111111');
+const needsOwnInk=h=>/^#[0-9a-f]{6}$/i.test(h)&&ctr(h,cs('--surface-1'))>=2.2;
+
+/* ---------------- tooltip ---------------- */
+const tip=document.getElementById('tip');
+function showTip(e, html){
+  tip.innerHTML=html; tip.style.opacity=1;
+  const r=tip.getBoundingClientRect();
+  let x=e.clientX+14,y=e.clientY+14;
+  if(x+r.width>innerWidth-8) x=e.clientX-r.width-14;
+  if(y+r.height>innerHeight-8) y=e.clientY-r.height-14;
+  tip.style.left=x+'px'; tip.style.top=y+'px';
+}
+const hideTip=()=>tip.style.opacity=0;
+function tipHTML(n){
+  const d=D[n], a=d.assess.ela_eog||{};
+  return `<b>${n}</b>
+  <div class="r"><span>Chronic absenteeism</span><span>${f1(d.chronic.all)}%</span></div>
+  <div class="r"><span>Georgia (published)</span><span>${f1(ST.chronic.all)}%</span></div>
+  <div class="r"><span>Graduation rate</span><span>${f1(d.grad.all)}%</span></div>
+  <div class="r"><span>Georgia (published)</span><span>${f1(ST.grad.all)}%</span></div>
+  <div class="r"><span>EOG ELA — Beginning</span><span>${f1(a.begin)}%</span></div>
+  <div class="r"><span>Out-of-school suspension</span><span>${f1(d.disc.oss)}%</span></div>
+  <div class="r"><span>Enrollment</span><span>${d.disc.enrollment==null?'n/a':d.disc.enrollment.toLocaleString()}</span></div>`;
+}
+
+let metric='chronic', sel=null, subject=SUBJ[0].key;
+
+/* ---------------- statewide tiles (published only) ---------------- */
+function tiles(){
+  const t=[
+    {lab:'Georgia — chronic absenteeism', val:f1(ST.chronic.all)+'%',
+     note:`Published statewide. With disabilities ${f1(ST.chronic.swd)}%, without ${f1(ST.chronic.not_swd)}%, economically disadvantaged ${f1(ST.chronic.ed)}%.`},
+    {lab:'Georgia — graduation rate', val:f1(ST.grad.all)+'%',
+     note:`Published statewide 4-year cohort rate. Economically disadvantaged ${f1(ST.grad.ed)}%, students with disabilities ${f1(ST.grad.swd)}%.`},
+    {lab:'Georgia — economically disadv.', val:f1(ST.enroll.ed)+'%',
+     note:`Published statewide share of enrollment. Students with disabilities ${f1(ST.enroll.swd)}%, English learners ${f1(ST.enroll.el)}%.`},
+    {lab:'Georgia — students counted', val:(ST.chronic.students||0).toLocaleString(),
+     note:'Published statewide student count in the attendance file. Georgia publishes no comparable statewide row for Milestones or discipline.'},
+  ];
+  document.getElementById('tiles').innerHTML=t.map(x=>
+    `<div class="card tile"><div class="lab">${x.lab}</div><div class="val">${x.val}</div><div class="note">${x.note}</div></div>`).join('');
+}
+
+/* ---------------- map ---------------- */
+function drawMap(){
+  const m=METRICS[metric];
+  document.getElementById('maptitle').textContent=m.title;
+  document.getElementById('mapdesc').textContent=m.desc;
+  let s=`<svg viewBox="0 0 ${MW} ${MH}" role="img" aria-label="${m.title} by district">
+    <defs><pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <rect width="6" height="6" fill="${cs('--grid')}"/>
+      <line x1="0" y1="0" x2="0" y2="6" stroke="${cs('--muted')}" stroke-width="1.2"/>
+    </pattern></defs>`;
+  FS.features.forEach(f=>{
+    s+=`<path d="${dAttr(f)}" fill="url(#hatch)" stroke="${cs('--surface-1')}" stroke-width="1.6" style="pointer-events:none"></path>`;
+    const [cx,cy]=centroid(f);
+    s+=`<text class="dlab2" x="${cx.toFixed(0)}" y="${(cy-4).toFixed(0)}" text-anchor="middle" style="fill:var(--text-secondary)">Fort Stewart</text>`;
+    s+=`<text class="dlab2" x="${cx.toFixed(0)}" y="${(cy+6).toFixed(0)}" text-anchor="middle" style="font-size:7.4px;fill:var(--text-secondary)">not a member district</text>`;
+  });
+  G.features.forEach(f=>{
+    const n=f.properties.district;
+    s+=`<path class="dpath ${sel===n?'sel':''}" d="${dAttr(f)}" fill="${fillFor(m.get(n),m)}" data-n="${n}"></path>`;
+  });
+  G.features.forEach(f=>{
+    const n=f.properties.district, v=m.get(n), fc=fillFor(v,m);
+    const [ax,ay]=centroid(f), nd=NUDGE[n]||[0,0], out=LEADER[n];
+    let cx=ax+nd[0], cy=ay+nd[1];
+    if(out){ cx=ax+out[0]; cy=ay+out[1]; }
+    const own=!out&&needsOwnInk(fc);
+    const ink=own?inkOn(fc):cs('--text-primary'), stroke=own?fc:cs('--surface-1');
+    if(out) s+=`<path class="leader" d="M${ax.toFixed(1)},${ay.toFixed(1)}L${(cx+(out[0]>0?-4:4)).toFixed(1)},${(cy-3).toFixed(1)}"/>`;
+    const anch=out?(out[0]>0?'start':'end'):'middle';
+    s+=`<text class="dlab" x="${cx.toFixed(0)}" y="${cy.toFixed(0)}" text-anchor="${anch}" style="fill:${ink};stroke:${stroke}">${short(n)}</text>`;
+    s+=`<text class="dlab2" x="${cx.toFixed(0)}" y="${(cy+10).toFixed(0)}" text-anchor="${anch}" style="fill:${ink};stroke:${stroke}">${v==null?'n/a':f1(v)+'%'}</text>`;
+  });
+  s+='</svg>';
+  document.getElementById('map').innerHTML=s;
+  document.querySelectorAll('#map .dpath').forEach(p=>{
+    p.onmousemove=e=>showTip(e,tipHTML(p.dataset.n));
+    p.onmouseleave=hideTip;
+    p.onclick=()=>{sel=p.dataset.n; drawMap(); panel(); pbisPanel();};
+  });
+  legend();
+}
+function legend(){
+  const m=METRICS[metric]; let s='';
+  if(m.ref==null || m.good==='none'){
+    const vals=NAMES.map(n=>m.get(n)).filter(x=>x!=null);
+    const lo=Math.min(...vals).toFixed(1), hi=Math.max(...vals).toFixed(1);
+    const left = m.good==='low' ? `Highest published (${hi}%)` : `Lowest published (${lo}%)`;
+    const right= m.good==='low' ? `Lowest published (${lo}%)` : `Highest published (${hi}%)`;
+    s+=`<span class="lgtxt">${left}</span>`;
+    SEQ.forEach(v=>s+=`<span class="lgcell" style="background:${cs(v)}"></span>`);
+    s+=`<span class="lgtxt">${right}</span>`;
+    s+=`<span class="lgtxt" style="margin-left:auto">No statewide figure published — absolute scale</span>`;
+  }else{
+    s+=`<span class="lgtxt">${m.good==='low'?'Worse than Georgia':'Below Georgia'}</span>`;
+    DIV.forEach(v=>s+=`<span class="lgcell" style="background:${cs(v)}"></span>`);
+    s+=`<span class="lgtxt">${m.good==='low'?'Better than Georgia':'Above Georgia'}</span>`;
+    s+=`<span class="lgtxt" style="margin-left:auto">Midpoint = Georgia’s published ${f1(m.ref)}%</span>`;
+  }
+  document.getElementById('legend').innerHTML=s;
+}
+
+/* ---------------- district detail panel ---------------- */
+function panel(){
+  const n = sel || NAMES[0], d = D[n];
+  const rows = [];
+  rows.push(['head','Chronic absenteeism — published']);
+  [['All students','all'],['With disabilities','swd'],['Without disabilities','not_swd'],
+   ['Economically disadvantaged','ed'],['English learners','el']].forEach(([lab,k])=>
+    rows.push([lab, f1(d.chronic[k])+'%']));
+  rows.push(['head','Graduation rate — published']);
+  [['All students','all'],['Economically disadvantaged','ed'],['With disabilities','swd']].forEach(([lab,k])=>
+    rows.push([lab, f1(d.grad[k])+'%']));
+  rows.push(['head','Discipline — published']);
+  rows.push(['In-school suspension', f1(d.disc.iss)+'%']);
+  rows.push(['Out-of-school suspension', f1(d.disc.oss)+'%']);
+  rows.push(['Expulsion', f1(d.disc.expl)+'%']);
+  rows.push(['Students with an incident', d.disc.students_with_incidents==null?'n/a':d.disc.students_with_incidents.toLocaleString()]);
+  rows.push(['Total incidents', d.disc.total_incidents==null?'n/a':d.disc.total_incidents.toLocaleString()]);
+  rows.push(['head','Enrollment characteristics — published']);
+  [['Economically disadvantaged','ed'],['Students with disabilities','swd'],['English learners','el'],['Gifted','gifted']]
+    .forEach(([lab,k])=>rows.push([lab, f1(d.enroll[k])+'%']));
+  rows.push(['Enrolled students', d.disc.enrollment==null?'n/a':d.disc.enrollment.toLocaleString()]);
+
+  document.getElementById('panel').innerHTML=
+    `<div style="font-size:17px;font-weight:640;margin-bottom:4px">${n}</div>
+     <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">
+       ${sel?'Click any district on the map to switch.':'Click any district on the map.'}
+     </div>
+     <dl style="margin:0">${rows.map(r=>r[0]==='head'
+        ? `<div class="phead">${r[1]}</div>`
+        : `<div class="prow"><dt>${r[0]}</dt><dd>${r[1]}</dd></div>`).join('')}</dl>`;
+}
+
+/* ---------------- achievement levels: published 4-level stack ---------------- */
+const LEVELS=[['begin','Beginning Learner'],['developing','Developing Learner'],
+              ['proficient','Proficient Learner'],['distinguished','Distinguished Learner']];
+function levelsChart(){
+  const rows=NAMES.map(n=>({n, a:D[n].assess[subject]}))
+    .filter(r=>r.a && r.a.begin!=null)
+    .sort((x,y)=>y.a.begin-x.a.begin);
+  const W=1180, rh=25, T=30, L=186, Rr=54, H=T+rows.length*rh+30;
+  const X=v=>L+v/100*(W-L-Rr);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Published achievement level distribution">`;
+  [0,20,40,60,80,100].forEach(t=>{
+    s+=`<line class="gridline" x1="${X(t)}" y1="${T-12}" x2="${X(t)}" y2="${H-24}"/>`;
+    s+=`<text class="tick" x="${X(t)}" y="${T-18}" text-anchor="middle">${t}%</text>`;
+  });
+  rows.forEach((r,i)=>{
+    const y=T+i*rh, bh=13;
+    s+=`<text class="nlab" x="${L-12}" y="${y+bh-2}" text-anchor="end">${r.n}</text>`;
+    let acc=0;
+    LEVELS.forEach(([k],li)=>{
+      const v=r.a[k]; if(v==null) return;
+      const x0=X(acc), x1=X(acc+v);
+      s+=`<rect x="${x0.toFixed(1)}" y="${y}" width="${Math.max(0,x1-x0-2).toFixed(1)}" height="${bh}"
+           fill="${cs(ORD[li])}" rx="${li===0||li===3?3:0}" class="lvl" data-n="${r.n}" data-k="${k}" style="cursor:pointer"/>`;
+      acc+=v;
+    });
+    // Georgia's proficiency standard sits where Developing ends
+    const cut=(r.a.begin||0)+(r.a.developing||0);
+    s+=`<line x1="${X(cut).toFixed(1)}" y1="${y-3}" x2="${X(cut).toFixed(1)}" y2="${y+bh+3}"
+         stroke="${cs('--text-primary')}" stroke-width="1.6"/>`;
+    s+=`<text class="vlab" x="${W-Rr+8}" y="${y+bh-2}">${f1(r.a.begin)}%</text>`;
+  });
+  s+=`<text class="qlab" x="${L}" y="${H-8}">Vertical rule = Georgia’s proficiency standard · right column = published Beginning Learner %</text>`;
+  s+='</svg>';
+  document.getElementById('levels').innerHTML = legendRow(LEVELS.map(([k,lab],i)=>[cs(ORD[i]),lab]))+s;
+  document.querySelectorAll('#levels .lvl').forEach(el=>{
+    el.onmousemove=e=>{
+      const a=D[el.dataset.n].assess[subject];
+      showTip(e,`<b>${el.dataset.n}</b>
+        <div class="r"><span>${SUBJ.find(s=>s.key===subject).label}</span><span></span></div>`+
+        LEVELS.map(([k,lab])=>`<div class="r"><span>${lab}</span><span>${f1(a[k])}%</span></div>`).join('')+
+        `<div class="r"><span>Students tested</span><span>${a.tested==null?'n/a':a.tested.toLocaleString()}</span></div>`);
+    };
+    el.onmouseleave=hideTip;
+    el.onclick=()=>{sel=el.dataset.n; drawMap(); panel(); pbisPanel(); scrollTo({top:0,behavior:'smooth'});};
+  });
+}
+
+/* ---------------- absenteeism by published group ---------------- */
+function absGroup(){
+  const rows=NAMES.map(n=>({n,a:D[n].chronic.swd,b:D[n].chronic.not_swd}))
+    .filter(r=>r.a!=null&&r.b!=null).sort((x,y)=>y.a-x.a);
+  const W=600, rh=23, T=52, H=T+rows.length*rh+34, L=150, Rr=22;
+  const lo=Math.min(...rows.map(r=>r.b),ST.chronic.not_swd)-2;
+  const hi=Math.max(...rows.map(r=>r.a),ST.chronic.swd)+2;
+  const X=v=>L+(v-lo)/(hi-lo)*(W-L-Rr);
+  const C1=cs('--series-1'), C2=cs('--series-2');
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Published chronic absenteeism by disability status">`;
+  [10,15,20,25,30,35].forEach(t=>{ if(t<lo||t>hi) return;
+    s+=`<line class="gridline" x1="${X(t)}" y1="${T-12}" x2="${X(t)}" y2="${H-26}"/>`;
+    s+=`<text class="tick" x="${X(t)}" y="${T-14}" text-anchor="middle">${t}%</text>`;});
+  [[ST.chronic.swd,C1],[ST.chronic.not_swd,C2]].forEach(([v,c])=>{
+    s+=`<line x1="${X(v).toFixed(1)}" y1="${T-12}" x2="${X(v).toFixed(1)}" y2="${H-26}"
+         stroke="${c}" stroke-width="1.4" stroke-dasharray="3 3"/>`;});
+  s+=`<text class="qlab" x="${X(ST.chronic.not_swd).toFixed(1)}" y="${T-32}" text-anchor="middle">GA ${f1(ST.chronic.not_swd)}%</text>`;
+  s+=`<text class="qlab" x="${X(ST.chronic.swd).toFixed(1)}" y="${T-32}" text-anchor="middle">GA ${f1(ST.chronic.swd)}%</text>`;
+  rows.forEach((r,i)=>{
+    const y=T+i*rh+7;
+    s+=`<text class="nlab" x="${L-12}" y="${y+4}" text-anchor="end">${r.n}</text>`;
+    s+=`<line x1="${X(Math.min(r.a,r.b))}" y1="${y}" x2="${X(Math.max(r.a,r.b))}" y2="${y}" stroke="${cs('--axis')}" stroke-width="1.5"/>`;
+    s+=`<circle class="dot gdot" cx="${X(r.b).toFixed(1)}" cy="${y}" r="5.5" fill="${C2}" data-n="${r.n}"/>`;
+    s+=`<circle class="dot gdot" cx="${X(r.a).toFixed(1)}" cy="${y}" r="5.5" fill="${C1}" data-n="${r.n}"/>`;
+  });
+  s+=`<text class="qlab" x="${L}" y="${H-8}">% missing 10%+ of enrolled days</text>`;
+  s+='</svg>';
+  document.getElementById('absgrp').innerHTML=
+    legendRow([[C1,'With disabilities'],[C2,'Without disabilities'],[null,'dashed = Georgia published']])+s;
+  wire('absgrp','.gdot',n=>{const c=D[n].chronic;
+    return `<b>${n}</b>
+      <div class="r"><span>With disabilities</span><span>${f1(c.swd)}%</span></div>
+      <div class="r"><span>Without disabilities</span><span>${f1(c.not_swd)}%</span></div>
+      <div class="r"><span>Economically disadvantaged</span><span>${f1(c.ed)}%</span></div>
+      <div class="r"><span>English learners</span><span>${f1(c.el)}%</span></div>
+      <div class="r"><span>All students</span><span>${f1(c.all)}%</span></div>
+      <div class="r"><span>Georgia, with disabilities</span><span>${f1(ST.chronic.swd)}%</span></div>
+      <div class="r"><span>Georgia, without</span><span>${f1(ST.chronic.not_swd)}%</span></div>`;});
+}
+
+/* ---------------- graduation rate vs published state ---------------- */
+function gradChart(){
+  const rows=NAMES.map(n=>({n,v:D[n].grad.all})).filter(r=>r.v!=null).sort((a,b)=>b.v-a.v);
+  const W=600, rh=23, T=34, H=T+rows.length*rh+30, L=150, Rr=52;
+  const lo=Math.min(...rows.map(r=>r.v),ST.grad.all)-2, hi=100.5;
+  const X=v=>L+(v-lo)/(hi-lo)*(W-L-Rr);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Published graduation rate by district">`;
+  [86,90,94,98].forEach(t=>{ if(t<lo) return;
+    s+=`<line class="gridline" x1="${X(t)}" y1="${T-12}" x2="${X(t)}" y2="${H-24}"/>`;
+    s+=`<text class="tick" x="${X(t)}" y="${T-18}" text-anchor="middle">${t}%</text>`;});
+  s+=`<line class="axline" style="stroke-width:1.6" x1="${X(ST.grad.all).toFixed(1)}" y1="${T-12}" x2="${X(ST.grad.all).toFixed(1)}" y2="${H-24}"/>`;
+  // Bar length already carries the distance from the state rate, so shade by polarity only —
+  // the 7-step diverging ramp puts near-state bars at the surface colour and they disappear.
+  const barFill = v => cs(v >= ST.grad.all ? '--d-pos2' : '--d-neg2');
+  rows.forEach((r,i)=>{
+    const y=T+i*rh, bh=13;
+    s+=`<text class="nlab" x="${L-12}" y="${y+bh-2}" text-anchor="end">${r.n}</text>`;
+    const x0=Math.min(X(r.v),X(ST.grad.all)), x1=Math.max(X(r.v),X(ST.grad.all));
+    s+=`<rect x="${x0.toFixed(1)}" y="${y}" width="${Math.max(2,x1-x0).toFixed(1)}" height="${bh}" rx="3"
+         fill="${barFill(r.v)}" class="gbar" data-n="${r.n}" style="cursor:pointer"/>`;
+    s+=`<text class="vlab" x="${W-Rr+8}" y="${y+bh-2}">${f1(r.v)}%</text>`;
+  });
+  s+=`<text class="qlab" x="${X(ST.grad.all).toFixed(1)}" y="${H-8}" text-anchor="middle">Georgia ${f1(ST.grad.all)}%</text>`;
+  s+='</svg>';
+  document.getElementById('grad').innerHTML=
+    legendRow([[cs('--d-pos2'),'At or above Georgia'],[cs('--d-neg2'),'Below Georgia']])+s;
+  wire('grad','.gbar',n=>{const g=D[n].grad;
+    return `<b>${n}</b>
+      <div class="r"><span>All students</span><span>${f1(g.all)}%</span></div>
+      <div class="r"><span>Economically disadvantaged</span><span>${f1(g.ed)}%</span></div>
+      <div class="r"><span>With disabilities</span><span>${f1(g.swd)}%</span></div>
+      <div class="r"><span>Cohort size</span><span>${g.cohort==null?'n/a':g.cohort.toLocaleString()}</span></div>
+      <div class="r"><span>Georgia (published)</span><span>${f1(ST.grad.all)}%</span></div>`;});
+}
+
+/* ---------------- suspension, published, absolute ---------------- */
+function suspChart(){
+  const rows=NAMES.map(n=>({n,iss:D[n].disc.iss,oss:D[n].disc.oss}))
+    .filter(r=>r.oss!=null).sort((a,b)=>b.oss-a.oss);
+  const W=600, rh=23, T=34, H=T+rows.length*rh+30, L=150, Rr=22;
+  const hi=Math.max(...rows.flatMap(r=>[r.iss||0,r.oss]))+2;
+  const X=v=>L+v/hi*(W-L-Rr);
+  const C1=cs('--series-1'), C2=cs('--series-2');
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Published suspension rates by district">`;
+  [0,5,10,15,20,25].forEach(t=>{ if(t>hi) return;
+    s+=`<line class="gridline" x1="${X(t)}" y1="${T-12}" x2="${X(t)}" y2="${H-26}"/>`;
+    s+=`<text class="tick" x="${X(t)}" y="${T-18}" text-anchor="middle">${t}%</text>`;});
+  rows.forEach((r,i)=>{
+    const y=T+i*rh+7;
+    s+=`<text class="nlab" x="${L-12}" y="${y+4}" text-anchor="end">${r.n}</text>`;
+    if(r.iss!=null) s+=`<line x1="${X(Math.min(r.iss,r.oss))}" y1="${y}" x2="${X(Math.max(r.iss,r.oss))}" y2="${y}" stroke="${cs('--axis')}" stroke-width="1.5"/>`;
+    if(r.iss!=null) s+=`<circle class="dot sdot" cx="${X(r.iss).toFixed(1)}" cy="${y}" r="5.5" fill="${C2}" data-n="${r.n}"/>`;
+    s+=`<circle class="dot sdot" cx="${X(r.oss).toFixed(1)}" cy="${y}" r="5.5" fill="${C1}" data-n="${r.n}"/>`;
+  });
+  s+=`<text class="qlab" x="${L}" y="${H-8}">% of students suspended at least once</text>`;
+  s+='</svg>';
+  document.getElementById('susp').innerHTML=
+    legendRow([[C1,'Out-of-school'],[C2,'In-school'],[null,'no statewide figure published']])+s;
+  wire('susp','.sdot',n=>{const d=D[n].disc;
+    return `<b>${n}</b>
+      <div class="r"><span>Out-of-school suspension</span><span>${f1(d.oss)}%</span></div>
+      <div class="r"><span>In-school suspension</span><span>${f1(d.iss)}%</span></div>
+      <div class="r"><span>Expulsion</span><span>${f1(d.expl)}%</span></div>
+      <div class="r"><span>Students with an incident</span><span>${d.students_with_incidents==null?'n/a':d.students_with_incidents.toLocaleString()}</span></div>
+      <div class="r"><span>Total incidents</span><span>${d.total_incidents==null?'n/a':d.total_incidents.toLocaleString()}</span></div>`;});
+}
+
+/* ---------------- PBIS: published ratings, listed, not rolled up ---------------- */
+const PBIS_ORDER=['Distinguished','Operational','Emerging','Installing'];
+function pbisPanel(){
+  const n=sel||NAMES[0], list=D[n].pbis;
+  let s=`<div style="font-size:13px;font-weight:600;margin-bottom:8px">${n}</div>`;
+  if(!list.length){
+    s+=`<p style="font-size:12.5px;color:var(--text-secondary);margin:0">Georgia publishes no PBIS
+        implementation rating for any of this district's ${D[n].n_schools_listed} schools in the 2024–25 file.</p>`;
+  }else{
+    s+=`<ul class="pbis" style="margin:0;padding-left:18px">`+
+       list.slice().sort((a,b)=>PBIS_ORDER.indexOf(a.rating)-PBIS_ORDER.indexOf(b.rating))
+         .map(x=>`<li><strong style="color:var(--text-primary)">${x.rating}</strong> — ${x.school}</li>`).join('')+
+       `</ul><p style="font-size:12px;color:var(--muted);margin:10px 0 0">${list.length} of
+        ${D[n].n_schools_listed} schools in the file carry a published rating.</p>`;
+  }
+  document.getElementById('pbis').innerHTML=s;
+}
+
+/* ---------------- helpers ---------------- */
+function legendRow(items){
+  return `<div class="legend" style="margin:0 0 10px 0;gap:16px">`+items.map(([c,l])=>
+    c?`<span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-secondary)">
+        <span class="swatch" style="background:${c};margin:0"></span>${l}</span>`
+     :`<span style="font-size:11.5px;color:var(--muted)">${l}</span>`).join('')+`</div>`;
+}
+function wire(el,selr,html){
+  document.querySelectorAll('#'+el+' '+selr).forEach(c=>{
+    c.onmousemove=e=>showTip(e,html(c.dataset.n));
+    c.onmouseleave=hideTip;
+    c.onclick=()=>{sel=c.dataset.n; drawMap(); panel(); pbisPanel(); scrollTo({top:0,behavior:'smooth'});};
+  });
+}
+
+/* ---------------- table ---------------- */
+function table(){
+  const cols=[
+    ['District',n=>n],
+    ['EOG ELA beg.',n=>f1(D[n].assess.ela_eog?.begin)],
+    ['EOG ELA prof.',n=>f1(D[n].assess.ela_eog?.proficient)],
+    ['EOG ELA dist.',n=>f1(D[n].assess.ela_eog?.distinguished)],
+    ['EOG Math beg.',n=>f1(D[n].assess.math_eog?.begin)],
+    ['Am Lit beg.',n=>f1(D[n].assess.amlit?.begin)],
+    ['Algebra beg.',n=>f1(D[n].assess.alg?.begin)],
+    ['Chronic abs.',n=>f1(D[n].chronic.all)],
+    ['Chronic SWD',n=>f1(D[n].chronic.swd)],
+    ['Grad rate',n=>f1(D[n].grad.all)],
+    ['Grad SWD',n=>f1(D[n].grad.swd)],
+    ['ISS',n=>f1(D[n].disc.iss)],
+    ['OSS',n=>f1(D[n].disc.oss)],
+    ['Econ. disadv.',n=>f1(D[n].enroll.ed)],
+    ['SWD',n=>f1(D[n].enroll.swd)],
+    ['Enrollment',n=>D[n].disc.enrollment==null?'n/a':D[n].disc.enrollment.toLocaleString()],
+  ];
+  const rows=[...NAMES].sort((a,b)=>(D[a].assess.ela_eog?.begin??0)-(D[b].assess.ela_eog?.begin??0));
+  const na='—';
+  document.getElementById('tbl').innerHTML=
+    `<thead><tr>${cols.map(c=>`<th>${c[0]}</th>`).join('')}</tr></thead><tbody>`+
+    rows.map(n=>`<tr>${cols.map(c=>`<td>${c[1](n)}</td>`).join('')}</tr>`).join('')+
+    `<tr style="font-weight:700"><td>Georgia (published)</td><td>${na}</td><td>${na}</td><td>${na}</td>
+      <td>${na}</td><td>${na}</td><td>${na}</td>
+      <td>${f1(ST.chronic.all)}</td><td>${f1(ST.chronic.swd)}</td>
+      <td>${f1(ST.grad.all)}</td><td>${f1(ST.grad.swd)}</td>
+      <td>${na}</td><td>${na}</td>
+      <td>${f1(ST.enroll.ed)}</td><td>${f1(ST.enroll.swd)}</td>
+      <td>${(ST.chronic.students||0).toLocaleString()}</td></tr></tbody>`;
+}
+
+/* ---------------- wire up ---------------- */
+document.querySelectorAll('.sg').forEach(e=>e.textContent=f1(ST.grad.all));
+function buildCtrls(){
+  document.getElementById('metrics-vs').innerHTML=Object.keys(VS).map(k=>
+    `<button data-k="${k}" aria-pressed="${k===metric}">${VS[k].label}</button>`).join('');
+  document.getElementById('metrics-abs').innerHTML=Object.keys(ABS).map(k=>
+    `<button data-k="${k}" aria-pressed="${k===metric}">${ABS[k].label}</button>`).join('');
+  document.querySelectorAll('#metrics-vs button, #metrics-abs button').forEach(b=>b.onclick=()=>{
+    metric=b.dataset.k;
+    document.querySelectorAll('#metrics-vs button, #metrics-abs button')
+      .forEach(x=>x.setAttribute('aria-pressed', x===b));
+    drawMap();
+  });
+  document.getElementById('subjects').innerHTML=SUBJ.map(s=>
+    `<button data-s="${s.key}" aria-pressed="${s.key===subject}">${s.label}</button>`).join('');
+  document.querySelectorAll('#subjects button').forEach(b=>b.onclick=()=>{
+    subject=b.dataset.s;
+    document.querySelectorAll('#subjects button').forEach(x=>x.setAttribute('aria-pressed', x===b));
+    levelsChart();
+  });
+}
+const tb=document.getElementById('tblbtn');
+tb.onclick=()=>{const w=document.getElementById('tblwrap'); const o=w.classList.toggle('open');
+  tb.textContent=o?'Hide table':'Show table'; tb.setAttribute('aria-expanded',o);};
+
+function drawAll(){
+  tiles(); buildCtrls(); drawMap(); panel(); levelsChart(); absGroup(); gradChart(); suspChart();
+  pbisPanel(); table();
+  document.getElementById('findings').innerHTML=DATA.findings.map(f=>`<li>${f}</li>`).join('');
+}
+const themeBtn=document.getElementById('themebtn');
+const isDark=()=>{const t=document.documentElement.dataset.theme;
+  return t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches);};
+const syncBtn=()=>themeBtn.textContent=isDark()?'Light':'Dark';
+themeBtn.onclick=()=>{document.documentElement.dataset.theme=isDark()?'light':'dark'; document.getElementById('fsbtn').onclick=()=>{
+  if(document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen?.().catch(()=>{});
+};
+document.getElementById('sharebtn').onclick=async()=>{
+  const b=document.getElementById('sharebtn'), was=b.textContent;
+  try{
+    if(navigator.share){ await navigator.share({title:document.title, url:location.href}); return; }
+    await navigator.clipboard.writeText(location.href); b.textContent='Link copied';
+  }catch(e){ b.textContent='Copy failed'; }
+  setTimeout(()=>b.textContent=was,1600);
+};
+syncBtn(); drawAll();};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{
+  if(!document.documentElement.dataset.theme){syncBtn();drawAll();}});
+document.getElementById('fsbtn').onclick=()=>{
+  if(document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen?.().catch(()=>{});
+};
+document.getElementById('sharebtn').onclick=async()=>{
+  const b=document.getElementById('sharebtn'), was=b.textContent;
+  try{
+    if(navigator.share){ await navigator.share({title:document.title, url:location.href}); return; }
+    await navigator.clipboard.writeText(location.href); b.textContent='Link copied';
+  }catch(e){ b.textContent='Copy failed'; }
+  setTimeout(()=>b.textContent=was,1600);
+};
+syncBtn(); drawAll();
+</script>
+</body>
+</html>
