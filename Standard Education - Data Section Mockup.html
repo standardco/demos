@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Standard Education — Data Section Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#07004D;
+  --ink:#0B0B14;
+  --muted:#5B5B6B;
+  --faint:#8A8A99;
+  --emerald:#34D399;
+  --emerald-ink:#033327;
+  --emerald-deep:#027A48;
+  --mint:#ECFDF3;
+  --mint2:#E9F7EF;
+  --blue:#2563EB;
+  --amber:#FCD34D;
+  --line:#E6E6EC;
+  --line2:#F1F1F5;
+  --bg:#FFFFFF;
+  --shadow:4px 4px 8px 2px rgba(7,0,77,.20);
+  --shadow-sm:0 1px 2px rgba(7,0,77,.06), 0 8px 24px -12px rgba(7,0,77,.18);
+  --max:1200px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:Inter,system-ui,sans-serif;
+  color:var(--ink);
+  background:#F4F4F7;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:Merriweather,Georgia,serif;font-weight:700;margin:0;letter-spacing:-.01em}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+
+/* ============ MOCKUP CHROME (not part of the site) ============ */
+.mchrome{
+  position:sticky;top:0;z-index:900;
+  background:var(--navy);color:#fff;
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+.mchrome-in{max-width:1440px;margin:0 auto;padding:9px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.chip{white-space:nowrap}
+.mchrome .brandtag{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.6;white-space:nowrap}
+.mgroup{display:flex;align-items:center;gap:6px}
+.mgroup>span.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.07em;opacity:.55;margin-right:4px}
+.chip{
+  background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.14);
+  padding:5px 11px;border-radius:999px;font-size:12.5px;font-weight:500;cursor:pointer;
+  transition:.15s;
+}
+.chip:hover{background:rgba(255,255,255,.20)}
+.chip.on{background:var(--emerald);color:var(--emerald-ink);border-color:var(--emerald);font-weight:600}
+.mchrome .spacer{flex:1}
+
+/* Notes / annotations */
+.note{
+  display:none;
+  background:#FFFBEB;border:1px solid #FDE68A;border-left:4px solid var(--amber);
+  border-radius:8px;padding:12px 14px;font-size:13.5px;line-height:1.55;color:#4A3E10;
+  margin:14px 0;
+}
+.note b{color:#3B310A}
+body.notes .note{display:block}
+.pin{
+  display:none;
+  width:20px;height:20px;border-radius:50%;background:var(--amber);color:#3B310A;
+  font-size:11px;font-weight:700;align-items:center;justify-content:center;
+  vertical-align:middle;margin-left:8px;
+}
+body.notes .pin{display:inline-flex}
+
+/* ============ VIEWPORT FRAME ============ */
+.frame{max-width:1400px;margin:22px auto 60px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px -30px rgba(7,0,77,.35);border:1px solid #E3E3EA}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 32px}
+
+/* ============ SITE HEADER ============ */
+.site-hd{background:#fff;border-bottom:1px solid var(--line2);position:relative;z-index:500}
+.site-hd-in{max-width:var(--max);margin:0 auto;padding:18px 32px;display:flex;align-items:center;gap:34px}
+.logo{display:flex;flex-direction:column;line-height:1;flex-shrink:0}
+.logo .w{font-family:Merriweather,serif;font-weight:900;font-size:29px;color:var(--navy);letter-spacing:-.02em}
+.logo .w svg{width:.60em;height:.60em;vertical-align:baseline;margin:0 .01em}
+.logo .w svg polygon{fill:var(--navy)}
+.ftlogo .w svg polygon{fill:#fff}
+.logo .sub{border-top:2px solid var(--navy);margin-top:3px;padding-top:3px;font-size:9.5px;font-weight:600;letter-spacing:.34em;color:var(--navy);text-align:center}
+nav.mainnav{display:flex;align-items:center;gap:4px;margin-left:auto}
+.nlink{display:flex;align-items:center;gap:5px;padding:9px 13px;border-radius:7px;font-size:15.5px;font-weight:500;color:var(--ink);cursor:pointer;white-space:nowrap}
+.nlink:hover{background:#F6F6FA}
+.nlink .car{width:9px;height:9px;border-right:2px solid #4B4B5A;border-bottom:2px solid #4B4B5A;transform:rotate(45deg) translateY(-2px);transition:.2s}
+.nlink.active{color:var(--emerald-deep)}
+.nlink.active .car{border-color:var(--emerald-deep);transform:rotate(-135deg) translateY(-2px)}
+.newpill{background:var(--amber);color:#3B310A;font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:4px;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:8px;font-weight:600;font-size:15.5px;cursor:pointer;transition:.15s}
+.btn-primary{background:var(--emerald);color:var(--emerald-ink);padding:12px 20px;box-shadow:var(--shadow)}
+.btn-primary:hover{transform:translate(-1px,-1px);box-shadow:6px 6px 10px 2px rgba(7,0,77,.22)}
+.btn-outline{background:#fff;color:var(--emerald-ink);border:2px solid var(--emerald-ink);padding:8px 18px}
+.btn-lg{padding:15px 26px;font-size:16.5px}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink);padding:9px 16px;font-weight:500;font-size:14.5px}
+.btn-ghost:hover{border-color:#C9C9D4}
+
+/* ---- Mega menu (variant A) ---- */
+.mega{
+  position:absolute;left:0;right:0;top:100%;background:#fff;
+  border-top:1px solid var(--line2);border-bottom:1px solid var(--line);
+  box-shadow:0 24px 48px -24px rgba(7,0,77,.28);
+  display:none;
+}
+.mega.open{display:block}
+.mega-in{max-width:var(--max);margin:0 auto;padding:30px 32px 26px;display:grid;grid-template-columns:1.15fr 1.15fr .95fr;gap:36px}
+.mcol h5{font-family:Inter,sans-serif;font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);margin:0 0 14px}
+.mitem{display:flex;align-items:flex-start;gap:11px;padding:9px 10px;margin:0 -10px;border-radius:8px;cursor:pointer}
+.mitem:hover{background:var(--mint)}
+.mitem .flagdot{width:30px;height:30px;border-radius:7px;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.02em}
+.mitem.soon .flagdot{background:#E6E6EC;color:#9A9AA8}
+.mitem.soon{cursor:default;opacity:.75}
+.mitem.soon:hover{background:transparent}
+.mitem .t{display:block;font-size:15px;font-weight:600;line-height:1.25}
+.mitem .d{display:block;font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.35}
+.mega .arrowlink{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:13.5px;font-weight:600;color:var(--emerald-deep);cursor:pointer}
+.mpromo{background:linear-gradient(160deg,var(--mint) 0%,#F5FBF7 100%);border:1px solid #CFEBDB;border-radius:12px;padding:20px}
+.mpromo h6{font-family:Merriweather,serif;font-size:16.5px;margin:0 0 7px;line-height:1.3}
+.mpromo p{font-size:13px;color:#3F5C50;margin:0 0 14px;line-height:1.5}
+.msearch{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #CFEBDB;border-radius:8px;padding:9px 12px;font-size:13.5px;color:var(--faint)}
+
+/* ---- Cascading menu (variant B) ---- */
+.casc{position:absolute;left:0;top:100%;display:none;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 24px 48px -22px rgba(7,0,77,.3);overflow:hidden}
+.casc.open{display:flex}
+.casc-col{width:250px;padding:8px;border-right:1px solid var(--line2);max-height:360px;overflow:auto}
+.casc-col:last-child{border-right:0}
+.casc-col h5{font-family:Inter,sans-serif;font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);margin:8px 10px 8px}
+.crow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:7px;font-size:14px;cursor:pointer}
+.crow:hover,.crow.on{background:var(--mint);font-weight:600}
+.crow .chev{color:#A9A9B8;font-size:12px}
+.crow small{color:var(--faint);font-weight:400;font-size:11.5px}
+
+/* ---- Simple dropdown (variant C) ---- */
+.simpledd{position:absolute;left:0;top:100%;display:none;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 20px 40px -20px rgba(7,0,77,.3);padding:8px;min-width:280px}
+.simpledd.open{display:block}
+
+/* ============ PAGE COMMON ============ */
+.crumbs{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted);padding:20px 0 0;flex-wrap:wrap}
+.crumbs a{cursor:pointer}
+.crumbs a:hover{color:var(--emerald-deep);text-decoration:underline}
+.crumbs .sep{color:#C9C9D4}
+.crumbs .here{color:var(--ink);font-weight:600}
+
+.ph{border-bottom:1px dashed #B9B9C6;cursor:help}
+.phbox{
+  border:1.5px dashed #CFCFDA;border-radius:10px;background:
+    repeating-linear-gradient(135deg,#FAFAFC 0 10px,#F4F4F8 10px 20px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:#9A9AA8;font-size:12.5px;font-weight:500;text-align:center;padding:16px;gap:4px;
+}
+.phbox strong{color:#7A7A8A;font-size:13px;font-weight:600}
+.phbox .kicker{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#AFAFBC}
+
+.sect{padding:44px 0}
+.sect-hd{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:20px;flex-wrap:wrap}
+.sect-hd h2{font-size:27px}
+.sect-hd p{margin:6px 0 0;font-size:14.5px;color:var(--muted)}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-deep);margin-bottom:9px}
+.hl{background:linear-gradient(180deg,transparent 52%,var(--amber) 52%,var(--amber) 92%,transparent 92%);padding:0 2px}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;transition:.15s;cursor:pointer}
+.card:hover{border-color:#B9E4CD;box-shadow:var(--shadow-sm);transform:translateY(-2px)}
+.card h3{font-size:17.5px;margin:0 0 4px;line-height:1.3}
+.card .meta{font-size:12.5px;color:var(--muted)}
+.card.dis{opacity:.6;cursor:default;background:#FBFBFD}
+.card.dis:hover{transform:none;box-shadow:none;border-color:var(--line)}
+
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+
+table.dt{width:100%;border-collapse:collapse;font-size:14px;background:#fff}
+table.dt th{
+  text-align:left;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--faint);padding:11px 14px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;
+}
+table.dt th:hover{color:var(--ink)}
+table.dt th.num,table.dt td.num{text-align:right}
+table.dt td{padding:13px 14px;border-bottom:1px solid var(--line2)}
+table.dt tbody tr{cursor:pointer}
+table.dt tbody tr:hover{background:var(--mint)}
+table.dt td .dname{font-weight:600}
+.tblwrap{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbltools{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#FBFBFD;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.fakeinput{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:7px;padding:8px 12px;font-size:13.5px;color:var(--faint);min-width:220px}
+.tag{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--mint);color:var(--emerald-deep)}
+.tag.grey{background:#F1F1F5;color:var(--muted)}
+
+/* page hero */
+.phero{background:linear-gradient(180deg,#FBFDFC 0%,#fff 100%);border-bottom:1px solid var(--line2)}
+.phero-in{max-width:var(--max);margin:0 auto;padding:0 32px 40px}
+.phero h1{font-size:44px;line-height:1.14;margin:14px 0 0;max-width:15ch}
+.phero .lede{font-size:17px;color:var(--muted);margin:14px 0 0;max-width:62ch;line-height:1.6}
+.factrow{display:flex;gap:34px;margin-top:26px;flex-wrap:wrap}
+.fact .v{font-family:Merriweather,serif;font-size:26px;font-weight:700;color:var(--navy)}
+.fact .k{font-size:12px;color:var(--muted);margin-top:2px;letter-spacing:.02em}
+
+/* two-col layout with sidebar */
+.two{display:grid;grid-template-columns:236px 1fr;gap:40px;align-items:start;padding:36px 0 0}
+.sidenav{position:sticky;top:74px}
+.sidenav h5{font-family:Inter,sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);margin:0 0 10px}
+.sidenav a{display:block;padding:8px 12px;border-radius:7px;font-size:14px;color:var(--muted);border-left:2px solid transparent;cursor:pointer}
+.sidenav a:hover{background:#F7F7FB;color:var(--ink)}
+.sidenav a.on{background:var(--mint);color:var(--emerald-deep);font-weight:600;border-left-color:var(--emerald)}
+.sidecta{margin-top:22px;background:var(--navy);color:#fff;border-radius:12px;padding:18px}
+.sidecta h6{font-family:Merriweather,serif;font-size:15.5px;margin:0 0 7px;line-height:1.35}
+.sidecta p{font-size:12.5px;color:#C9C6E0;margin:0 0 14px;line-height:1.5}
+.sidecta .btn{width:100%;justify-content:center;font-size:14px;padding:10px 14px;box-shadow:none}
+
+/* sticky subnav */
+.subnav{position:sticky;top:60px;z-index:400;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+.subnav-in{max-width:var(--max);margin:0 auto;padding:0 32px;display:flex;align-items:center;gap:2px;overflow:auto}
+.subnav a{padding:14px 14px;font-size:14.5px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;cursor:pointer}
+.subnav a:hover{color:var(--ink)}
+.subnav a.on{color:var(--emerald-deep);border-bottom-color:var(--emerald);font-weight:600}
+.subnav .right{margin-left:auto;display:flex;align-items:center;gap:8px;padding:8px 0;flex-shrink:0}
+.subnav .right .btn,.subnav .right .tag{white-space:nowrap}
+
+/* map */
+.mapcard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;grid-template-columns:1fr 1.05fr;gap:24px;align-items:center}
+.mapsvg{width:100%;max-width:330px;height:auto;display:block;margin:0 auto}
+.mapsvg .st{fill:#F3F7F5;stroke:#CFEBDB;stroke-width:2}
+.mapsvg .rg{fill:#fff;stroke:var(--emerald-deep);stroke-width:1.5;cursor:pointer;transition:.15s}
+.mapsvg g:hover .rg{fill:var(--emerald);stroke:var(--emerald-ink)}
+.mapsvg text{font-family:Inter,sans-serif;font-size:11px;font-weight:700;fill:var(--emerald-deep);pointer-events:none}
+.mapsvg g:hover text{fill:var(--emerald-ink)}
+.maplegend{font-size:13px;color:var(--muted);line-height:1.7;columns:2;column-gap:22px}
+.maplegend b{color:var(--ink);font-weight:600}
+
+/* CTA band */
+.ctaband{background:var(--navy);color:#fff;border-radius:16px;padding:38px 40px;display:flex;align-items:center;gap:30px;justify-content:space-between;flex-wrap:wrap;margin:14px 0 0}
+.ctaband h3{font-size:25px;color:#fff;max-width:26ch;line-height:1.28}
+.ctaband p{margin:9px 0 0;color:#C9C6E0;font-size:14.5px;max-width:52ch;line-height:1.6}
+
+/* footer */
+.site-ft{background:var(--navy);color:#fff;margin-top:56px}
+.site-ft-in{max-width:var(--max);margin:0 auto;padding:44px 32px 26px;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:30px}
+.site-ft h6{font-family:Inter,sans-serif;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:#8A85B8;margin:0 0 13px;font-weight:700}
+.site-ft a{display:block;font-size:13.5px;color:#DDDBEE;padding:4px 0}
+.site-ft a:hover{color:#fff}
+.ftlogo .w{color:#fff}.ftlogo .sub{color:#fff;border-color:#fff}
+.ftbottom{max-width:var(--max);margin:0 auto;padding:16px 32px 30px;border-top:1px solid rgba(255,255,255,.14);font-size:12.5px;color:#A29DCB;display:flex;gap:18px;flex-wrap:wrap}
+
+.screen{display:none}
+.screen.on{display:block}
+.mini{font-size:12.5px;color:var(--faint)}
+.hr{height:1px;background:var(--line2);margin:36px 0}
+.pillrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.pill{border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:13.5px;cursor:pointer;background:#fff}
+.pill:hover{border-color:var(--emerald);background:var(--mint)}
+.pill.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+@media(max-width:1100px){
+  .mega-in{grid-template-columns:1fr 1fr}
+  .two{grid-template-columns:1fr}
+  .sidenav{position:static}
+  .mapcard{grid-template-columns:1fr}
+  .grid4{grid-template-columns:repeat(2,1fr)}
+  .site-ft-in{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body class="notes">
+
+<!-- ================= MOCKUP TOOLBAR ================= -->
+<div class="mchrome">
+  <div class="mchrome-in">
+    <span class="brandtag">Mockup · Data section</span>
+    <div class="mgroup">
+      <span class="lbl">Screen</span>
+      <button class="chip on" data-screen="states">1 · States index</button>
+      <button class="chip" data-screen="georgia">2 · State</button>
+      <button class="chip" data-screen="resa">3 · RESA</button>
+      <button class="chip" data-screen="district">4 · District</button>
+    </div>
+    <div class="mgroup">
+      <span class="lbl">Nav pattern</span>
+      <button class="chip on" data-nav="a">A · Mega menu</button>
+      <button class="chip" data-nav="b">B · Cascading</button>
+      <button class="chip" data-nav="c">C · Minimal</button>
+    </div>
+    <div class="spacer"></div>
+    <button class="chip on" id="notesBtn">Design notes: on</button>
+    <button class="chip" id="menuBtn">Open “Data” menu</button>
+  </div>
+</div>
+
+<div class="frame">
+
+<!-- ================= SITE HEADER ================= -->
+<header class="site-hd">
+  <div class="site-hd-in">
+    <a class="logo">
+      <span class="w">St<svg viewBox="0 0 10 10"><polygon points="5,1 9.4,9 0.6,9"/></svg>ndard</span>
+      <span class="sub">EDUCATION</span>
+    </a>
+    <nav class="mainnav">
+      <div class="nlink">Solutions <span class="car"></span></div>
+      <div class="nlink">Products <span class="car"></span></div>
+      <div class="nlink active" id="dataTrigger">Data <span class="car"></span> <span class="newpill">New</span></div>
+      <div class="nlink">Blog</div>
+      <div class="nlink">FAQs</div>
+      <div class="nlink">Request a Demo</div>
+      <button class="btn btn-outline">Login</button>
+    </nav>
+  </div>
+
+  <!-- ---- Variant A: mega menu ---- -->
+  <div class="mega" id="megaA">
+    <div class="mega-in">
+      <div class="mcol">
+        <h5>Browse by state</h5>
+        <div class="mitem" data-go="georgia">
+          <span class="flagdot">GA</span>
+          <span><span class="t">Georgia</span><span class="d">16 RESAs · 180 districts · 1.75M students</span></span>
+        </div>
+        <div class="mitem" data-go="georgia">
+          <span class="flagdot">KS</span>
+          <span><span class="t">Kansas</span><span class="d">7 service centers · 286 districts · 480K students</span></span>
+        </div>
+        <div class="mitem soon">
+          <span class="flagdot">AL</span>
+          <span><span class="t">Alabama</span><span class="d">Coming soon</span></span>
+        </div>
+        <div class="mitem soon">
+          <span class="flagdot">SC</span>
+          <span><span class="t">South Carolina</span><span class="d">Coming soon</span></span>
+        </div>
+        <div class="arrowlink" data-go="states">All states &amp; regions →</div>
+      </div>
+
+      <div class="mcol">
+        <h5>Popular regions</h5>
+        <div class="mitem" data-go="resa"><span class="flagdot">1</span><span><span class="t">First District RESA</span><span class="d">Statesboro, GA · 18 districts</span></span></div>
+        <div class="mitem" data-go="resa"><span class="flagdot">7</span><span><span class="t">Metro RESA</span><span class="d">Smyrna, GA · 16 districts</span></span></div>
+        <div class="mitem" data-go="resa"><span class="flagdot">14</span><span><span class="t">Pioneer RESA</span><span class="d">Cleveland, GA · 14 districts</span></span></div>
+        <div class="mitem" data-go="resa"><span class="flagdot">GB</span><span><span class="t">Greenbush</span><span class="d">Girard, KS · 60+ districts</span></span></div>
+        <div class="arrowlink" data-go="georgia">Browse all Georgia RESAs →</div>
+      </div>
+
+      <div class="mcol">
+        <div class="mpromo">
+          <h6>Find your district in seconds</h6>
+          <p>Free, always-current snapshots for every district we cover. No login required.</p>
+          <div class="msearch">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8A8A99" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>
+            Search “Candler County”…
+          </div>
+          <div class="arrowlink" data-go="district">See a sample district →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---- Variant B: cascading menu ---- -->
+  <div class="casc" id="megaB" style="left:32px">
+    <div class="casc-col">
+      <h5>State</h5>
+      <div class="crow on">Georgia <span class="chev">›</span></div>
+      <div class="crow">Kansas <span class="chev">›</span></div>
+      <div class="crow" style="opacity:.5">Alabama <small>soon</small></div>
+      <div class="crow" style="opacity:.5">South Carolina <small>soon</small></div>
+    </div>
+    <div class="casc-col">
+      <h5>RESA · Georgia</h5>
+      <div class="crow on" data-go="resa">First District <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">Chattahoochee-Flint <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">Coastal Plains <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">CSRA <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">Griffin <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">Heart of Georgia <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">Metro <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">Middle Georgia <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">North Georgia <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">Northeast Georgia <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">Northwest Georgia <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">Oconee <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">Okefenokee <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">Pioneer <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">Southwest Georgia <span class="chev">›</span></div>
+      <div class="crow" data-go="resa">West Georgia <span class="chev">›</span></div>
+    </div>
+    <div class="casc-col">
+      <h5>District · First District</h5>
+      <div class="crow" data-go="district">Bryan County</div>
+      <div class="crow" data-go="district">Bulloch County</div>
+      <div class="crow on" data-go="district">Candler County</div>
+      <div class="crow" data-go="district">Effingham County</div>
+      <div class="crow" data-go="district">Emanuel County</div>
+      <div class="crow" data-go="district">Evans County</div>
+      <div class="crow" data-go="district">Jenkins County</div>
+      <div class="crow" data-go="district">Liberty County</div>
+      <div class="crow" data-go="district">Long County</div>
+      <div class="crow" data-go="district">McIntosh County</div>
+      <div class="crow" data-go="district">Screven County</div>
+      <div class="crow" data-go="district">Tattnall County</div>
+      <div class="crow" data-go="district">Toombs County</div>
+      <div class="crow" data-go="district">Vidalia City</div>
+      <div class="crow" data-go="district">Wayne County</div>
+    </div>
+  </div>
+
+  <!-- ---- Variant C: minimal dropdown ---- -->
+  <div class="simpledd" id="megaC" style="left:32px">
+    <div class="crow" data-go="georgia">Georgia <small>16 RESAs · 180 districts</small></div>
+    <div class="crow" data-go="georgia">Kansas <small>7 centers · 286 districts</small></div>
+    <div style="height:1px;background:var(--line2);margin:6px 8px"></div>
+    <div class="crow" data-go="states">All states &amp; regions</div>
+    <div class="crow" data-go="district">Find a district ⌘K</div>
+  </div>
+</header>
+
+<!-- ============================================================
+     SCREEN 1 — DATA / STATES INDEX
+     ============================================================ -->
+<section class="screen on" id="scr-states">
+  <div class="phero">
+    <div class="phero-in">
+      <div class="crumbs"><a data-go="states">Home</a><span class="sep">/</span><span class="here">Data</span></div>
+      <div class="eyebrow" style="margin-top:18px">Free district data</div>
+      <h1>District data, <span class="hl">state by state</span></h1>
+      <p class="lede">Enrollment, attendance, assessment and accountability snapshots for every district we cover — built from public state data, refreshed each reporting cycle. Pick your state to start.</p>
+      <div style="margin-top:26px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <div class="fakeinput" style="min-width:380px;padding:13px 16px;font-size:15px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A8A99" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>
+          Search any district, RESA or service center…
+        </div>
+        <button class="btn btn-primary">Search</button>
+      </div>
+      <div class="pillrow">
+        <span class="mini" style="align-self:center;margin-right:4px">Popular:</span>
+        <span class="pill" data-go="resa">First District RESA</span>
+        <span class="pill" data-go="district">Candler County</span>
+        <span class="pill" data-go="resa">Metro RESA</span>
+        <span class="pill" data-go="georgia">Georgia</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="note"><b>Note 1 — URL structure.</b> <code>/data</code> → <code>/data/georgia</code> → <code>/data/georgia/first-district-resa</code> → <code>/data/georgia/first-district-resa/candler-county</code>. Every level is a real, indexable page with its own title and meta description, so a superintendent googling “Candler County enrollment trend” can land on your page. The nav is just a shortcut into a structure that stands on its own.</div>
+
+    <div class="sect">
+      <div class="sect-hd">
+        <div>
+          <h2>Choose a state</h2>
+          <p>We start where our customers are. More states are added as we validate their public data feeds.</p>
+        </div>
+        <span class="tag">2 states live · 4 in progress</span>
+      </div>
+      <div class="grid3">
+        <div class="card" data-go="georgia">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <span class="flagdot" style="width:38px;height:38px;border-radius:9px;background:var(--navy);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center">GA</span>
+            <h3 style="margin:0">Georgia</h3>
+          </div>
+          <div class="meta">Regional Educational Service Agencies (RESAs)</div>
+          <div style="display:flex;gap:20px;margin-top:16px">
+            <span><b class="ph" title="Sample value">16</b> <span class="mini">RESAs</span></span>
+            <span><b class="ph" title="Sample value">180</b> <span class="mini">districts</span></span>
+            <span><b class="ph" title="Sample value">1.75M</b> <span class="mini">students</span></span>
+          </div>
+          <div class="arrowlink" style="margin-top:14px;color:var(--emerald-deep);font-weight:600;font-size:13.5px">Explore Georgia →</div>
+        </div>
+
+        <div class="card" data-go="georgia">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <span class="flagdot" style="width:38px;height:38px;border-radius:9px;background:var(--navy);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center">KS</span>
+            <h3 style="margin:0">Kansas</h3>
+          </div>
+          <div class="meta">Education Service Centers (KAESA)</div>
+          <div style="display:flex;gap:20px;margin-top:16px">
+            <span><b class="ph" title="Sample value">7</b> <span class="mini">centers</span></span>
+            <span><b class="ph" title="Sample value">286</b> <span class="mini">districts</span></span>
+            <span><b class="ph" title="Sample value">480K</b> <span class="mini">students</span></span>
+          </div>
+          <div class="arrowlink" style="margin-top:14px;color:var(--emerald-deep);font-weight:600;font-size:13.5px">Explore Kansas →</div>
+        </div>
+
+        <div class="card dis">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <span class="flagdot" style="width:38px;height:38px;border-radius:9px;background:#E6E6EC;color:#9A9AA8;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center">+4</span>
+            <h3 style="margin:0">Alabama · South Carolina · Tennessee · Florida</h3>
+          </div>
+          <div class="meta">In progress — data feeds under review</div>
+          <div style="margin-top:16px" class="mini">Want your state next? <span style="color:var(--emerald-deep);font-weight:600">Tell us →</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note"><b>Note 2 — the regional layer is the point.</b> Each state names its intermediate agency differently (Georgia: <i>RESA</i>; Kansas: <i>education service center</i>; elsewhere: ESC, BOCES, IU, AEA). The nav should use the state’s own vocabulary at that level rather than forcing one label — the label is a per-state field, not a hard-coded word.</div>
+
+    <div class="sect" style="padding-top:8px">
+      <div class="sect-hd"><div><h2>How the snapshots are built</h2></div></div>
+      <div class="grid3">
+        <div class="card" style="cursor:default">
+          <div class="tag grey" style="margin-bottom:10px">01</div>
+          <h3>Public data, assembled</h3>
+          <div class="meta" style="margin-top:6px;line-height:1.6">State report cards, enrollment files and federal collections, normalized into one comparable shape.</div>
+        </div>
+        <div class="card" style="cursor:default">
+          <div class="tag grey" style="margin-bottom:10px">02</div>
+          <h3>Regional context added</h3>
+          <div class="meta" style="margin-top:6px;line-height:1.6">Every district is shown against its RESA or service-center peers, not just the state average.</div>
+        </div>
+        <div class="card" style="cursor:default">
+          <div class="tag grey" style="margin-bottom:10px">03</div>
+          <h3>Refreshed each cycle</h3>
+          <div class="meta" style="margin-top:6px;line-height:1.6">Updated when the state publishes, with the source and vintage noted on every page.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ctaband">
+      <div>
+        <h3>Want this for your own data, not just the public files?</h3>
+        <p>Standard Education connects to your SIS and assessment systems so the same view runs on live, student-level data.</p>
+      </div>
+      <button class="btn btn-primary btn-lg">Request a Demo</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 2 — STATE PAGE (GEORGIA)
+     ============================================================ -->
+<section class="screen" id="scr-georgia">
+  <div class="phero">
+    <div class="phero-in">
+      <div class="crumbs"><a data-go="states">Home</a><span class="sep">/</span><a data-go="states">Data</a><span class="sep">/</span><span class="here">Georgia</span></div>
+      <div class="eyebrow" style="margin-top:18px">Georgia</div>
+      <h1 style="max-width:22ch">Georgia district data by <span class="hl">RESA</span></h1>
+      <p class="lede">Georgia’s 180 school districts are organized into 16 Regional Educational Service Agencies. Pick a RESA to see its regional snapshot and every district inside it — or jump straight to a district.</p>
+      <div class="factrow">
+        <div class="fact"><div class="v ph" title="Sample value">16</div><div class="k">RESAs</div></div>
+        <div class="fact"><div class="v ph" title="Sample value">180</div><div class="k">School districts</div></div>
+        <div class="fact"><div class="v ph" title="Sample value">1.75M</div><div class="k">Students</div></div>
+        <div class="fact"><div class="v ph" title="Sample value">2,300+</div><div class="k">Schools</div></div>
+        <div class="fact"><div class="v" style="font-size:17px;padding-top:7px">2025–26</div><div class="k">Latest reporting year</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subnav">
+    <div class="subnav-in">
+      <a class="on">State snapshot</a>
+      <a>Browse RESAs</a>
+      <a>All districts A–Z</a>
+      <a>Compare</a>
+      <div class="right"><button class="btn btn-ghost">Download data</button><button class="btn btn-primary" style="padding:9px 16px;font-size:14px">Request a Demo</button></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="note"><b>Note 3 — state page does two jobs.</b> Top half is the <i>state snapshot</i> (a data page in its own right). Bottom half is the <i>directory</i> — map plus list, both routing into RESAs. Map and list are two views of the same thing so people who think geographically and people who scan alphabetically both get there fast.</div>
+
+    <div class="sect">
+      <div class="sect-hd">
+        <div><h2>Georgia at a glance</h2><p>Placeholder modules — actual metrics to be decided.</p></div>
+        <span class="mini">Source: GaDOE · vintage noted per metric</span>
+      </div>
+      <div class="grid4">
+        <div class="phbox" style="height:120px"><span class="kicker">Module</span><strong>Headline KPI</strong><span>e.g. enrollment + YoY</span></div>
+        <div class="phbox" style="height:120px"><span class="kicker">Module</span><strong>Headline KPI</strong><span>e.g. chronic absenteeism</span></div>
+        <div class="phbox" style="height:120px"><span class="kicker">Module</span><strong>Headline KPI</strong><span>e.g. CCRPI / proficiency</span></div>
+        <div class="phbox" style="height:120px"><span class="kicker">Module</span><strong>Headline KPI</strong><span>e.g. graduation rate</span></div>
+      </div>
+      <div class="grid2" style="margin-top:14px">
+        <div class="phbox" style="height:250px"><span class="kicker">Module</span><strong>Trend chart</strong><span>statewide, multi-year</span></div>
+        <div class="phbox" style="height:250px"><span class="kicker">Module</span><strong>Distribution / ranking</strong><span>RESAs compared</span></div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="sect" style="padding-top:0">
+      <div class="sect-hd">
+        <div><h2>Choose a RESA</h2><p>16 regional agencies. Click a region on the map or pick from the list.</p></div>
+        <div style="display:flex;gap:6px">
+          <span class="pill on">Map</span><span class="pill">List</span><span class="pill">Table</span>
+        </div>
+      </div>
+
+      <div class="mapcard">
+        <div>
+          <svg class="mapsvg" viewBox="0 0 300 320" role="img" aria-label="Georgia RESA map">
+            <path class="st" d="M40 22 L172 14 L214 44 L262 152 L256 206 L232 262 L96 268 L54 182 Z"/>
+            <g><circle class="rg" cx="72" cy="48" r="15"/><text x="72" y="52" text-anchor="middle">11</text></g>
+            <g><circle class="rg" cx="118" cy="38" r="15"/><text x="118" y="42" text-anchor="middle">9</text></g>
+            <g><circle class="rg" cx="163" cy="42" r="15"/><text x="163" y="46" text-anchor="middle">14</text></g>
+            <g><circle class="rg" cx="200" cy="72" r="15"/><text x="200" y="76" text-anchor="middle">10</text></g>
+            <g><circle class="rg" cx="112" cy="84" r="15"/><text x="112" y="88" text-anchor="middle">7</text></g>
+            <g><circle class="rg" cx="70" cy="104" r="15"/><text x="70" y="108" text-anchor="middle">16</text></g>
+            <g><circle class="rg" cx="152" cy="106" r="15"/><text x="152" y="110" text-anchor="middle">5</text></g>
+            <g><circle class="rg" cx="228" cy="120" r="15"/><text x="228" y="124" text-anchor="middle">4</text></g>
+            <g><circle class="rg" cx="188" cy="130" r="15"/><text x="188" y="134" text-anchor="middle">12</text></g>
+            <g><circle class="rg" cx="140" cy="150" r="15"/><text x="140" y="154" text-anchor="middle">8</text></g>
+            <g><circle class="rg" cx="78" cy="150" r="15"/><text x="78" y="154" text-anchor="middle">3</text></g>
+            <g><circle class="rg" cx="196" cy="178" r="15"/><text x="196" y="182" text-anchor="middle">6</text></g>
+            <g><circle class="rg" cx="130" cy="200" r="15"/><text x="130" y="204" text-anchor="middle">2</text></g>
+            <g><circle class="rg" cx="232" cy="212" r="15"/><text x="232" y="216" text-anchor="middle">1</text></g>
+            <g><circle class="rg" cx="96" cy="228" r="15"/><text x="96" y="232" text-anchor="middle">15</text></g>
+            <g><circle class="rg" cx="180" cy="238" r="15"/><text x="180" y="242" text-anchor="middle">13</text></g>
+          </svg>
+          <div class="mini" style="text-align:center;margin-top:6px">Illustrative placement — real RESA boundary shapes to come.</div>
+        </div>
+        <div class="maplegend">
+          <div><b>1</b> First District — Statesboro</div>
+          <div><b>2</b> Coastal Plains — Lenox</div>
+          <div><b>3</b> Chattahoochee-Flint — Ellaville</div>
+          <div><b>4</b> CSRA — Dearing</div>
+          <div><b>5</b> Griffin — Griffin</div>
+          <div><b>6</b> Heart of Georgia — Eastman</div>
+          <div><b>7</b> Metro — Smyrna</div>
+          <div><b>8</b> Middle Georgia — Fort Valley</div>
+          <div><b>9</b> North Georgia — Ellijay</div>
+          <div><b>10</b> Northeast Georgia — Winterville</div>
+          <div><b>11</b> Northwest Georgia — Rome</div>
+          <div><b>12</b> Oconee — Milledgeville</div>
+          <div><b>13</b> Okefenokee — Nahunta</div>
+          <div><b>14</b> Pioneer — Cleveland</div>
+          <div><b>15</b> Southwest Georgia — Camilla</div>
+          <div><b>16</b> West Georgia — Grantville</div>
+        </div>
+      </div>
+
+      <div class="grid3" style="margin-top:20px">
+        <div class="card" data-go="resa"><h3>First District RESA</h3><div class="meta">Statesboro · Southeast Georgia</div><div style="display:flex;gap:16px;margin-top:12px"><span class="mini"><b class="ph" title="Sample value">18</b> districts</span><span class="mini"><b class="ph" title="Sample value">86K</b> students</span></div></div>
+        <div class="card" data-go="resa"><h3>Metro RESA</h3><div class="meta">Smyrna · Atlanta metro</div><div style="display:flex;gap:16px;margin-top:12px"><span class="mini"><b class="ph" title="Sample value">16</b> districts</span><span class="mini"><b class="ph" title="Sample value">680K</b> students</span></div></div>
+        <div class="card" data-go="resa"><h3>Pioneer RESA</h3><div class="meta">Cleveland · Northeast Georgia</div><div style="display:flex;gap:16px;margin-top:12px"><span class="mini"><b class="ph" title="Sample value">14</b> districts</span><span class="mini"><b class="ph" title="Sample value">92K</b> students</span></div></div>
+        <div class="card" data-go="resa"><h3>Heart of Georgia RESA</h3><div class="meta">Eastman · Central Georgia</div><div style="display:flex;gap:16px;margin-top:12px"><span class="mini"><b class="ph" title="Sample value">17</b> districts</span><span class="mini"><b class="ph" title="Sample value">44K</b> students</span></div></div>
+        <div class="card" data-go="resa"><h3>Northwest Georgia RESA</h3><div class="meta">Rome · Northwest Georgia</div><div style="display:flex;gap:16px;margin-top:12px"><span class="mini"><b class="ph" title="Sample value">15</b> districts</span><span class="mini"><b class="ph" title="Sample value">118K</b> students</span></div></div>
+        <div class="card" data-go="resa"><h3>Coastal Plains RESA</h3><div class="meta">Lenox · South Georgia</div><div style="display:flex;gap:16px;margin-top:12px"><span class="mini"><b class="ph" title="Sample value">19</b> districts</span><span class="mini"><b class="ph" title="Sample value">72K</b> students</span></div></div>
+      </div>
+      <div style="text-align:center;margin-top:22px"><button class="btn btn-ghost">Show all 16 RESAs</button></div>
+    </div>
+
+    <div class="note"><b>Note 4 — escape hatch.</b> Most visitors want <i>their own district</i> and don’t know or care which RESA it’s in. Every state page needs a prominent “find a district” path that skips the regional layer entirely. The RESA hierarchy is how you organize; district search is how most people actually arrive.</div>
+
+    <div class="sect" style="padding-top:0">
+      <div class="sect-hd"><div><h2>Or jump straight to a district</h2></div></div>
+      <div class="fakeinput" style="max-width:460px;padding:13px 16px;font-size:15px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A8A99" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.3-4.3"/></svg>
+        Type a district name…
+      </div>
+      <div class="pillrow" style="margin-top:16px">
+        <span class="pill">A</span><span class="pill">B</span><span class="pill">C</span><span class="pill">D</span><span class="pill">E</span><span class="pill">F</span><span class="pill">G</span><span class="pill">H</span><span class="pill">…</span><span class="pill">W</span>
+      </div>
+    </div>
+
+    <div class="ctaband">
+      <div><h3>Presenting to a Georgia board or RESA?</h3><p>We’ll pull a custom regional brief for any RESA in the state.</p></div>
+      <button class="btn btn-primary btn-lg">Request a Demo</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 3 — RESA PAGE
+     ============================================================ -->
+<section class="screen" id="scr-resa">
+  <div class="phero">
+    <div class="phero-in">
+      <div class="crumbs">
+        <a data-go="states">Home</a><span class="sep">/</span><a data-go="states">Data</a><span class="sep">/</span>
+        <a data-go="georgia">Georgia</a><span class="sep">/</span><span class="here">First District RESA</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:22px;margin-top:18px;flex-wrap:wrap">
+        <div style="flex:1;min-width:340px">
+          <div class="eyebrow">Regional Educational Service Agency · Georgia</div>
+          <h1 style="max-width:24ch">First District RESA</h1>
+          <p class="lede">Serving 18 school districts across southeast Georgia from Statesboro. Regional snapshot below, with every member district listed and comparable.</p>
+        </div>
+        <div style="width:220px">
+          <div class="phbox" style="height:150px"><span class="kicker">Module</span><strong>Region locator map</strong><span>counties highlighted</span></div>
+        </div>
+      </div>
+      <div class="factrow">
+        <div class="fact"><div class="v ph" title="Sample value">18</div><div class="k">Member districts</div></div>
+        <div class="fact"><div class="v ph" title="Sample value">86,400</div><div class="k">Students</div></div>
+        <div class="fact"><div class="v ph" title="Sample value">142</div><div class="k">Schools</div></div>
+        <div class="fact"><div class="v" style="font-size:17px;padding-top:7px">Statesboro, GA</div><div class="k">Headquarters</div></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:26px;flex-wrap:wrap">
+        <button class="btn btn-primary">Request a regional briefing</button>
+        <button class="btn btn-ghost">Download this snapshot (PDF)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="subnav">
+    <div class="subnav-in">
+      <a class="on">Snapshot</a><a>Districts (18)</a><a>Compare districts</a><a>Trends</a><a>Sources &amp; notes</a>
+      <div class="right"><span class="tag">Updated Jul 2026</span></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="note"><b>Note 5 — RESA page = snapshot + roster.</b> Two jobs on one page: the regional data story (top) and the list of member districts (bottom), which is also the primary navigation into the district level. Sticky left rail keeps the sections reachable without scroll-hunting; sticky CTA rides along.</div>
+
+    <div class="two">
+      <aside class="sidenav">
+        <h5>On this page</h5>
+        <a class="on">Regional snapshot</a>
+        <a>Member districts</a>
+        <a>District comparison</a>
+        <a>Multi-year trends</a>
+        <a>Sources &amp; methodology</a>
+        <div class="sidecta">
+          <h6>Buying through the RESA co-op?</h6>
+          <p>We can be purchased through your RESA’s cooperative agreement — no full RFP required.</p>
+          <button class="btn btn-primary">Talk to us</button>
+        </div>
+        <div style="margin-top:18px">
+          <h5>Nearby RESAs</h5>
+          <a data-go="resa">Heart of Georgia</a>
+          <a data-go="resa">Okefenokee</a>
+          <a data-go="resa">Coastal Plains</a>
+          <a data-go="resa">Oconee</a>
+        </div>
+      </aside>
+
+      <div>
+        <div class="sect" style="padding-top:0">
+          <div class="sect-hd">
+            <div><h2>Regional snapshot</h2><p>Placeholder modules — actual metrics to be decided.</p></div>
+          </div>
+          <div class="grid3">
+            <div class="phbox" style="height:118px"><span class="kicker">Module</span><strong>KPI tile</strong></div>
+            <div class="phbox" style="height:118px"><span class="kicker">Module</span><strong>KPI tile</strong></div>
+            <div class="phbox" style="height:118px"><span class="kicker">Module</span><strong>KPI tile</strong></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-top:14px">
+            <div class="phbox" style="height:260px"><span class="kicker">Module</span><strong>Regional trend chart</strong><span>region vs. state, 5 years</span></div>
+            <div class="phbox" style="height:260px"><span class="kicker">Module</span><strong>Composition / mix</strong><span>e.g. demographics</span></div>
+          </div>
+          <div class="phbox" style="height:150px;margin-top:14px"><span class="kicker">Module</span><strong>District ranking strip</strong><span>all 18 districts on one metric, sortable</span></div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="sect" style="padding-top:0">
+          <div class="sect-hd">
+            <div><h2>Districts in First District RESA</h2><p>18 districts. Click any row for its full snapshot.</p></div>
+          </div>
+          <div class="tblwrap">
+            <div class="tbltools">
+              <div class="fakeinput">Filter districts…</div>
+              <span class="pill on">All</span><span class="pill">Under 2,500</span><span class="pill">2,500–10,000</span><span class="pill">10,000+</span>
+              <span class="mini" style="margin-left:auto">Sortable columns — metrics TBD</span>
+            </div>
+            <table class="dt">
+              <thead>
+                <tr>
+                  <th>District</th><th>County seat</th>
+                  <th class="num">Metric A ↕</th><th class="num">Metric B ↕</th><th class="num">Metric C ↕</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="resaRows"></tbody>
+            </table>
+          </div>
+          <div class="mini" style="margin-top:10px">District roster shown is illustrative — final membership list to be confirmed against RESA records.</div>
+        </div>
+
+        <div class="note"><b>Note 6 — comparison is the hook.</b> A superintendent’s first question is “how do we look next to the district down the road?” Putting a peer-comparison block on the RESA page — not just individual district pages — is what makes the regional layer worth having instead of a flat district directory.</div>
+
+        <div class="sect" style="padding-top:0">
+          <div class="sect-hd"><div><h2>Compare districts in this region</h2></div></div>
+          <div class="phbox" style="height:300px"><span class="kicker">Module</span><strong>Side-by-side comparison builder</strong><span>pick 2–4 districts, pick metrics</span></div>
+        </div>
+
+        <div class="ctaband">
+          <div><h3>Get the First District RESA brief</h3><p>A one-page PDF for your next regional meeting, refreshed each cycle.</p></div>
+          <button class="btn btn-primary btn-lg">Request it</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 4 — DISTRICT PAGE
+     ============================================================ -->
+<section class="screen" id="scr-district">
+  <div class="phero">
+    <div class="phero-in">
+      <div class="crumbs">
+        <a data-go="states">Home</a><span class="sep">/</span><a data-go="states">Data</a><span class="sep">/</span>
+        <a data-go="georgia">Georgia</a><span class="sep">/</span><a data-go="resa">First District RESA</a><span class="sep">/</span>
+        <span class="here">Candler County</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:26px;margin-top:18px;flex-wrap:wrap">
+        <div style="flex:1;min-width:360px">
+          <div class="eyebrow">School district · Georgia</div>
+          <h1 style="max-width:20ch">Candler County School District</h1>
+          <p class="lede">Metter, GA · Part of <a data-go="resa" style="color:var(--emerald-deep);font-weight:600;cursor:pointer">First District RESA</a>. Enrollment, attendance, assessment and accountability at a glance.</p>
+          <div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap">
+            <button class="btn btn-primary">See this on live data</button>
+            <button class="btn btn-ghost">Download snapshot</button>
+            <button class="btn btn-ghost">Compare to peers</button>
+          </div>
+        </div>
+        <div style="width:250px">
+          <div class="phbox" style="height:170px"><span class="kicker">Module</span><strong>District locator</strong><span>+ schools list</span></div>
+        </div>
+      </div>
+      <div class="factrow">
+        <div class="fact"><div class="v ph" title="Sample value">2,180</div><div class="k">Students</div></div>
+        <div class="fact"><div class="v ph" title="Sample value">4</div><div class="k">Schools</div></div>
+        <div class="fact"><div class="v ph" title="Sample value">68%</div><div class="k">Economically disadvantaged</div></div>
+        <div class="fact"><div class="v" style="font-size:17px;padding-top:7px">2025–26</div><div class="k">Reporting year</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subnav">
+    <div class="subnav-in">
+      <a class="on">Overview</a><a>Enrollment</a><a>Demographics</a><a>Attendance</a><a>Assessment</a><a>Accountability</a><a>Peer comparison</a>
+      <div class="right"><span class="tag">Updated Jul 2026</span><button class="btn btn-primary" style="padding:9px 16px;font-size:14px">Request a Demo</button></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="note"><b>Note 7 — district page is the money page.</b> This is what gets shared, linked and searched. Note the two lateral moves that keep people in the section: “up” to the RESA (breadcrumb + peer block) and “sideways” to neighboring districts at the bottom. Sub-nav tabs let the page grow into per-topic pages later (<code>…/candler-county/attendance</code>) without changing the nav.</div>
+
+    <div class="two">
+      <aside class="sidenav">
+        <h5>On this page</h5>
+        <a class="on">Overview</a><a>Enrollment</a><a>Demographics</a><a>Attendance</a><a>Assessment</a><a>Accountability</a><a>Peer comparison</a><a>Sources</a>
+        <div class="sidecta">
+          <h6>This is public data.<br>Yours goes deeper.</h6>
+          <p>Connect your SIS and see the same view student-by-student, updated nightly.</p>
+          <button class="btn btn-primary">Request a Demo</button>
+        </div>
+        <div style="margin-top:18px">
+          <h5>In this RESA</h5>
+          <a data-go="district">Bulloch County</a>
+          <a data-go="district">Emanuel County</a>
+          <a data-go="district">Evans County</a>
+          <a data-go="district">Toombs County</a>
+          <a data-go="resa">All 18 districts →</a>
+        </div>
+      </aside>
+
+      <div>
+        <div class="sect" style="padding-top:0">
+          <div class="sect-hd"><div><h2>Overview</h2><p>Placeholder modules — actual metrics to be decided.</p></div></div>
+          <div class="grid4">
+            <div class="phbox" style="height:110px"><span class="kicker">Module</span><strong>KPI</strong></div>
+            <div class="phbox" style="height:110px"><span class="kicker">Module</span><strong>KPI</strong></div>
+            <div class="phbox" style="height:110px"><span class="kicker">Module</span><strong>KPI</strong></div>
+            <div class="phbox" style="height:110px"><span class="kicker">Module</span><strong>KPI</strong></div>
+          </div>
+          <div class="phbox" style="height:230px;margin-top:14px"><span class="kicker">Module</span><strong>Primary trend chart</strong><span>district vs. RESA vs. state</span></div>
+          <div class="grid2" style="margin-top:14px">
+            <div class="phbox" style="height:220px"><span class="kicker">Module</span><strong>Breakdown chart</strong></div>
+            <div class="phbox" style="height:220px"><span class="kicker">Module</span><strong>Breakdown chart</strong></div>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="sect" style="padding-top:0">
+          <div class="sect-hd"><div><h2>Schools in this district</h2></div></div>
+          <div class="tblwrap">
+            <table class="dt">
+              <thead><tr><th>School</th><th>Grades</th><th class="num">Metric A ↕</th><th class="num">Metric B ↕</th></tr></thead>
+              <tbody>
+                <tr><td class="dname">Metter Elementary School</td><td>PK–5</td><td class="num"><span class="ph" title="Sample value">—</span></td><td class="num"><span class="ph" title="Sample value">—</span></td></tr>
+                <tr><td class="dname">Metter Intermediate School</td><td>4–6</td><td class="num"><span class="ph" title="Sample value">—</span></td><td class="num"><span class="ph" title="Sample value">—</span></td></tr>
+                <tr><td class="dname">Metter Middle School</td><td>7–8</td><td class="num"><span class="ph" title="Sample value">—</span></td><td class="num"><span class="ph" title="Sample value">—</span></td></tr>
+                <tr><td class="dname">Metter High School</td><td>9–12</td><td class="num"><span class="ph" title="Sample value">—</span></td><td class="num"><span class="ph" title="Sample value">—</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mini" style="margin-top:10px">School list is illustrative.</div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="sect" style="padding-top:0">
+          <div class="sect-hd">
+            <div><h2>How Candler County compares</h2><p>Against the 17 other districts in First District RESA.</p></div>
+            <span class="tag">Regional peers</span>
+          </div>
+          <div class="phbox" style="height:280px"><span class="kicker">Module</span><strong>Peer comparison</strong><span>district plotted against RESA peers + state</span></div>
+        </div>
+
+        <div class="sect" style="padding-top:0">
+          <div class="sect-hd"><div><h2>Neighboring districts</h2></div></div>
+          <div class="grid4">
+            <div class="card" data-go="district"><h3 style="font-size:15.5px">Bulloch County</h3><div class="mini" style="margin-top:5px"><span class="ph" title="Sample value">11,200</span> students</div></div>
+            <div class="card" data-go="district"><h3 style="font-size:15.5px">Emanuel County</h3><div class="mini" style="margin-top:5px"><span class="ph" title="Sample value">4,300</span> students</div></div>
+            <div class="card" data-go="district"><h3 style="font-size:15.5px">Evans County</h3><div class="mini" style="margin-top:5px"><span class="ph" title="Sample value">2,600</span> students</div></div>
+            <div class="card" data-go="district"><h3 style="font-size:15.5px">Toombs County</h3><div class="mini" style="margin-top:5px"><span class="ph" title="Sample value">3,000</span> students</div></div>
+          </div>
+        </div>
+
+        <div class="ctaband">
+          <div><h3>This is what public data shows. Imagine your own.</h3><p>Standard Education runs the same views on your live SIS, attendance and assessment data.</p></div>
+          <button class="btn btn-primary btn-lg">Request a Demo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-ft">
+  <div class="site-ft-in">
+    <div>
+      <div class="logo ftlogo" style="display:inline-flex"><span class="w">St<svg viewBox="0 0 10 10"><polygon points="5,1 9.4,9 0.6,9"/></svg>ndard</span><span class="sub">EDUCATION</span></div>
+      <p style="color:#C9C6E0;font-size:13.5px;line-height:1.65;margin:16px 0 0;max-width:34ch">Turning district data into decisions superintendents can act on.</p>
+    </div>
+    <div>
+      <h6>Data</h6>
+      <a data-go="states">All states</a><a data-go="georgia">Georgia</a><a data-go="georgia">Kansas</a><a data-go="states">Methodology</a><a data-go="states">Request a state</a>
+    </div>
+    <div><h6>Products</h6><a>Analytics</a><a>Assessments &amp; Screeners</a><a>FOCUS</a><a>Attendance</a><a>Demographics</a></div>
+    <div><h6>Company</h6><a>Blog</a><a>FAQs</a><a>Request a Demo</a><a>Login</a></div>
+  </div>
+  <div class="ftbottom"><span>© 2026 Standard Education</span><span>Privacy Policy</span><span>Terms of Service</span><span>Data sources &amp; vintage</span></div>
+</footer>
+
+</div><!-- /frame -->
+
+<script>
+/* ---------- district roster (illustrative) ---------- */
+const districts=[
+ ["Bryan County","Pembroke"],["Bulloch County","Statesboro"],["Candler County","Metter"],
+ ["Effingham County","Springfield"],["Emanuel County","Swainsboro"],["Evans County","Claxton"],
+ ["Jenkins County","Millen"],["Liberty County","Hinesville"],["Long County","Ludowici"],
+ ["McIntosh County","Darien"],["Screven County","Sylvania"],["Tattnall County","Reidsville"],
+ ["Toombs County","Lyons"],["Vidalia City","Vidalia"],["Wayne County","Jesup"],
+ ["Glennville City","Glennville"],["Pembroke City","Pembroke"],["Statesboro City","Statesboro"]
+];
+document.getElementById('resaRows').innerHTML = districts.map(d=>`
+ <tr data-go="district">
+   <td class="dname">${d[0]}</td><td style="color:var(--muted)">${d[1]}</td>
+   <td class="num"><span class="ph" title="Sample value">—</span></td>
+   <td class="num"><span class="ph" title="Sample value">—</span></td>
+   <td class="num"><span class="ph" title="Sample value">—</span></td>
+   <td style="color:#C9C9D4;text-align:right">›</td>
+ </tr>`).join('');
+
+/* ---------- screen switching ---------- */
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on', s.id==='scr-'+name));
+  document.querySelectorAll('.chip[data-screen]').forEach(c=>c.classList.toggle('on', c.dataset.screen===name));
+  closeMenus();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+document.querySelectorAll('.chip[data-screen]').forEach(c=>c.onclick=()=>showScreen(c.dataset.screen));
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-go]');
+  if(t){ e.preventDefault(); showScreen(t.dataset.go); }
+});
+
+/* ---------- nav variant ---------- */
+let variant='a';
+function setVariant(v){
+  variant=v;
+  document.querySelectorAll('.chip[data-nav]').forEach(c=>c.classList.toggle('on', c.dataset.nav===v));
+  closeMenus();
+}
+document.querySelectorAll('.chip[data-nav]').forEach(c=>c.onclick=()=>{setVariant(c.dataset.nav); openMenu();});
+
+function closeMenus(){
+  ['megaA','megaB','megaC'].forEach(id=>document.getElementById(id).classList.remove('open'));
+  document.getElementById('menuBtn').classList.remove('on');
+  document.getElementById('menuBtn').textContent='Open “Data” menu';
+}
+function openMenu(){
+  closeMenus();
+  document.getElementById('mega'+variant.toUpperCase()).classList.add('open');
+  document.getElementById('menuBtn').classList.add('on');
+  document.getElementById('menuBtn').textContent='Close “Data” menu';
+}
+function toggleMenu(){
+  const open=document.getElementById('mega'+variant.toUpperCase()).classList.contains('open');
+  open?closeMenus():openMenu();
+}
+document.getElementById('menuBtn').onclick=e=>{e.stopPropagation();toggleMenu()};
+document.getElementById('dataTrigger').onclick=e=>{e.stopPropagation();toggleMenu()};
+document.querySelector('.site-hd').addEventListener('mouseleave',closeMenus);
+
+/* ---------- notes ---------- */
+const nb=document.getElementById('notesBtn');
+nb.onclick=()=>{
+  document.body.classList.toggle('notes');
+  const on=document.body.classList.contains('notes');
+  nb.classList.toggle('on',on);
+  nb.textContent='Design notes: '+(on?'on':'off');
+};
+
+/* ---------- inert in-page anchors ---------- */
+document.querySelectorAll('.sidenav a:not([data-go]), .subnav a').forEach(a=>{
+  a.onclick=()=>{
+    const grp=a.closest('.sidenav,.subnav-in');
+    grp.querySelectorAll('a').forEach(x=>x.classList.remove('on'));
+    a.classList.add('on');
+  };
+});
+document.querySelectorAll('.pillrow .pill, .tbltools .pill, .sect-hd .pill').forEach(p=>{
+  if(p.dataset.go) return;
+  p.onclick=()=>{
+    const sibs=p.parentElement.querySelectorAll('.pill');
+    if(p.parentElement.querySelector('.pill.on')) sibs.forEach(x=>x.classList.remove('on'));
+    p.classList.add('on');
+  };
+});
+</script>
+</body>
+</html>
