@@ -1,0 +1,238 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>KCKPS Truancy System Flow</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: two swimlane diagrams (school level, district level). Lanes = actors, columns = sequence, elbow arrows between steps */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#18212e; --muted:#5b6778; --line:#d5dbe4; --lane:#eef1f5; --edge:#66748a;
+  --auto:#1f6f8b; --auto-bg:#e2f0f5; --manual:#b4580c; --manual-bg:#fff4e8; --ai:#1d7a46; --ai-bg:#e3f4ea; --fam:#6a4fa3; --fam-bg:#efeaf8;
+  --f-display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10151d; --surface:#18202b; --ink:#e6ebf2; --muted:#9aa6b6; --line:#2c3644; --lane:#141b25; --edge:#8796ab;
+  --auto:#6cc3df; --auto-bg:#14303b; --manual:#f0a25a; --manual-bg:#33230f; --ai:#6fd39a; --ai-bg:#143022; --fam:#b79ff0; --fam-bg:#271f3b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10151d; --surface:#18202b; --ink:#e6ebf2; --muted:#9aa6b6; --line:#2c3644; --lane:#141b25; --edge:#8796ab;
+  --auto:#6cc3df; --auto-bg:#14303b; --manual:#f0a25a; --manual-bg:#33230f; --ai:#6fd39a; --ai-bg:#143022; --fam:#b79ff0; --fam-bg:#271f3b; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.wrap{max-width:1780px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:26px}
+h1,h2{font-family:var(--f-display);margin:0;text-wrap:balance}
+h1{font-size:clamp(28px,4vw,40px);font-weight:700;line-height:1.05}
+h2{font-size:22px;font-weight:600}
+.sub{color:var(--muted);margin:6px 0 0;max-width:76ch}
+.pitch{background:var(--surface);border:1.5px solid var(--ai);border-radius:8px;padding:16px 18px;display:grid;gap:10px}
+.pitch p{margin:0;font-size:clamp(17px,2.2vw,21px);line-height:1.4;font-weight:600;max-width:90ch}
+.pitch .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pitch small{color:var(--muted);font-size:12.5px}
+button.copy{font:600 13px var(--f-body);padding:6px 12px;border-radius:999px;border:1px solid var(--ai);background:var(--ai-bg);color:var(--ai);cursor:pointer}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:grid;gap:2px;align-content:start}
+.tile b{font-family:var(--f-display);font-size:34px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.tile span{font-size:14px}
+.tile small{color:var(--muted);font-size:12.5px}
+.tile.now b{color:var(--manual)} .tile.after b{color:var(--ai)}
+.chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13.5px}
+.chip b{font-family:var(--f-mono);font-size:13px}
+.chip.big{border-color:var(--manual);background:var(--manual-bg)}
+.chip.dim{color:var(--muted)}
+.bar{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;align-items:center}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.sw{width:18px;height:13px;border-radius:3px;border:1.5px solid}
+.sw.auto{background:var(--auto-bg);border-color:var(--auto)} .sw.manual{background:var(--manual-bg);border-color:var(--manual)}
+.sw.dec{background:var(--fam-bg);border-color:var(--fam);border-style:dashed;border-radius:8px}
+.toggle button{font:600 13px var(--f-body);padding:6px 12px;border-radius:999px;border:1px solid var(--ai);background:var(--surface);color:var(--ai);cursor:pointer}
+.toggle button[aria-pressed="true"]{background:var(--ai);color:var(--surface)}
+button:focus-visible{outline:2px solid var(--auto);outline-offset:2px}
+
+.phase{display:grid;gap:10px}
+.phase-head{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline}
+.phase-head small{color:var(--muted);font-size:13.5px}
+.diagram{display:grid;grid-template-columns:150px minmax(0,1fr);border:1px solid var(--line);border-radius:8px;background:var(--surface);overflow:hidden}
+.labels{border-right:1px solid var(--line);background:var(--surface);z-index:2}
+.lbl{box-sizing:border-box;padding:10px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;gap:2px}
+.lbl:last-child{border-bottom:0}
+.lbl b{font-family:var(--f-display);font-weight:600;font-size:17px;line-height:1.1}
+.lbl small{font-size:11.5px;color:var(--muted);line-height:1.25}
+.lbl .hrs{font-family:var(--f-mono);font-size:11.5px;font-weight:600;color:var(--manual)}
+.scroll{overflow-x:auto}
+.canvas{position:relative}
+.stripe{position:absolute;left:0;right:0;border-bottom:1px solid var(--line)}
+.stripe:nth-child(even){background:var(--lane)}
+svg.edges{position:absolute;inset:0;overflow:visible;pointer-events:none}
+.edges path{fill:none;stroke:var(--edge);stroke-width:1.6}
+.edges .head{fill:var(--edge);stroke:none}
+.elabel{position:absolute;font-family:var(--f-mono);font-size:10.5px;line-height:1.2;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:1px 5px;white-space:nowrap;transform:translateY(-50%);z-index:1}
+.node{position:absolute;box-sizing:border-box;border:1.5px solid;border-radius:5px;padding:6px 8px;display:grid;gap:3px;font-size:12.5px;line-height:1.25;z-index:1;transition:opacity .15s}
+.node.auto{background:var(--auto-bg);border-color:var(--auto)}
+.node.manual{background:var(--manual-bg);border-color:var(--manual)}
+.node.dec{background:var(--fam-bg);border-color:var(--fam);border-style:dashed;border-radius:12px}
+.node.ext{background:var(--surface);border-color:var(--muted);border-style:dashed}
+.node .k{font-family:var(--f-mono);font-size:9.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.node.auto .k{color:var(--auto)} .node.manual .k{color:var(--manual)} .node.dec .k{color:var(--fam)} .node.ext .k{color:var(--muted)}
+.node .t{font-weight:600}
+.node .tm{font-family:var(--f-mono);font-size:10.5px}
+.node .wk{font-family:var(--f-mono);font-size:10.5px;font-weight:600;color:var(--manual)}
+.node .ai{justify-self:start;font-family:var(--f-mono);font-size:9.5px;font-weight:600;padding:1px 5px;border-radius:3px;background:var(--ai-bg);color:var(--ai)}
+.node .note{font-size:11px;color:var(--muted)}
+.dim .node:not(.cand){opacity:.25}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:6px;align-content:start;min-width:0;font-size:14px}
+.panel p{margin:0}
+.foot{font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.node{transition:none}}
+@media (max-width:600px){.diagram{grid-template-columns:104px minmax(0,1fr)} .lbl b{font-size:15px} .lbl small{display:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>KCKPS Truancy System Flow</h1>
+    <p class="sub">Who does what in the truancy process, how work passes between people and systems, and roughly how long each manual step takes. Weekly hours are district-wide estimates.</p>
+  </header>
+
+  <section class="pitch">
+    <p id="pitch">Based on what we know, KCK staff likely spend about 45 hours a week (181 a month, roughly 1.1 full-time people) on truancy paperwork. We think Gemini agents could cut that by about half, without buying new software.</p>
+  </section>
+
+  <section class="tiles" aria-label="Time summary">
+    <div class="tile now"><b>45</b><span>hrs / week today</span><small>181 hrs a month · 1,627 a year<br>Secretaries ≈29 · School teams ≈7 · Attend to Achieve ≈9</small></div>
+    <div class="tile"><b>1.1</b><span>full-time staff equivalent</span><small>at 40 hrs a week, spread across many people</small></div>
+    <div class="tile after"><b>22</b><span>hrs / week with AI</span><small>88 hrs a month · 795 a year</small></div>
+    <div class="tile after"><b>51%</b><span>less paperwork time</span><small>23 hrs a week back (Gemini only)</small></div>
+    <div class="tile"><b>21</b><span>hrs / week with families</span><small>meetings and TCPS; not counted in savings</small></div>
+  </section>
+
+  <div class="bar">
+    <div class="legend">
+      <span><i class="sw auto"></i>System (automated)</span>
+      <span><i class="sw manual"></i>Staff (manual)</span>
+      <span><i class="sw dec"></i>Family decision point</span>
+      <span><span style="font-family:var(--f-mono);font-size:10px;font-weight:600;padding:1px 5px;border-radius:3px;background:var(--ai-bg);color:var(--ai)">AI</span>Agent could take this on</span>
+    </div>
+    <div class="toggle"><button id="aiToggle" aria-pressed="false">Highlight AI candidates</button></div>
+  </div>
+
+  <div id="phases" style="display:grid;gap:30px"></div>
+
+  <section class="notes">
+    <div class="panel"><h2>How to read the times</h2><p>Per-unit times (for example "3–5 min / letter") are our estimates. Weekly hours apply them to a best-guess volume of ~6,000 first letters a year, worked back from ~1,700 referrals, over 36 school weeks.</p></div>
+    <div class="panel"><h2>Where AI stops</h2><p>Gemini works in Gmail, Docs, Sheets and Forms but can't act inside Infinite Campus. Steps that write to IC one student at a time stay manual unless KCK IT confirms a batch import.</p></div>
+    <div class="panel"><h2>Not shown</h2><p>Coding absences as excused or unexcused and returning parent calls. That's likely a large share of secretary time, but it sits outside the truancy steps.</p></div>
+  </section>
+
+  <p class="foot">Draft for KCK to correct. Sources: KCKPS Truancy Process doc and the Oct 15, 2026 check-in.</p>
+</div>
+
+<script>
+const P=136, W=116, H=176; // column pitch, node width, lane height
+const PHASES=[
+ {title:"Part 1 · School level",sub:"First unexcused absence through the school's attendance plan",cols:11,
+  lanes:[
+   {k:"fam",t:"Parent / family",s:"Receives notices, decides whether to attend"},
+   {k:"sys",t:"Systems",s:"IC, Elevate, auto-dialer"},
+   {k:"sec",t:"Attendance secretary",s:"Often also registrar / treasurer",hrs:"≈29 hrs/wk"},
+   {k:"team",t:"School attendance team",s:"Principal, certified staff",hrs:"≈7 hrs/wk"}],
+  nodes:[
+   {id:"a0",l:"sys",c:0,kind:"auto",t:"Unexcused absence → auto call / text"},
+   {id:"a0f",l:"fam",c:0,kind:"dec",k:"Family",t:"Gets call / text"},
+   {id:"a1",l:"sys",c:1,kind:"auto",t:"Elevate daily list: hit 3 / 5 / 7 unexcused"},
+   {id:"a2",l:"sec",c:2,kind:"manual",t:"Print, address and mail truancy letter",tm:"3–5 min / letter",wk:"≈11 hrs/wk",ai:true},
+   {id:"a3f",l:"fam",c:3,kind:"dec",k:"Family",t:"Gets letter; may call school"},
+   {id:"a3s",l:"sys",c:3,kind:"auto",t:"Letter logged in IC contact log"},
+   {id:"a3",l:"sec",c:3,kind:"manual",t:"Check SPED caseload; notify coordinator",tm:"~1 min / student avg",wk:"≈3 hrs/wk",ai:true},
+   {id:"a4",l:"sys",c:4,kind:"auto",t:"Wednesday report (ATT 140-0018): +2 after letter"},
+   {id:"a5",l:"team",c:5,kind:"manual",t:"Review list; choose parent meeting or Attendance 101",tm:"1–2 hrs / wk per school",wk:"≈7 hrs/wk",ai:true},
+   {id:"a6",l:"sec",c:6,kind:"manual",t:"Invite parents (ParentSquare); push plan to portal one by one",tm:"~2.5 min / student",wk:"≈3.5 hrs/wk",ai:true,note:"Invites yes; portal push needs IC batch"},
+   {id:"a7f",l:"fam",c:7,kind:"dec",k:"Decision",t:"Parent attends? Only 10–20% do"},
+   {id:"a7",l:"team",c:7,kind:"manual",t:"Hold parent meeting or Attendance 101",tm:"~1 hr / session",note:"Stays human"},
+   {id:"a8",l:"sec",c:8,kind:"manual",t:"Log attempted / completed plan + PLP contact log in IC",tm:"~2.5 min / student",wk:"≈3.5 hrs/wk",note:"Needs IC batch import"},
+   {id:"a9",l:"sys",c:9,kind:"auto",t:"Completed plans go on Elevate watch list"},
+   {id:"a10",l:"sec",c:10,kind:"manual",t:"Submit referral to Attend to Achieve (IC tab)",tm:"5–10 min / referral",wk:"≈8 hrs/wk",ai:true,note:"AI pre-fills · continues in Part 2"}
+  ],
+  edges:[
+   {f:"a0",t:"a0f"},{f:"a0",t:"a1"},{f:"a1",t:"a2"},
+   {f:"a2",t:"a3f"},{f:"a2",t:"a3s"},{f:"a2",t:"a3"},
+   {f:"a3s",t:"a4"},{f:"a4",t:"a5"},{f:"a5",t:"a6"},{f:"a6",t:"a7f"},
+   {f:"a7f",t:"a7",lb:"attends"},{f:"a7f",t:"a8",lb:"no-show (80–90%)"},{f:"a7",t:"a8"},
+   {f:"a8",t:"a9"},{f:"a9",t:"a10",lb:"+2 unexcused",side:"l"},{f:"a8",t:"a10",lb:"no-show"}
+  ]},
+ {title:"Part 2 · District level",sub:"Truancy Court Prevention Support (TCPS) class through DA referral",cols:8,
+  lanes:[
+   {k:"fam",t:"Parent / family",s:"Last chance before the DA"},
+   {k:"sys",t:"Systems",s:"IC, Elevate"},
+   {k:"a2a",t:"Attend to Achieve",s:"2 specialists + 5–6 extra-duty staff",hrs:"≈9 hrs/wk"},
+   {k:"da",t:"Wyandotte Co. DA",s:"External"}],
+  nodes:[
+   {id:"b0",l:"sys",c:0,kind:"auto",t:"Thursday Elevate report: families to invite"},
+   {id:"b1",l:"a2a",c:1,kind:"manual",t:"Invite families to Wednesday TCPS class",tm:"~1.5 min / family",wk:"≈2 hrs/wk",ai:true},
+   {id:"b2f",l:"fam",c:2,kind:"dec",k:"Decision",t:"Family attends TCPS?"},
+   {id:"b3",l:"a2a",c:3,kind:"manual",t:"Run class; record attendance; update watch list and IC",tm:"≈16 staff-hrs class",wk:"≈3.5 hrs/wk logging",ai:true,note:"Sign-in + logging only"},
+   {id:"b4",l:"sys",c:4,kind:"auto",t:"Back on watch list; more absences go to DA list"},
+   {id:"b5",l:"a2a",c:5,kind:"manual",t:"Build and send weekly DA referral report",tm:"~5 min / student",wk:"≈4 hrs/wk",ai:true},
+   {id:"b6",l:"da",c:6,kind:"ext",k:"External",t:"Reviews referrals; ~20 a year called to court"},
+   {id:"b7",l:"a2a",c:7,kind:"manual",t:"Relay court status to the school",tm:"Low volume"}
+  ],
+  edges:[
+   {f:"b0",t:"b1"},{f:"b1",t:"b2f"},{f:"b2f",t:"b3",lb:"attends"},{f:"b3",t:"b4"},
+   {f:"b2f",t:"b5",lb:"no-show",late:true},{f:"b4",t:"b5"},
+   {f:"b5",t:"b6"},{f:"b6",t:"b7"}
+  ]}
+];
+
+const root=document.getElementById("phases");
+const built=[];
+PHASES.forEach((ph,pi)=>{
+  const sec=document.createElement("section"); sec.className="phase";
+  const width=ph.cols*P+16, height=ph.lanes.length*H;
+  sec.innerHTML=`<div class="phase-head"><h2>${ph.title}</h2><small>${ph.sub}</small></div>
+   <div class="diagram"><div class="labels">${ph.lanes.map(l=>`<div class="lbl" style="height:${H}px"><b>${l.t}</b><small>${l.s}</small>${l.hrs?`<span class="hrs">${l.hrs}</span>`:""}</div>`).join("")}</div>
+   <div class="scroll"><div class="canvas" style="width:${width}px;height:${height}px">
+     ${ph.lanes.map((l,i)=>`<div class="stripe" style="top:${i*H}px;height:${H}px"></div>`).join("")}
+     <svg class="edges" width="${width}" height="${height}"><defs><marker id="ah${pi}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g></svg>
+   </div></div></div>`;
+  root.appendChild(sec);
+  const canvas=sec.querySelector(".canvas");
+  const laneIdx=Object.fromEntries(ph.lanes.map((l,i)=>[l.k,i]));
+  const els={};
+  ph.nodes.forEach(n=>{
+    const d=document.createElement("div");
+    const cand=n.ai?" cand":"";
+    d.className=`node ${n.kind}${cand}`;
+    d.style.width=W+"px"; d.style.left=(8+n.c*P+(P-W)/2)+"px";
+    const k=n.k||(n.kind==="auto"?"System":"Staff");
+    d.innerHTML=`<span class="k">${k}</span><span class="t">${n.t}</span>${n.tm?`<span class="tm">${n.tm}</span>`:""}${n.wk?`<span class="wk">${n.wk}</span>`:""}${n.ai?`<span class="ai">AI candidate</span>`:""}${n.note?`<span class="note">${n.note}</span>`:""}`;
+    canvas.appendChild(d); els[n.id]={el:d,n,lane:laneIdx[n.l]};
+  });
+  built.push({ph,pi,canvas,els});
+});
+
+function box(o){const e=o.el;return{l:e.offsetLeft,t:e.offsetTop,r:e.offsetLeft+e.offsetWidth,b:e.offsetTop+e.offsetHeight,cx:e.offsetLeft+e.offsetWidth/2,cy:e.offsetTop+e.offsetHeight/2,lane:o.lane,c:o.n.c}}
+function draw(){
+  built.forEach(({ph,pi,canvas,els})=>{
+    Object.values(els).forEach(o=>{const h=o.el.offsetHeight;o.el.style.top=(o.lane*H+(H-h)/2)+"px";});
+    canvas.querySelectorAll(".elabel").forEach(x=>x.remove());
+    const g=canvas.querySelector("svg g"); let paths="";
+    const gap=(P-W)/2;
+    ph.edges.forEach(e=>{
+      const a=box(els[e.f]), b=box(els[e.t]); let d, lx, ly, left=false;
+      if(a.lane===b.lane){ d=`M${a.r},${a.cy} H${b.l-2}`; lx=(a.r+b.l)/2-30; ly=a.cy-13; }
+      else if(a.c===b.c){ const down=b.lane>a.lane; d=down?`M${a.cx},${a.b} V${b.t-2}`:`M${a.cx},${a.t} V${b.b+2}`; lx=a.cx+6; ly=down?(a.b+b.t)/2:(b.b+a.t)/2; }
+      else { const gx=e.late?b.l-gap:a.r+gap; d=`M${a.r},${a.cy} H${gx} V${b.cy} H${b.l-2}`; lx=gx+5; ly=(a.cy+b.cy)/2; }
+      left=e.side==="l";
+      paths+=`<path d="${d}" marker-end="url(#ah${pi})"/>`;
+      if(e.lb){const s=document.createElement("span");s.className="elabel";s.textContent=e.lb;s.style.left=(left?lx-10:lx)+"px";if(left)s.style.transform="translate(-100%,-50%)";s.style.top=ly+"px";canvas.appendChild(s);}
+    });
+    g.innerHTML=paths;
+  });
+}
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(draw);
+draw(); addEventListener("resize",draw);
+
+const tg=document.getElementById("aiToggle");
+tg.addEventListener("click",()=>{const on=tg.getAttribute("aria-pressed")!=="true";tg.setAttribute("aria-pressed",on);document.querySelectorAll(".canvas").forEach(c=>c.classList.toggle("dim",on));});
+</script>
+
+</body></html>
